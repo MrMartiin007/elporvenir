@@ -128,7 +128,9 @@
             </div>
         @endif
 
+        
         <div class="bg-white shadow-sm sm:rounded-lg p-4">
+            <strong> Ultimas Entradas</strong>
             <div class="table-responsive-md">
                 <table class="table table-hover table-bordered" id="tablaEntradas">
                     <thead class="text-center">

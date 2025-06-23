@@ -52,7 +52,6 @@ public function index(Request $request)
     public function store(EntradaRequest $request)
     {
         Entrada::create($request->validated());
-
         return redirect()->route('entradas.index')
             ->with('success', 'Entrada created successfully.');
     }

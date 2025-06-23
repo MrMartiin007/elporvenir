@@ -39,7 +39,9 @@
                 <div class="p-6 text-gray-900">
                     <div class="table-responsive-md">
                         <table class="table table-hover table-bordered" id="tablaProductos">
-                            <thead class="text-center">
+                            <thead class="text-center" style="background-color: #ffb6c1; color: #000;">
+
+
                                 <tr>
                                     <th>#</th>
                                     <th>Código</th>
@@ -62,7 +64,9 @@
                                         <td>{{ $producto->detalle_producto }}</td>
                                         <td>
                                             @if($producto->foto_producto)
-                                                <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="rounded-circle object-cover" style="width: 45px; height: 45px;" alt="Foto producto">
+                                                <img src="{{ asset('storage/' . $producto->foto_producto) }}"
+                                                    class="rounded-circle object-cover" style="width: 45px; height: 45px;"
+                                                    alt="Foto producto">
                                             @else
                                                 <span class="text-muted">Sin imagen</span>
                                             @endif
@@ -73,16 +77,20 @@
                                         <td>{{ $producto->precio_venta }}</td>
                                         <td>{{ $producto->precio_docena }}</td>
                                         <td>
-                                            <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('productos.show', $producto->id) }}"
+                                                class="btn btn-sm btn-info">
                                                 <i class="fa fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('productos.edit', $producto->id) }}" class="btn btn-sm btn-success">
+                                            <a href="{{ route('productos.edit', $producto->id) }}"
+                                                class="btn btn-sm btn-success">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('productos.destroy', $producto->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('productos.destroy', $producto->id) }}" method="POST"
+                                                class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                             </form>
