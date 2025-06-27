@@ -23,10 +23,10 @@ class VentaController extends Controller
         }
 
         $ventas = Venta::where('users_id', auth()->id())
-            ->paginate();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('venta.index', compact('ventas'))
-            ->with('i', (request()->input('page', 1) - 1) * $ventas->perPage());
+        return view('venta.index', compact('ventas'));
     }
 
     public function create(Request $request)
@@ -145,13 +145,13 @@ class VentaController extends Controller
             ->with('success', 'Producto agregado correctamente.');
     }
 
-   public function show($id)
-{
-    // Buscar la venta con sus detalles y productos relacionados
-    $venta = Venta::with('detalles.producto')->findOrFail($id);
+    public function show($id)
+    {
+        // Buscar la venta con sus detalles y productos relacionados
+        $venta = Venta::with('detalles.producto')->findOrFail($id);
 
-    return view('venta.show', compact('venta'));
-}
+        return view('venta.show', compact('venta'));
+    }
 
 
     public function edit($id)

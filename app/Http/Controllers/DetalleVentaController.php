@@ -16,10 +16,9 @@ class DetalleVentaController extends Controller
      */
     public function index()
     {
-        $detalleVentas = DetalleVenta::paginate();
+        $detalleVentas = DetalleVenta::orderBy('created_at', 'asc')->get();
 
-        return view('detalle-venta.index', compact('detalleVentas'))
-            ->with('i', (request()->input('page', 1) - 1) * $detalleVentas->perPage());
+        return view('detalle-venta.index', compact('detalleVentas'));
     }
 
     /**

@@ -14,13 +14,13 @@ class MarcaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $marcas = Marca::paginate();
+   public function index()
+{
+    $marcas = Marca::orderBy('nombre_marca', 'asc')->get();
 
-        return view('marca.index', compact('marcas'))
-            ->with('i', (request()->input('page', 1) - 1) * $marcas->perPage());
-    }
+    return view('marca.index', compact('marcas'));
+}
+
 
     /**
      * Show the form for creating a new resource.

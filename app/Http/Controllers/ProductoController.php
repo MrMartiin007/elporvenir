@@ -20,11 +20,13 @@ class ProductoController extends Controller
     {
       
         $marcas = Marca::pluck('nombre_marca', 'id');
-        $productos = Producto::with(['marca', 'ultimaEntrada'])->paginate(15);
+        $productos = Producto::with(['marca', 'ultimaEntrada'])
+        ->orderBy('created_at','desc')
+        ->get();
 
 
-        return view('producto.index', compact('productos', 'marcas'))
-            ->with('i', (request()->input('page', 1) - 1) * $productos->perPage());
+
+        return view('producto.index', compact('productos', 'marcas'));
     }
 
     /**
