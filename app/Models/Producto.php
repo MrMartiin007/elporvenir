@@ -11,12 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property $codigo_producto
  * @property $detalle_producto
  * @property $foto_producto
- * @property $precio_costo
- * @property $precio_venta
- * @property $precio_docena
  * @property $created_at
  * @property $updated_at
- * @property  $marcas_id
  *
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -32,12 +28,24 @@ class Producto extends Model
      *
      * @var array
      */
-    protected $fillable = ['codigo_producto', 'detalle_producto', 'foto_producto', 'precio_costo', 'precio_venta', 'precio_docena','marcas_id'];
+    protected $fillable = ['codigo_producto', 'detalle_producto', 'foto_producto','marcas_id'];
 
-public function marca()
+
+    public function marca()
 {
     return $this->belongsTo(Marca::class, 'marcas_id');
 }
+public function entradas()
+{
+    return $this->hasMany(Entrada::class, 'productos_id');
+}
+
+public function ultimaEntrada()
+{
+    return $this->hasOne(Entrada::class, 'productos_id')->latestOfMany();
+}
+
 
 
 }
+

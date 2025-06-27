@@ -4,6 +4,8 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VentaController;
+use App\Models\DetalleVenta;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,8 +39,16 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::resource('productos', ProductoController::class);
         Route::resource('marcas', MarcaController::class);
         Route::resource('entradas', EntradaController::class);
+        Route::resource('ventas', VentaController::class);
+        Route::resource('detalle-ventas', DetalleVenta::class);
+
+        Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
+      
+
     });
 });
 require __DIR__ . '/auth.php';
 
 
+  Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
+Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');

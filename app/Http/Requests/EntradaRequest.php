@@ -24,7 +24,10 @@ class EntradaRequest extends FormRequest
         return [
 			'fecha_ingreso' => 'required|string',
 			'cantidad' => 'required|string',
-			'productos_id' => 'required',
+			'precio_costo' => 'required|string',
+			'precio_venta' => 'required|string',
+			'precio_docena' => 'required|string',
+            'productos_id' => 'required',
         ];
     }
 }

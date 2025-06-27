@@ -59,7 +59,7 @@
                                 <!-- Primera fila: Detalle, Marca, Precio Costo -->
                                 <div class="flex flex-wrap justify-between gap-4">
                                     <div class="flex-1 min-w-0">
-                                        <x-input-label for="detalle_producto" :value="__('Detalle Producto')" />
+                                        <x-input-label for="detalle_producto" :value="__('Detalle del Producto')" />
                                         <x-text-input id="detalle_producto" class="block mt-1 w-full" type="text"
                                             name="detalle_producto" :value="old('detalle_producto')" required
                                             autocomplete="detalle_producto" />
@@ -80,6 +80,12 @@
                                         <x-input-error :messages="$errors->get('marcas_id')" class="mt-2" />
                                     </div>
 
+                                    
+                                </div>
+
+
+                                <!-- Segunda fila: Precio Venta, Precio Docena, Código -->
+                                <div class="flex flex-wrap justify-between gap-4">
                                     <div class="flex-1 min-w-0">
                                         <x-input-label for="precio_costo" :value="__('Precio Costo')" />
                                         <x-text-input id="precio_costo" class="block mt-1 w-full" type="number"
@@ -87,10 +93,6 @@
                                             autocomplete="precio_costo" step="0.01" />
                                         <x-input-error :messages="$errors->get('precio_costo')" class="mt-2" />
                                     </div>
-                                </div>
-
-                                <!-- Segunda fila: Precio Venta, Precio Docena, Código -->
-                                <div class="flex flex-wrap justify-between gap-4">
 
                                     <div class="flex-1 min-w-0">
                                         <x-input-label for="precio_venta" :value="__('Precio Venta')" />
@@ -108,8 +110,18 @@
                                         <x-input-error :messages="$errors->get('precio_docena')" class="mt-2" />
                                     </div>
 
+
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <x-input-label for="cantidad" :value="__('Cantidad del Producto a Ingresar *')" />
+                                        <x-text-input id="cantidad" name="cantidad" type="number" min="1"
+                                            class="mt-1 block w-full" value="{{ old('cantidad') }}" required />
+                                        <x-input-error :messages="$errors->get('cantidad')" class="mt-2" />
+                                    </div>
                                     <div class="flex-1 min-w-0">
-                                        <x-input-label for="codigo_producto" :value="__('Código Producto')" />
+                                        <x-input-label for="codigo_producto" :value="__('Código del Producto')" />
                                         <x-text-input id="codigo_producto" class="block mt-1 w-full" type="text"
                                             name="codigo_producto" :value="old('codigo_producto')" required
                                             autocomplete="codigo_producto" />

@@ -40,8 +40,6 @@
                     <div class="table-responsive-md">
                         <table class="table table-hover table-bordered" id="tablaProductos">
                             <thead class="text-center" style="background-color: #ffb6c1; color: #000;">
-
-
                                 <tr>
                                     <th>#</th>
                                     <th>Código</th>
@@ -60,7 +58,7 @@
                                 @foreach($productos as $producto)
                                     <tr class="align-middle text-center">
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $producto->codigo_producto }}</td>
+                                        <td class="align-middle text-center">{{ $producto->codigo_producto }}</td>
                                         <td>{{ $producto->detalle_producto }}</td>
                                         <td>
                                             @if($producto->foto_producto)
@@ -72,10 +70,11 @@
                                             @endif
                                         </td>
                                         <td>{{ $producto->marca->nombre_marca}} </td>
-                                        <td>{{ $producto->stock }}</td>
-                                        <td>{{ $producto->precio_costo }}</td>
-                                        <td>{{ $producto->precio_venta }}</td>
-                                        <td>{{ $producto->precio_docena }}</td>
+                                        <td class="align-middle text-center">{{ $producto->stock }}</td>
+                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_costo ?? '-' }}</td>
+                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_venta ?? '-' }}</td>
+                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_docena ?? '-' }}</td>
+
                                         <td>
                                             <a href="{{ route('productos.show', $producto->id) }}"
                                                 class="btn btn-sm btn-info">
@@ -99,11 +98,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
-
-                    {{-- Paginación --}}
-                    <div class="mt-3">
-                        {!! $productos->links() !!}
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entrada;
 use App\Models\Marca;
 use App\Models\Producto;
 use App\Http\Requests\ProductoRequest;
@@ -17,10 +18,12 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        $productos = Producto::paginate();
+      
         $marcas = Marca::pluck('nombre_marca', 'id');
+        $productos = Producto::with(['marca', 'ultimaEntrada'])->paginate(15);
 
-        return view('producto.index', compact('productos','marcas'))
+
+        return view('producto.index', compact('productos', 'marcas'))
             ->with('i', (request()->input('page', 1) - 1) * $productos->perPage());
     }
 
@@ -30,28 +33,43 @@ class ProductoController extends Controller
     public function create()
     {
         $producto = new Producto();
-         $marcas = Marca::all();
-        return view('producto.create', compact('producto','marcas'));
+        $marcas = Marca::all();
+        return view('producto.create', compact('producto', 'marcas'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
+
     public function store(ProductoRequest $request)
     {
+
         $data = $request->validated();
 
         // Procesar la imagen si existe
-        if ($request->hasFile('foto_producto')) {
+         if ($request->hasFile('foto_producto')) {
             $imagePath = $request->file('foto_producto')->store('productos', 'public');
             $data['foto_producto'] = $imagePath;
         }
 
-        Producto::create($data);
+        // Crear el producto
+        $producto = Producto::create($data);
+
+        // Crear la entrada inicial
+        Entrada::create([
+            'productos_id' => $producto->id,
+            'cantidad' => $request->input('cantidad'),
+            'precio_costo' => $request->input('precio_costo'),
+            'precio_venta' => $request->input('precio_venta'),
+            'precio_docena' => $request->input('precio_docena'),
+            'fecha_ingreso' => now(), 
+        ]);
 
         return redirect()->route('productos.index')
-            ->with('success', 'Producto creado exitosamente.');
+            ->with('success', 'Producto y entrada inicial creados exitosamente.');
     }
+
 
     /**
      * Display the specified resource.

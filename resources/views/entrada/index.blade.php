@@ -66,7 +66,7 @@
                             <a href="{{ route('entradas.index') }}" class="btn-close"></a>
                         </div>
                         <div class="modal-body">
-                            
+
                             <div class="text-center mb-3">
                                 <x-input-label for="foto_prodcuto" :value="__('Foto del producto')" />
                                 <img src="{{ asset('storage/' . $producto->foto_producto) }}" alt="Foto" class="mx-auto"
@@ -85,29 +85,57 @@
                                         value="{{ $producto->detalle_producto }}" disabled />
                                 </div>
                             </div>
-                             <div class="row mb-3">
+                            <div class="row mb-3">
                                 <div class="col">
                                     <x-input-label for="stock" :value="__('Stock')" />
                                     <x-text-input id="stock" type="text" class="mt-1 block w-full"
                                         value="{{ $producto->stock }} Unidades" disabled />
                                 </div>
+
                                 <div class="col">
-                                    <x-input-label for="precio_costo" :value="__('Precio Costo')" />
-                                    <x-text-input id="precio_costo" type="text" class="mt-1 block w-full"
-                                        value="{{ $producto->precio_costo }} " disabled />
+                                    <x-input-label for="Marca" :value="__('Marca')" />
+                                    <x-text-input id="marca" type="text" class="mt-1 block w-full"
+                                        value="{{ $producto->marca->nombre_marca }}" disabled />
                                 </div>
                             </div>
+
+
 
                             <form id="formEntrada" action="{{ route('entradas.store') }}" method="POST" class="guardar">
                                 @csrf
                                 <input type="hidden" name="productos_id" value="{{ $producto->id }}">
+                                @php
+                                    $costo = $ultimaEntrada->precio_costo ?? '';
+                                    $venta = $ultimaEntrada->precio_venta ?? '';
+                                    $docena = $ultimaEntrada->precio_docena ?? '';
+                                @endphp
 
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <x-input-label for="fecha_ingreso" :value="__('Fecha Ingreso')" />
-                                        <x-text-input id="fecha_ingreso" name="fecha_ingreso" type="date"
-                                            class="mt-1 block w-full" value="{{ old('fecha_ingreso', date('Y-m-d')) }}"
+                                        <x-input-label for="precio_costo" :value="__('Nuevo Precio Costo?')" />
+                                        <x-text-input id="precio_costo" name="precio_costo" type="number" step="0.01"
+                                            class="mt-1 block w-full" value="{{ $costo }}" />
+                                    </div>
+                                    <div class="col">
+                                        <x-input-label for="precio_venta" :value="__('Precio Venta')" />
+                                        <x-text-input id="precio_venta" name="precio_venta" type="number" step="0.01"
+                                            class="mt-1 block w-full" value="{{ $venta }}" />
+                                    </div>
+                                    <div class="col">
+                                        <x-input-label for="precio_docena" :value="__('Precio Docena')" />
+                                        <x-text-input id="precio_docena" name="precio_docena" type="number" step="0.01"
+                                            class="mt-1 block w-full" value="{{ $docena }}" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                       <x-input-label for="fecha_ingreso" :value="__('Fecha y Hora de Ingreso')" />
+                                        <x-text-input id="fecha_ingreso" name="fecha_ingreso" type="text"
+                                            class="mt-1 block w-full"
+                                            value="{{ old('fecha_ingreso', \Carbon\Carbon::now()->format('Y-m-d H:i:s')) }}"
                                             required />
+
                                     </div>
 
                                     <div class="col">
@@ -116,6 +144,10 @@
                                             class="mt-1 block w-full" required />
                                     </div>
                                 </div>
+
+
+
+
 
                                 <div class="modal-footer">
                                     <a href="{{ route('entradas.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -128,7 +160,7 @@
             </div>
         @endif
 
-        
+
         <div class="bg-white shadow-sm sm:rounded-lg p-4">
             <strong> Ultimas Entradas</strong>
             <div class="table-responsive-md">
@@ -147,16 +179,12 @@
                         @foreach($entradas as $entrada)
                             <tr class="align-middle text-center">
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $entrada->fecha_ingreso }}</td>
-                                <td>{{ $entrada->cantidad }}</td>
+                                <td class="align-middle text-center">{{ $entrada->fecha_ingreso }}</td>
+                                <td class="align-middle text-center">{{ $entrada->cantidad }}</td>
                                 <td>{{ $entrada->producto->detalle_producto }}</td>
                                 <td><img src="{{ asset('storage/' . $entrada->producto->foto_producto) }}" alt="Foto"
                                         style="height: 50px; border-radius: 8px;"></td>
                                 <td>
-                                    <a href="{{ route('entradas.show', $entrada->id) }}" class="btn btn-sm btn-info"><i
-                                            class="fa fa-eye"></i></a>
-                                    <a href="{{ route('entradas.edit', $entrada->id) }}" class="btn btn-sm btn-success"><i
-                                            class="fa fa-edit"></i></a>
                                     <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST"
                                         class="d-inline">
                                         @csrf
@@ -220,4 +248,66 @@
             });
         });
     </script>
+    <script>
+        const formatCurrencyInputs = ['precio_costo', 'precio_venta', 'precio_docena'];
+
+        formatCurrencyInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            // Al iniciar, si está vacío, colocar "0.00"
+            if (input.value.trim() === '') input.value = '0.00';
+
+            input.addEventListener('input', () => {
+                let raw = input.value.replace(/[^0-9]/g, ''); // solo números, eliminar todo menos dígitos
+
+                if (raw === '') {
+                    // Si borran todo, ponemos "0."
+                    input.value = '0.';
+                    return;
+                }
+
+                // Convertimos a número y lo dividimos entre 100 para poner decimal
+                let num = parseInt(raw, 10);
+                if (isNaN(num)) num = 0;
+
+                // Formateamos con dos decimales
+                let formatted = (num / 100).toFixed(2);
+
+                input.value = formatted;
+            });
+
+            input.addEventListener('blur', () => {
+                // Si al salir está vacío o inválido, poner 0.00
+                if (input.value.trim() === '' || isNaN(parseFloat(input.value))) {
+                    input.value = '0.00';
+                }
+            });
+        });
+
+        const inputCosto = document.getElementById('precio_costo');
+        const inputVenta = document.getElementById('precio_venta');
+        const inputDocena = document.getElementById('precio_docena');
+
+        function actualizarPrecios() {
+            let costo = parseFloat(inputCosto.value);
+            if (isNaN(costo)) costo = 0;
+
+            inputVenta.value = (costo * 1.25).toFixed(2);
+            inputDocena.value = (costo * 1.15).toFixed(2);
+        }
+
+        if (inputCosto) {
+            inputCosto.addEventListener('input', actualizarPrecios);
+            inputCosto.addEventListener('blur', () => {
+                if (inputCosto.value.trim() === '' || isNaN(parseFloat(inputCosto.value))) {
+                    inputCosto.value = '0.00';
+                }
+                actualizarPrecios();
+            });
+            if (inputCosto.value.trim() === '') inputCosto.value = '0.00';
+        }
+
+    </script>
+
 </x-app-layout>

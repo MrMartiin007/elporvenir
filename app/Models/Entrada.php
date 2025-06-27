@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property $id
  * @property $fecha_ingreso
  * @property $cantidad
+ * @property $precio_costo
+ * @property $precio_venta
+ * @property $precio_docena
  * @property $created_at
  * @property $updated_at
  * @property $productos_id
  *
- * @property Producto $producto
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -29,17 +31,14 @@ class Entrada extends Model
      *
      * @var array
      */
-    protected $fillable = ['fecha_ingreso', 'cantidad', 'productos_id'];
+    protected $fillable = ['fecha_ingreso', 'cantidad', 'precio_costo', 'precio_venta', 'precio_docena', 'productos_id'];
 
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function producto()
+        public function producto()
     {
         return $this->belongsTo(Producto::class, 'productos_id', 'id');
     }
-    
+
  protected static function booted()
     {
         static::created(function ($entrada) {
@@ -50,6 +49,5 @@ class Entrada extends Model
             }
         });
     }
-
 
 }
