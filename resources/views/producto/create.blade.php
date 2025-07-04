@@ -56,7 +56,6 @@
 
                             <!-- Inputs agrupados en 2 líneas de 3 elementos cada una -->
                             <div class="space-y-6">
-                                <!-- Primera fila: Detalle, Marca, Precio Costo -->
                                 <div class="flex flex-wrap justify-between gap-4">
                                     <div class="flex-1 min-w-0">
                                         <x-input-label for="detalle_producto" :value="__('Detalle del Producto')" />
@@ -66,10 +65,9 @@
                                         <x-input-error :messages="$errors->get('detalle_producto')" class="mt-2" />
                                     </div>
 
-                                    <div class="flex-1 min-w-0">
-                                        <x-input-label for="marcas_id" :value="__('Marca del Producto')" />
-                                        <select name="marcas_id" id="marcas_id"
-                                            class="select2 block mt-1 w-full h-10 border-gray-300 rounded-md shadow-sm">
+                                    <div class="col-md-6">
+                                        <x-input-label for="Marca_Producto" :value="__('Marca del Producto')" />
+                                        <select name="marcas_id" id="marcas_id" class="form-select">
                                             <option value="">Selecciona una marca</option>
                                             @foreach ($marcas as $marca)
                                                 <option value="{{ $marca->id }}" {{ old('marcas_id') == $marca->id ? 'selected' : '' }}>
@@ -77,40 +75,31 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <x-input-error :messages="$errors->get('marcas_id')" class="mt-2" />
+                                        <x-input-error :messages="$errors->get('marcas_id')" class="mt-1" />
                                     </div>
-
-                                    
                                 </div>
 
 
                                 <!-- Segunda fila: Precio Venta, Precio Docena, Código -->
-                                <div class="flex flex-wrap justify-between gap-4">
-                                    <div class="flex-1 min-w-0">
-                                        <x-input-label for="precio_costo" :value="__('Precio Costo')" />
-                                        <x-text-input id="precio_costo" class="block mt-1 w-full" type="number"
-                                            name="precio_costo" :value="old('precio_costo')" required
-                                            autocomplete="precio_costo" step="0.01" />
-                                        <x-input-error :messages="$errors->get('precio_costo')" class="mt-2" />
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="precio_costo" class="form-label">Precio Costo</label>
+                                        <x-text-input type="number" step="0.01" class="form-control" id="precio_costo"
+                                            name="precio_costo" value="{{ old('precio_costo', '0.00') }}" required />
+                                        <x-input-error :messages="$errors->get('precio_costo')" class="mt-1" />
                                     </div>
-
-                                    <div class="flex-1 min-w-0">
-                                        <x-input-label for="precio_venta" :value="__('Precio Venta')" />
-                                        <x-text-input id="precio_venta" class="block mt-1 w-full" type="number"
-                                            name="precio_venta" :value="old('precio_venta')" required
-                                            autocomplete="precio_venta" step="0.01" />
-                                        <x-input-error :messages="$errors->get('precio_venta')" class="mt-2" />
+                                    <div class="col-md-4">
+                                        <label for="precio_venta" class="form-label">Precio Venta</label>
+                                        <x-text-input type="number" step="0.01" class="form-control" id="precio_venta"
+                                            name="precio_venta" value="{{ old('precio_venta', '0.00') }}" required />
+                                        <x-input-error :messages="$errors->get('precio_venta')" class="mt-1" />
                                     </div>
-
-                                    <div class="flex-1 min-w-0">
-                                        <x-input-label for="precio_docena" :value="__('Precio por Docena')" />
-                                        <x-text-input id="precio_docena" class="block mt-1 w-full" type="number"
-                                            name="precio_docena" :value="old('precio_docena')" required
-                                            autocomplete="precio_docena" step="0.01" />
-                                        <x-input-error :messages="$errors->get('precio_docena')" class="mt-2" />
+                                    <div class="col-md-4">
+                                        <label for="precio_docena" class="form-label">Precio Docena</label>
+                                        <x-text-input type="number" step="0.01" class="form-control" id="precio_docena"
+                                            name="precio_docena" value="{{ old('precio_docena', '0.00') }}" required />
+                                        <x-input-error :messages="$errors->get('precio_docena')" class="mt-1" />
                                     </div>
-
-
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

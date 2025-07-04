@@ -6,6 +6,7 @@ use App\Models\Entrada;
 use App\Models\Marca;
 use App\Models\Producto;
 use App\Http\Requests\ProductoRequest;
+use Illuminate\Http\Request;
 
 /**
  * Class ProductoController
@@ -16,15 +17,27 @@ class ProductoController extends Controller
     /**
      * Display a listing of the resource.
      */
- public function index()
-{
-    $marcas = Marca::pluck('nombre_marca', 'id');
-    $productos = Producto::with(['marca', 'ultimaEntrada'])
-        ->orderBy('created_at', 'desc')
-        ->paginate(10); // o el número que desees por página
+    public function index()
+    {
+        $buscar = request('buscar');
 
-    return view('producto.index', compact('productos', 'marcas'));
-}
+        $productos = Producto::with(['marca', 'ultimaEntrada'])
+            ->when($buscar, function ($query, $buscar) {
+                $query->where('codigo_producto', 'like', "%{$buscar}%")
+                    ->orWhere('detalle_producto', 'like', "%{$buscar}%")
+                    ->orWhereHas('marca', function ($q) use ($buscar) {
+                        $q->where('nombre_marca', 'like', "%{$buscar}%");
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->appends(['buscar' => $buscar]); // mantiene el filtro en la paginación
+
+        $marcas = Marca::pluck('nombre_marca', 'id');
+
+        return view('producto.index', compact('productos', 'marcas'));
+    }
+
 
 
     /**
@@ -48,7 +61,7 @@ class ProductoController extends Controller
         $data = $request->validated();
 
         // Procesar la imagen si existe
-         if ($request->hasFile('foto_producto')) {
+        if ($request->hasFile('foto_producto')) {
             $imagePath = $request->file('foto_producto')->store('productos', 'public');
             $data['foto_producto'] = $imagePath;
         }
@@ -63,7 +76,7 @@ class ProductoController extends Controller
             'precio_costo' => $request->input('precio_costo'),
             'precio_venta' => $request->input('precio_venta'),
             'precio_docena' => $request->input('precio_docena'),
-            'fecha_ingreso' => now(), 
+            'fecha_ingreso' => now(),
         ]);
 
         return redirect()->route('productos.index')
@@ -76,37 +89,67 @@ class ProductoController extends Controller
      */
     public function show($id)
     {
-        $producto = Producto::find($id);
+        $producto = Producto::with(['marca', 'ultimaEntrada'])->findOrFail($id);
 
         return view('producto.show', compact('producto'));
     }
 
+
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Producto $producto)
     {
-        $producto = Producto::find($id);
-
-        return view('producto.edit', compact('producto'));
+        $marcas = Marca::all();
+        return view('producto.edit', compact('producto', 'marcas'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductoRequest $request, Producto $producto)
+    public function update(Request $request, Producto $producto)
     {
-        $producto->update($request->validated());
+        $request->validate([
+            'codigo_producto' => 'required|string|max:100|unique:productos,codigo_producto,' . $producto->id,
+            'detalle_producto' => 'required',
+            'foto_producto' => 'image',
+            'marcas_id' => 'required|exists:marcas,id',
+
+
+
+        ]);
+
+        $producto->update([
+            'codigo_producto' => $request->codigo_producto,
+            'detalle_producto' => $request->detalle_producto,
+            'marcas_id' => $request->marcas_id,
+        ]);
+
+
+        if ($request->hasFile('foto_producto')) {
+            $foto = $request->file('foto_producto');
+
+            $rutaFoto = $foto->store('productos', 'public');
+
+            $producto->update(['foto_producto' => $rutaFoto]);
+        }
 
         return redirect()->route('productos.index')
-            ->with('success', 'Producto updated successfully');
+            ->with('success', 'Producto Actualizado Exitosamente.');
     }
 
-    public function destroy($id)
+      public function destroy($id)
     {
+        try {
         Producto::find($id)->delete();
 
         return redirect()->route('productos.index')
-            ->with('success', 'Producto deleted successfully');
+            ->with('success', 'Producto eliminado exitosamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('productos.index')
+            ->with('error', 'No se puede eliminar el producto, este ya tuvo ventas registradas.');
     }
+}
 }

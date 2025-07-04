@@ -28,18 +28,29 @@
     <div class="py-12">
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
-                <div class="row align-items-end">
-                    <div class="col text-end mt-4 pe-5">
-                        <a href="{{ route('productos.create') }}" class="btn btn-primary active">
-                            <i class="fa fa-plus me-2"></i> Crear Nuevo Producto
-                        </a>
+                <div class="d-flex justify-content-end flex-column align-items-end px-4 pt-5 gap-2">
+                    <a href="{{ route('productos.create') }}" class="btn btn-primary active">
+                        <i class="fa fa-plus me-2"></i> Crear Nuevo Producto
+                    </a>
+
+                    <div class="col-md-2 offset-md-6 mt-4">
+                        <form method="GET" action="{{ route('productos.index') }}">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="buscar" value="{{ request('buscar') }}"
+                                    class="form-control form-control-sm"
+                                    placeholder="Buscar código, detalle o marca...">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
                 <div class="p-6 text-gray-900">
                     <div class="table-responsive-md">
                         <table class="table table-hover table-bordered" id="tablaProductos">
-                            <thead class="text-center" style="background-color: #ffb6c1; color: #000;">
+                            <thead class="table-danger text-center text-black">
+
                                 <tr>
                                     <th>#</th>
                                     <th>Código</th>
@@ -55,7 +66,7 @@
                             </thead>
 
                             <tbody>
-                                @foreach($productos as $producto)
+                                @forelse($productos as $producto)
                                     <tr class="align-middle text-center">
                                         <td>{{ $loop->iteration + ($productos->currentPage() - 1) * $productos->perPage() }}
                                         </td>
@@ -105,7 +116,12 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No se encontraron resultados para tu
+                                            búsqueda.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                         <div class="mt-3">
@@ -128,13 +144,11 @@
         </div>
     </div>
 
-
-
-<script>
-    function mostrarImagen(ruta) {
-        document.getElementById('modalImage').src = ruta;
-    }
-</script>
+    <script>
+        function mostrarImagen(ruta) {
+            document.getElementById('modalImage').src = ruta;
+        }
+    </script>
 
 
 </x-app-layout>

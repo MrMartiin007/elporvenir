@@ -14,12 +14,17 @@ class MarcaController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index()
-{
-    $marcas = Marca::orderBy('nombre_marca', 'asc')->get();
+    public function index()
+    {
+        $buscar = request('buscar');
 
-    return view('marca.index', compact('marcas'));
-}
+        $marcas = Marca::where('nombre_marca', 'like', "%{$buscar}%")
+
+            ->orderBy('nombre_marca', 'asc')
+            ->paginate(10); // o el número que desees por página
+
+        return view('marca.index', compact('marcas'));
+    }
 
 
     /**
@@ -36,7 +41,7 @@ class MarcaController extends Controller
      */
     public function store(MarcaRequest $request)
     {
-         $data = $request->validated();
+        $data = $request->validated();
 
         // Procesar la imagen si existe
         if ($request->hasFile('logo_marca')) {
