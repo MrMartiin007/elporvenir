@@ -53,7 +53,7 @@
                             <tbody>
                                 @foreach ($ventas as $venta)
                                     <tr class="align-middle text-center">
-                                        <td>{{ ++$i }}</td>
+                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($venta->fecha_venta)->format('d-m-Y') }}</td>
                                         <td class="align-middle text-center">{{ $venta->cantidad_productos }}</td>
                                         <td class="align-middle text-center">{{ $venta->total_vendido }}</td>

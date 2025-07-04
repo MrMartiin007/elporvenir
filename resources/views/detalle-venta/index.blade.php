@@ -70,7 +70,6 @@
                         </div>
                     </div>
                 </div>
-                {!! $detalleVentas->links() !!}
             </div>
         </div>
     </div>

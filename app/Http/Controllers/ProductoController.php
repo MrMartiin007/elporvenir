@@ -16,18 +16,16 @@ class ProductoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-      
-        $marcas = Marca::pluck('nombre_marca', 'id');
-        $productos = Producto::with(['marca', 'ultimaEntrada'])
-        ->orderBy('created_at','desc')
-        ->get();
+ public function index()
+{
+    $marcas = Marca::pluck('nombre_marca', 'id');
+    $productos = Producto::with(['marca', 'ultimaEntrada'])
+        ->orderBy('created_at', 'desc')
+        ->paginate(10); // o el número que desees por página
 
+    return view('producto.index', compact('productos', 'marcas'));
+}
 
-
-        return view('producto.index', compact('productos', 'marcas'));
-    }
 
     /**
      * Show the form for creating a new resource.

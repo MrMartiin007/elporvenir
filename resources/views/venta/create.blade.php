@@ -64,11 +64,14 @@
                                             <td>
                                                 @if($detalle->producto->foto_producto)
                                                     <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
-                                                        class="rounded-circle object-cover" style="width: 45px; height: 45px;"
-                                                        alt="Foto producto">
+                                                        class="rounded-circle object-cover cursor-pointer"
+                                                        style="width: 45px; height: 45px;" alt="Foto producto"
+                                                        data-bs-toggle="modal" data-bs-target="#fotoModal"
+                                                        onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
                                                 @else
                                                     <span class="text-muted">Sin imagen</span>
                                                 @endif
+
                                             </td>
                                             <td>{{ $detalle->cantidad }}</td>
                                             <td>Q {{ number_format($detalle->precio_unitario, 2) }}</td>
@@ -80,14 +83,14 @@
                                                     <input type="number" name="descuento"
                                                         value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
                                                         max="{{ $detalle->precio_unitario }}" style="
-                                                    border: none; 
-                                                    border-bottom: 1px solid #333; 
-                                                    outline: none; 
-                                                    width: 80px; 
-                                                    text-align: center;
-                                                    padding: 2px 4px;
-                                                    background: transparent;
-                                                " class="form-control-sm">
+                                                            border: none; 
+                                                            border-bottom: 1px solid #333; 
+                                                            outline: none; 
+                                                            width: 80px; 
+                                                            text-align: center;
+                                                            padding: 2px 4px;
+                                                            background: transparent;
+                                                        " class="form-control-sm">
                                                     <button type="submit" class="btn btn-sm btn-primary" style="height: 30px;">
                                                         <i class="fas fa-check"></i>
                                                     </button>
@@ -169,5 +172,23 @@
                 }
             });
         });
+    </script>
+    <!-- Modal para mostrar imagen -->
+    <div class="modal fade" id="fotoModal" tabindex="-1" aria-labelledby="fotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Foto del producto" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        function mostrarImagen(ruta) {
+            document.getElementById('modalImage').src = ruta;
+        }
     </script>
 </x-app-layout>

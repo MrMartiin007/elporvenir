@@ -40,12 +40,9 @@ public function index(Request $request)
         }
     
     }
-      
-
-
     $entradas = Entrada::with('producto')
         ->orderBy('created_at', 'asc')
-        ->get();
+       ->paginate(20); // o el número que desees por página
 
     return view('entrada.index', compact('entradas', 'productosFiltrados', 'ultimaEntrada'));
 }

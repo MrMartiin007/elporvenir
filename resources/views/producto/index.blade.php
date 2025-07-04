@@ -57,23 +57,33 @@
                             <tbody>
                                 @foreach($productos as $producto)
                                     <tr class="align-middle text-center">
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $loop->iteration + ($productos->currentPage() - 1) * $productos->perPage() }}
+                                        </td>
                                         <td class="align-middle text-center">{{ $producto->codigo_producto }}</td>
                                         <td>{{ $producto->detalle_producto }}</td>
                                         <td>
                                             @if($producto->foto_producto)
                                                 <img src="{{ asset('storage/' . $producto->foto_producto) }}"
-                                                    class="rounded-circle object-cover" style="width: 45px; height: 45px;"
-                                                    alt="Foto producto">
+                                                    class="rounded-circle object-cover cursor-pointer"
+                                                    style="width: 45px; height: 45px;" alt="Foto producto"
+                                                    data-bs-toggle="modal" data-bs-target="#fotoModal"
+                                                    onclick="mostrarImagen('{{ asset('storage/' . $producto->foto_producto) }}')">
                                             @else
                                                 <span class="text-muted">Sin imagen</span>
                                             @endif
+
                                         </td>
                                         <td>{{ $producto->marca->nombre_marca}} </td>
                                         <td class="align-middle text-center">{{ $producto->stock }}</td>
-                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_costo ?? '-' }}</td>
-                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_venta ?? '-' }}</td>
-                                        <td class="align-middle text-center">{{ $producto->ultimaEntrada?->precio_docena ?? '-' }}</td>
+                                        <td class="align-middle text-center">
+                                            {{ $producto->ultimaEntrada?->precio_costo ?? '-' }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ $producto->ultimaEntrada?->precio_venta ?? '-' }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ $producto->ultimaEntrada?->precio_docena ?? '-' }}
+                                        </td>
 
                                         <td>
                                             <a href="{{ route('productos.show', $producto->id) }}"
@@ -98,42 +108,33 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="mt-3">
+                            {{ $productos->links() }}
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+    <!-- Modal para mostrar imagen -->
+    <div class="modal fade" id="fotoModal" tabindex="-1" aria-labelledby="fotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Foto del producto" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
 
-{{-- Scripts para DataTables --}}
+
+
 <script>
-    $(document).ready(function () {
-        let table = $('#tablaProductos').DataTable({
-            responsive: true,
-            scrollX: true,
-            autoWidth: false,
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-            language: {
-                "emptyTable": "No hay productos registrados",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ productos",
-                "infoEmpty": "Mostrando 0 a 0 de 0 productos",
-                "infoFiltered": "(filtrado de _MAX_ productos)",
-                "lengthMenu": "Mostrar _MENU_ productos",
-                "search": "Buscar:",
-                "zeroRecords": "No se encontraron coincidencias",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Último",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            }
-        });
-
-        table.columns.adjust();
-
-        $(window).resize(function () {
-            table.columns.adjust();
-        });
-    });
+    function mostrarImagen(ruta) {
+        document.getElementById('modalImage').src = ruta;
+    }
 </script>
+
+
+</x-app-layout>
