@@ -34,6 +34,13 @@
                     </x-nav-link>
                     @endrole
                     @role('venta')
+                    <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
+                        {{ __('Venta') }}
+                    </x-nav-link>
+                     <x-nav-link :href="route('productos.consultar')"
+                        :active="request()->routeIs('productos.consultar')">
+                        {{ __('Consultar Producto') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
                         {{ __('Productos') }}
                     </x-nav-link>
@@ -42,15 +49,7 @@
                     </x-nav-link>
                     <x-nav-link :href="route('entradas.index')" :active="request()->routeIs('entradas.*')">
                         {{ __('Entradas') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
-                        {{ __('Venta') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('productos.consultar')"
-                        :active="request()->routeIs('productos.consultar')">
-                        {{ __('Consultar Producto') }}
-                    </x-nav-link>
-
+                    </x-nav-link> 
 
                     @endrole
                 </div>
