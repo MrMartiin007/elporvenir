@@ -139,17 +139,36 @@ class ProductoController extends Controller
             ->with('success', 'Producto Actualizado Exitosamente.');
     }
 
-      public function destroy($id)
+    public function destroy($id)
     {
         try {
-        Producto::find($id)->delete();
+            Producto::find($id)->delete();
 
-        return redirect()->route('productos.index')
-            ->with('success', 'Producto eliminado exitosamente.');
+            return redirect()->route('productos.index')
+                ->with('success', 'Producto eliminado exitosamente.');
 
         } catch (\Exception $e) {
             return redirect()->route('productos.index')
-            ->with('error', 'No se puede eliminar el producto, este ya tuvo ventas registradas.');
+                ->with('error', 'No se puede eliminar el producto, este ya tuvo ventas registradas.');
+        }
     }
-}
+    public function consultarProducto()
+    {
+        $buscar = request('buscar');
+
+        $productos = null;
+
+        if ($buscar) {
+            $productos = Producto::with(['marca', 'ultimaEntrada'])
+                ->where('codigo_producto', $buscar)
+                ->orWhere('detalle_producto', 'like', "%{$buscar}%")
+                ->orWhereHas('marca', function ($query) use ($buscar) {
+                    $query->where('nombre_marca', 'LIKE', "%$buscar%");
+                })
+                ->get();
+        }
+
+        return view('producto.consultar', compact('productos', 'buscar'));
+    }
+
 }

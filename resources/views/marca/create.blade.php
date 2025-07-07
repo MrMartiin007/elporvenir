@@ -30,7 +30,7 @@
                             </div>
 
                             <div class="mb-2">
-                                <x-input-label for="logo_marca" :value="__('Logo de la Marca')" />
+                                <x-input-label for="foto_marca" :value="__('Logo de la Marca')" />
                                 <div id="drop-area" class="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-1 
                                     text-center cursor-pointer hover:bg-gray-50 transition duration-150 ease-in-out">
                                     <div id="drop-content">
@@ -42,7 +42,7 @@
                                         </svg>
                                         <p class="mt-1 text-sm text-gray-600">Arrastra y suelta el logo</p>
                                         <p class="mt-1 text-xs text-gray-500">o haz clic para seleccionar</p>
-                                        <input type="file" id="logo_marca" name="logo_marca" class="hidden" accept="image/*" />
+                                        <input type="file" id="foto_marca" name="foto_marca" class="hidden" accept="image/*" />
                                     </div>
 
                                     <div id="preview-container" class="mt-2 hidden">
@@ -56,7 +56,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <x-input-error :messages="$errors->get('logo_marca')" class="mt-2" />
+                                <x-input-error :messages="$errors->get('foto_marca')" class="mt-2" />
                             </div>
 
                             <div class="flex items-center mt-6 space-x-4">
@@ -84,7 +84,7 @@
         const dropArea = document.getElementById('drop-area');
         const dropContent = document.getElementById('drop-content');
         const previewContainer = document.getElementById('preview-container');
-        const fileInput = document.getElementById('logo_marca');
+        const fileInput = document.getElementById('foto_marca');
         const preview = document.getElementById('foto_preview');
         const fileNameDisplay = document.getElementById('file-name');
         let currentFile = null;

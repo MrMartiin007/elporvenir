@@ -63,8 +63,8 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $marca->nombre_marca }}</td>
                                     <td>
-                                        @if ($marca->logo_marca)
-                                            <img src="{{ asset('storage/' . $marca->logo_marca) }}"
+                                        @if ($marca->foto_marca)
+                                            <img src="{{ asset('storage/' . $marca->foto_marca) }}"
                                                 class="rounded-circle object-cover" style="width: 45px; height: 45px;"
                                                 alt="Logo Marca">
                                         @else

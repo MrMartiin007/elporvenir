@@ -26,7 +26,7 @@
                         </div>
                         <div class="form-group mb-2 mb20">
                             <strong>Logo Marca:</strong>
-                            {{ $marca->logo_marca }}
+                            {{ $marca->foto_marca }}
                         </div>
 
                     </div>

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property $id
  * @property $nombre_marca
- * @property $logo_marca
+ * @property $foto_marca
  * @property $created_at
  * @property $updated_at
  *
@@ -27,7 +27,7 @@ class Marca extends Model
      *
      * @var array
      */
-    protected $fillable = ['nombre_marca', 'logo_marca'];
+    protected $fillable = ['nombre_marca', 'foto_marca'];
 
 
 public function productos()

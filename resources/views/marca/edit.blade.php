@@ -27,9 +27,9 @@
             {!! $errors->first('nombre_marca', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
         <div class="form-group mb-2 mb20">
-            <label for="logo_marca" class="form-label">{{ __('Logo Marca') }}</label>
-            <input type="text" name="logo_marca" class="form-control @error('logo_marca') is-invalid @enderror" value="{{ old('logo_marca', $marca?->logo_marca) }}" id="logo_marca" placeholder="Logo Marca">
-            {!! $errors->first('logo_marca', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            <label for="foto_marca" class="form-label">{{ __('Logo Marca') }}</label>
+            <input type="text" name="foto_marca" class="form-control @error('foto_marca') is-invalid @enderror" value="{{ old('foto_marca', $marca?->foto_marca) }}" id="foto_marca" placeholder="Logo Marca">
+            {!! $errors->first('foto_marca', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
     </div>

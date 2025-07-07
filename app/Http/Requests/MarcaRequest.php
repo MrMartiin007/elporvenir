@@ -23,7 +23,7 @@ class MarcaRequest extends FormRequest
     {
         return [
             'nombre_marca' => 'required|string',
-            'logo_marca' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto_marca' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
         ];
     }

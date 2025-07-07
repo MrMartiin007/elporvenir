@@ -44,9 +44,9 @@ class MarcaController extends Controller
         $data = $request->validated();
 
         // Procesar la imagen si existe
-        if ($request->hasFile('logo_marca')) {
-            $imagePath = $request->file('logo_marca')->store('marcas', 'public');
-            $data['logo_marca'] = $imagePath;
+        if ($request->hasFile('foto_marca')) {
+            $imagePath = $request->file('foto_marca')->store('marcas', 'public');
+            $data['foto_marca'] = $imagePath;
         }
 
         Marca::create($data);
