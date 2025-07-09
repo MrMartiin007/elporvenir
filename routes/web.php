@@ -31,24 +31,22 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('admin')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('productos', ProductoController::class);
-    Route::resource('marcas', MarcaController::class);
-    Route::resource('entradas', EntradaController::class);
-    Route::resource('ventas', VentaController::class);
-    Route::resource('detalle-ventas', DetalleVenta::class);
-
-    Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
-
-    Route::get('/producto/consultar', [ProductoController::class, 'consultarProducto'])->name('productos.consultar');
-
+        Route::resource('productos', ProductoController::class);
+        Route::resource('marcas', MarcaController::class);
+        Route::resource('entradas', EntradaController::class);
+        Route::resource('ventas', VentaController::class);
+        Route::resource('detalle-ventas', DetalleVenta::class);
+        Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
+        Route::get('/producto/consultar', [ProductoController::class, 'consultarProducto'])->name('productos.consultar');
 
 
+    });
 });
-
 
 require __DIR__ . '/auth.php';
 
