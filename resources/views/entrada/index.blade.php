@@ -130,7 +130,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col">
-                                       <x-input-label for="fecha_ingreso" :value="__('Fecha y Hora de Ingreso')" />
+                                        <x-input-label for="fecha_ingreso" :value="__('Fecha y Hora de Ingreso')" />
                                         <x-text-input id="fecha_ingreso" name="fecha_ingreso" type="text"
                                             class="mt-1 block w-full"
                                             value="{{ old('fecha_ingreso', \Carbon\Carbon::now()->format('Y-m-d H:i:s')) }}"
@@ -182,18 +182,24 @@
                                 <td class="align-middle text-center">{{ $entrada->fecha_ingreso }}</td>
                                 <td class="align-middle text-center">{{ $entrada->cantidad }}</td>
                                 <td>{{ $entrada->producto->detalle_producto ?? 'sin detalle'}}</td>
-                                <td><img src="{{ asset('storage/' . $entrada->producto->foto_producto) }}" alt="Foto"
-                                        style="height: 50px; border-radius: 8px;"></td>
                                 <td>
-                                    <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('¿Estás seguro de eliminar esta entrada?')">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if ($entrada->producto->foto_producto)
+                                        <img src="{{ asset('storage/' . $entrada->producto->foto_producto) }}" alt="Foto"
+                                            style="height: 50px; border-radius: 8px;">
+                                    @else
+                                        <img src="{{ asset('images/sin-foto.png') }}" alt="Sin foto"
+                                            style="height: 50px; border-radius: 8px;">
+                                    @endif
+                                </td>
+
+                                <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Estás seguro de eliminar esta entrada?')">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
                                 </td>
                             </tr>
                         @endforeach
