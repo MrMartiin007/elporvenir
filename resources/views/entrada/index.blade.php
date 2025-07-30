@@ -191,16 +191,16 @@
                                             style="height: 50px; border-radius: 8px;">
                                     @endif
                                 </td>
-
-
-                                <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('¿Estás seguro de eliminar esta entrada?')">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </form>
+                                <td>
+                                    <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Estás seguro de eliminar esta entrada?')">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
