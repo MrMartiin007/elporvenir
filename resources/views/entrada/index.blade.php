@@ -183,7 +183,7 @@
                                 <td class="align-middle text-center">{{ $entrada->cantidad }}</td>
                                 <td>{{ $entrada->producto->detalle_producto ?? 'sin detalle'}}</td>
                                 <td>
-                                    @if ($entrada->producto->foto_producto)
+                                    @if ($entrada->producto && $entrada->producto->foto_producto)
                                         <img src="{{ asset('storage/' . $entrada->producto->foto_producto) }}" alt="Foto"
                                             style="height: 50px; border-radius: 8px;">
                                     @else
@@ -191,6 +191,7 @@
                                             style="height: 50px; border-radius: 8px;">
                                     @endif
                                 </td>
+
 
                                 <form action="{{ route('entradas.destroy', $entrada->id) }}" method="POST" class="d-inline">
                                     @csrf
