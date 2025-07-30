@@ -181,7 +181,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td class="align-middle text-center">{{ $entrada->fecha_ingreso }}</td>
                                 <td class="align-middle text-center">{{ $entrada->cantidad }}</td>
-                                <td>{{ $entrada->producto->detalle_producto }}</td>
+                                <td>{{ $entrada->producto->detalle_producto ?? 'sin detalle'}}</td>
                                 <td><img src="{{ asset('storage/' . $entrada->producto->foto_producto) }}" alt="Foto"
                                         style="height: 50px; border-radius: 8px;"></td>
                                 <td>
