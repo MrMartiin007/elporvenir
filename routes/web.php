@@ -54,3 +54,5 @@ require __DIR__ . '/auth.php';
 Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
 Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
 
+
+Route::get('/shop', [App\Http\Controllers\ShopController::class, 'shop'])->name('shop');

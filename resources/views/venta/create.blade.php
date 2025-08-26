@@ -41,15 +41,15 @@
 
                         <strong class="text-center align-middle"> Productos Vendidos</strong>
                         @if($venta->detalles->count() > 0)
-                            <table class="table table-bordered table-striped" id="tablaProductos">
+                            <table class="table table-bordered table-striped " id="tablaProductos">
                                 <thead class="text-center">
                                     <tr>
                                         <th>#</th>
                                         <th>Código</th>
                                         <th>Producto</th>
                                         <th>Foto</th>
-                                        <th>Cant</th>
-                                        <th>Precio</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio U</th>
                                         <th>Descuento</th>
                                         <th>Subtotal</th>
                                         <th>Acccion</th>
@@ -73,16 +73,11 @@
                                                 @endif
 
                                             </td>
-                                            <td>{{ $detalle->cantidad }}</td>
-                                            <td>Q {{ number_format($detalle->precio_unitario, 2) }}</td>
-                                            <td>
-                                                <form action="{{ route('ventas.update', $detalle->id) }}" method="POST"
-                                                    class="d-flex align-items-center gap-2">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="number" name="descuento"
-                                                        value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
-                                                        max="{{ $detalle->precio_unitario }}" style="
+                                            <td class="text-center align-middle">
+                                                <input type="number" name="cantidad"
+                                                    value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
+                                                    form="f-actualizar-{{ $detalle->id }}"
+                                                    style="
                                                             border: none; 
                                                             border-bottom: 1px solid #333; 
                                                             outline: none; 
@@ -91,26 +86,48 @@
                                                             padding: 2px 4px;
                                                             background: transparent;
                                                         " class="form-control-sm">
-                                                    <button type="submit" class="btn btn-sm btn-primary" style="height: 30px;">
+                                            </td>
+                                            <td>Q {{ number_format($detalle->precio_unitario, 2) ?? 'favor verifique el precio'}}</td>
+                                            <td class="text-center align-middle">
+                                                <input type="number" name="descuento"
+                                                    value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
+                                                    max="{{ $detalle->precio_unitario }}" form="f-actualizar-{{ $detalle->id }}"
+                                                    style="
+                                                            border: none; 
+                                                            border-bottom: 1px solid #333; 
+                                                            outline: none; 
+                                                            width: 80px; 
+                                                            text-align: center;
+                                                            padding: 2px 4px;
+                                                            background: transparent;
+                                                        " class="form-control-sm">
+                                            </td>
+                                            <td>Q
+                                                {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <form id="f-actualizar-{{ $detalle->id }}"
+                                                    action="{{ route('ventas.update', $detalle->id) }}" method="POST"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-sm btn-primary">
                                                         <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+
+                                                {{-- Botón eliminar (opcional, si ya lo tienes en esta misma celda) --}}
+                                                <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('¿Eliminar este producto de la venta?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
                                             </td>
 
-
-                                            <td>Q
-                                                {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
-                                            </td>
-
-                                            <td>
-                                                <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
-                                                    onsubmit="return confirm('¿Eliminar este producto de la venta?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger"><i
-                                                            class="fas fa-trash-alt"></i></button>
-                                                </form>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

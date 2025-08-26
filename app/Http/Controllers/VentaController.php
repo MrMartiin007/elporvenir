@@ -162,33 +162,54 @@ class VentaController extends Controller
 
     public function update(Request $request, $detalleId)
     {
-        // Validar el descuento
         $request->validate([
-            'descuento' => 'required|numeric|min:0',
+            'cantidad' => 'nullable|integer|min:1',
+            'descuento' => 'nullable|numeric|min:0',
         ]);
 
-        // Buscar el detalle de venta
         $detalle = DetalleVenta::findOrFail($detalleId);
+        $producto = $detalle->producto;
 
-        // Validar que el descuento no sea mayor que el precio unitario
-        if ($request->descuento > $detalle->precio_unitario) {
+        if ($request->filled('descuento') && $request->descuento > $detalle->precio_unitario) {
             return back()->with('bad_status', 'El descuento no puede ser mayor que el precio del producto.');
         }
 
-        // Actualizar el descuento
-        $detalle->descuento = $request->descuento;
+        if ($request->filled('cantidad')) {
+            $nuevaCantidad = (int) $request->cantidad;
+            $cantidadActual = (int) $detalle->cantidad;
+
+            if ($nuevaCantidad !== $cantidadActual) {
+                $dif = $nuevaCantidad - $cantidadActual;
+
+                if ($dif > 0) {
+                    if ($producto->stock < $dif) {
+                        return back()->with('bad_status', 'Stock insuficiente para aumentar la cantidad solicitada.');
+                    }
+                    $producto->stock -= $dif;
+                } else {
+                    $producto->stock += abs($dif);
+                }
+                $producto->save();
+
+                $detalle->cantidad = $nuevaCantidad;
+            }
+        }
+
+        if ($request->filled('descuento')) {
+            $detalle->descuento = $request->descuento;
+        }
+
         $detalle->save();
 
-        // Opcional: actualizar totales en la venta padre
         $venta = $detalle->venta;
         $venta->cantidad_productos = $venta->detalles()->sum('cantidad');
-        // Asumiendo que subtotal = (precio_unitario - descuento) * cantidad
         $venta->total_vendido = $venta->detalles()
             ->sum(\DB::raw('(precio_unitario - IFNULL(descuento,0)) * cantidad'));
         $venta->save();
 
-        return back()->with('success', 'Descuento actualizado correctamente.');
+        return back()->with('success', 'Detalle actualizado correctamente.');
     }
+
 
 
     public function destroy($id)
