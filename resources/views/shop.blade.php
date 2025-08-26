@@ -148,7 +148,7 @@
                             alt="{{ $producto->nombre }}">
 
                         <div class="card-body">
-                            <h5 class="card-title">Precio: Q. {{ $producto->precio_venta }}</h5>
+                            <h5 class="card-title">Precio: Q. {{ $producto->ultimaEntrada?->precio_venta}}</h5>
                             <p class="card-text">{{ $producto->marca->nombre_marca }}</p>
                             <p class="card-text">{{ $producto->detalle_producto }}</p>
                             {{-- Disponibilidad --}}

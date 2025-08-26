@@ -18,7 +18,8 @@ class ShopController extends Controller
     {
         $search = $request->input('search');
     
-        $productos = Producto::where('detalle_producto', 'like', '%' . $search . '%')
+        $productos = Producto::with(['marca', 'ultimaEntrada'])
+        ->where('detalle_producto', 'like', '%' . $search . '%')
         ->orWhereHas('marca', function ($query) use ($search) {
             $query->where('nombre_marca', 'LIKE', "%$search%");
         })
