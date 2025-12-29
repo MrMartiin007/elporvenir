@@ -36,7 +36,7 @@
         <script>Swal.fire('{{ session("error") }}', '', 'error');</script>
     @endif
 
-    <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-7 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="mb-6 bg-white shadow-sm sm:rounded-lg p-4">
             <form method="GET" action="{{ route('entradas.index') }}" class="flex gap-3">
                 <input type="text" name="buscar" id="codigoBuscar" class="border border-gray-300 rounded form-control"

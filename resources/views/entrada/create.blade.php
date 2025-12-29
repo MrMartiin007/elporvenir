@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg bg-div">
                 <div class="p-6 text-gray-900">
@@ -51,21 +51,21 @@
                                 <x-input-error :messages="$errors->get('productos_id')" class="mt-2" />
                             </div>
 
-                            
-                        </div>
-                         <div class="flex items-center mt-6 space-x-4">
-                                <a href="{{ url()->previous() }}">
-                                    <button type="button"
-                                        class="bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 border border-red-700 rounded">
-                                        Regresar
-                                    </button>
-                                </a>
 
-                                <button type="submit"
-                                    class="bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 border border-blue-700 rounded">
-                                    Guardar Entrada
+                        </div>
+                        <div class="flex items-center mt-6 space-x-4">
+                            <a href="{{ url()->previous() }}">
+                                <button type="button"
+                                    class="bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 border border-red-700 rounded">
+                                    Regresar
                                 </button>
-                            </div>
+                            </a>
+
+                            <button type="submit"
+                                class="bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 border border-blue-700 rounded">
+                                Guardar Entrada
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

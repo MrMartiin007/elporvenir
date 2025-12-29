@@ -160,7 +160,7 @@ class ProductoController extends Controller
 
         if ($buscar) {
             $productos = Producto::with(['marca', 'ultimaEntrada'])
-                ->where('codigo_producto', $buscar)
+                ->where('codigo_producto', 'like', "%{$buscar}%")
                 ->orWhere('detalle_producto', 'like', "%{$buscar}%")
                 ->orWhereHas('marca', function ($query) use ($buscar) {
                     $query->where('nombre_marca', 'LIKE', "%$buscar%");

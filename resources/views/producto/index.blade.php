@@ -25,109 +25,107 @@
         <script>Swal.fire('{{ session("error") }}', '', 'error');</script>
     @endif
 
-    <div class="py-12">
-        <div class="mx-auto sm:px-6 lg:px-8">
+    <div class="py-10">
+        <div class="container-fluid">
             <div class="bg-white shadow-sm sm:rounded-lg">
-                <div class="d-flex justify-content-end flex-column align-items-end px-4 pt-5 gap-2">
-                    <a href="{{ route('productos.create') }}" class="btn btn-primary active">
-                        <i class="fa fa-plus me-2"></i> Crear Nuevo Producto
+                <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+                    <a href="{{ route('productos.create') }}" class="btn text-white" style="background-color: #d63384;">
+                        <i class="fa fa-plus me-2"></i> Crear Nuevo
                     </a>
 
-                    <div class="col-md-2 offset-md-6 mt-4">
-                        <form method="GET" action="{{ route('productos.index') }}">
-                            <div class="input-group input-group-sm">
-                                <input type="text" name="buscar" value="{{ request('buscar') }}"
-                                    class="form-control form-control-sm"
-                                    placeholder="Buscar código, detalle o marca...">
-                                <button type="submit" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    <form method="GET" action="{{ route('productos.index') }}" class="d-flex">
+                        <div class="input-group">
+                            <input type="text" name="buscar" value="{{ request('buscar') }}"
+                                class="form-control border-pink" placeholder="Buscar...">
+                            <button type="submit" class="btn text-white" style="background-color: #d63384;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="p-6 text-gray-900">
-                    <div class="table-responsive-md">
-                        <table class="table table-hover table-bordered" id="tablaProductos">
-                            <thead class="table-danger text-center text-black">
-
+                <div class="p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle" id="tablaProductos">
+                            <thead class="text-center" style="background-color: #fce4ec; color: #880e4f;">
                                 <tr>
                                     <th>#</th>
                                     <th>Código</th>
                                     <th>Detalle</th>
                                     <th>Foto</th>
-                                    <th>Marca</th>
+                                    <th>Brand</th>
                                     <th>Stock</th>
-                                    <th>Precio Costo</th>
-                                    <th>Precio Venta</th>
-                                    <th>Precio Docena</th>
+                                    <th>P. Costo</th>
+                                    <th>P. Venta</th>
+                                    <th>P. Docena</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 @forelse($productos as $producto)
-                                    <tr class="align-middle text-center">
+                                    <tr class="text-center">
                                         <td>{{ $loop->iteration + ($productos->currentPage() - 1) * $productos->perPage() }}
                                         </td>
-                                        <td class="align-middle text-center">{{ $producto->codigo_producto }}</td>
-                                        <td>{{ $producto->detalle_producto }}</td>
+                                        <td>{{ $producto->codigo_producto }}</td>
+                                        <td class="text-start">{{ $producto->detalle_producto }}</td>
                                         <td>
                                             @if($producto->foto_producto)
                                                 <img src="{{ asset('storage/' . $producto->foto_producto) }}"
-                                                    class="rounded-circle object-cover cursor-pointer"
-                                                    style="width: 45px; height: 45px;" alt="Foto producto"
-                                                    data-bs-toggle="modal" data-bs-target="#fotoModal"
+                                                    class="rounded-circle object-cover cursor-pointer border shadow-sm"
+                                                    style="width: 40px; height: 40px;" alt="Foto" data-bs-toggle="modal"
+                                                    data-bs-target="#fotoModal"
                                                     onclick="mostrarImagen('{{ asset('storage/' . $producto->foto_producto) }}')">
                                             @else
-                                                <span class="text-muted">Sin imagen</span>
+                                                <span class="badge bg-light text-dark border">Sin foto</span>
                                             @endif
-
                                         </td>
                                         <td>{{ $producto->marca->nombre_marca}} </td>
-                                        <td class="align-middle text-center">{{ $producto->stock }}</td>
-                                        <td class="align-middle text-center">
-                                            {{ $producto->ultimaEntrada?->precio_costo ?? '-' }}
+                                        <td>
+                                            <span class="badge rounded-pill"
+                                                style="background-color: {{ $producto->stock > 0 ? '#d63384' : '#dc3545' }};">
+                                                {{ $producto->stock }}
+                                            </span>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            {{ $producto->ultimaEntrada?->precio_venta ?? '-' }}
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            {{ $producto->ultimaEntrada?->precio_docena ?? '-' }}
-                                        </td>
+                                        <td>{{ $producto->ultimaEntrada?->precio_costo ?? '-' }}</td>
+                                        <td>{{ $producto->ultimaEntrada?->precio_venta ?? '-' }}</td>
+                                        <td>{{ $producto->ultimaEntrada?->precio_docena ?? '-' }}</td>
 
                                         <td>
-                                            <a href="{{ route('productos.show', $producto->id) }}"
-                                                class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('productos.edit', $producto->id) }}"
-                                                class="btn btn-sm btn-success">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('productos.destroy', $producto->id) }}" method="POST"
-                                                class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm"
+                                                    style="color: #d63384; border-color: #d63384;" title="Ver">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('productos.edit', $producto->id) }}" class="btn btn-sm"
+                                                    style="color: #198754; border-color: #198754;" title="Editar">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('productos.destroy', $producto->id) }}" method="POST"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm"
+                                                        style="color: #dc3545; border-color: #dc3545;" title="Eliminar"
+                                                        onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted">No se encontraron resultados para tu
-                                            búsqueda.</td>
+                                        <td colspan="10" class="text-center text-muted p-5">
+                                            <i class="fas fa-box-open fa-3x mb-3" style="color: #f8bbd0;"></i>
+                                            <p>No se encontraron productos.</p>
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
-                        <div class="mt-3">
+                        <div class="mt-4 d-flex justify-content-end">
                             {{ $productos->links() }}
                         </div>
-
                     </div>
                 </div>
             </div>

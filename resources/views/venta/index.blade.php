@@ -26,7 +26,7 @@
     @endif
 
 
-    <div class="py-12">
+    <div class="py-10">
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="row align-items-end">
@@ -53,13 +53,12 @@
                             <tbody>
                                 @foreach ($ventas as $venta)
                                     <tr class="align-middle text-center">
-                                         <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($venta->fecha_venta)->format('d-m-Y') }}</td>
                                         <td class="align-middle text-center">{{ $venta->cantidad_productos }}</td>
                                         <td class="align-middle text-center">{{ $venta->total_vendido }}</td>
                                         <td>
-                                            <a href="{{ route('ventas.show', $venta->id) }}"
-                                                class="btn btn-sm btn-info">
+                                            <a href="{{ route('ventas.show', $venta->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fa fa-eye"></i>
                                             </a>
 

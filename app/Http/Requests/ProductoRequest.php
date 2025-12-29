@@ -25,7 +25,7 @@ class ProductoRequest extends FormRequest
 			'codigo_producto' => 'required|string',
 			'detalle_producto' => 'required|string',
 			'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-             'marcas_id' => 'required|string',
+            'marcas_id' => 'required|string',
         ];
     }
 }

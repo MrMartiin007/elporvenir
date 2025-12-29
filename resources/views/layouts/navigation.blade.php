@@ -22,6 +22,15 @@
                     <x-nav-link :href="route('entradas.index')" :active="request()->routeIs('entradas.*')">
                         {{ __('Entradas') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('empresas.index')" :active="request()->routeIs('empresas.*')">
+                        {{ __('Empresas') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('facturas.index')" :active="request()->routeIs('facturas.*')">
+                        {{ __('Facturas') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('calendario.index')" :active="request()->routeIs('calendario.*')">
+                        {{ __('Calendario') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
                         {{ __('Venta') }}
                     </x-nav-link>
@@ -34,7 +43,7 @@
                     <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
                         {{ __('Venta') }}
                     </x-nav-link>
-                     <x-nav-link :href="route('productos.consultar')"
+                    <x-nav-link :href="route('productos.consultar')"
                         :active="request()->routeIs('productos.consultar')">
                         {{ __('Consultar Producto') }}
                     </x-nav-link>
@@ -46,7 +55,7 @@
                     </x-nav-link>
                     <x-nav-link :href="route('entradas.index')" :active="request()->routeIs('entradas.*')">
                         {{ __('Entradas') }}
-                    </x-nav-link> 
+                    </x-nav-link>
 
                     @endrole
                 </div>
