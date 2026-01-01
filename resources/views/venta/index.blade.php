@@ -26,7 +26,7 @@
     @endif
 
 
-    <div class="py-10">
+    <div class="py-9">
         <div class="mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="row align-items-end">

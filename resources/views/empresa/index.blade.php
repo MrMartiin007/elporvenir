@@ -15,7 +15,7 @@
         </script>
     @endif
 
-    <div class="py-10">
+    <div class="py-9">
         <div class="container-fluid">
             <div class="bg-white shadow-sm sm:rounded-lg">
 

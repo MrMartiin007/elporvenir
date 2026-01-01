@@ -25,7 +25,7 @@
         <script>Swal.fire('{{ session("error") }}', '', 'error');</script>
     @endif
 
-    <div class="py-10">
+    <div class="py-9">
         <div class="container-fluid">
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
