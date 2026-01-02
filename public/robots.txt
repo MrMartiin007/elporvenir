@@ -1,2 +1,18 @@
+# Robots.txt - Beauty Center El Porvenir
+# https://elporvenir.shop/
+
 User-agent: *
-Disallow:
+Allow: /
+Allow: /contacto
+
+# Bloquear área administrativa
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+
+# Bloquear directorios del sistema
+Disallow: /storage/
+
+# Sitemap
+Sitemap: https://elporvenir.shop/sitemap.xml

@@ -46,7 +46,7 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        
+
         Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
         Route::resource('facturas', App\Http\Controllers\FacturaController::class);
 
@@ -73,5 +73,7 @@ require __DIR__ . '/auth.php';
 Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
 Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
 
+// Sitemap for SEO
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 
 // Route::get('/shop', [App\Http\Controllers\ShopController::class, 'shop'])->name('shop');

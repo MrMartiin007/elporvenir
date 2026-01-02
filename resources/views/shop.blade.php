@@ -2,20 +2,64 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Beauty Center El Porvenir</title>
-    <title>{{$tittle ?? 'Elporvenir'}}</title>
-    <link rel="shortcut icon" href="{{asset('logo.jpg')}}" type="image/x-icon">
+    {{-- SEO Meta Tags --}}
+    <x-seo-meta title="Beauty Center El Porvenir - Cosméticos y Cuidado Personal en Puerto Barrios"
+        description="Descubre los mejores productos de belleza y cuidado personal en Puerto Barrios, Izabal. Amplio catálogo de cosméticos, maquillaje, cuidado de la piel, perfumes y más. ¡Calidad garantizada!"
+        keywords="cosméticos, belleza, cuidado personal, maquillaje, skincare, perfumes, Puerto Barrios, Izabal, Guatemala, productos de belleza, beauty center"
+        :image="asset('logo.jpg')" url="https://elporvenir.shop/" type="website" />
 
-    <!-- Bootstrap 5 CDN -->
+    {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    {{-- Font Awesome --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
+    {{-- Google Fonts --}}
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
+
+    {{-- Schema.org Structured Data - Local Business --}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BeautySalon",
+        "name": "Beauty Center El Porvenir",
+        "image": "{{ asset('logo.jpg') }}",
+        "@id": "https://elporvenir.shop/",
+        "url": "https://elporvenir.shop/",
+        "telephone": "+502-3899-5635",
+        "priceRange": "$$",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Puerto Barrios",
+            "addressLocality": "Puerto Barrios",
+            "addressRegion": "Izabal",
+            "postalCode": "",
+            "addressCountry": "GT"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 15.7308,
+            "longitude": -88.5992
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            "opens": "08:00",
+            "closes": "18:00"
+        },
+        "sameAs": [
+            "https://www.facebook.com/profile.php?id=100068403559419",
+            "https://www.instagram.com/bcporvenir?igsh=Y2o3cjRreWpvN3B5"
+        ]
+    }
+    </script>
 
     <style>
         /* Colors Variables */
@@ -433,11 +477,23 @@
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach($productos as $producto)
                             <div class="col">
-                                <div class="card card-product">
+                                <div class="card card-product" itemscope itemtype="https://schema.org/Product">
+                                    {{-- Schema.org Product Data --}}
+                                    <meta itemprop="name" content="{{ $producto->detalle_producto }}">
+                                    <meta itemprop="brand" content="{{ $producto->marca->nombre_marca ?? 'El Porvenir' }}">
+                                    @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
+                                        <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
+                                        <meta itemprop="priceCurrency" content="GTQ">
+                                    @endif
+                                    <link itemprop="availability" href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
+                                    
                                     <div class="card-img-wrapper">
                                         @if($producto->foto_producto)
-                                            <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
-                                                alt="{{ $producto->detalle_producto }}">
+                                            <img src="{{ asset('storage/' . $producto->foto_producto) }}" 
+                                                 class="card-img-top"
+                                                 alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
+                                                 itemprop="image"
+                                                 loading="lazy">
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
@@ -450,11 +506,14 @@
                                     </div>
                                     <div class="card-body">
                                         <span class="category-badge">{{ $producto->marca->nombre_marca ?? 'General' }}</span>
-                                        <a href="#" class="product-title">{{ $producto->detalle_producto }}</a>
+                                        <a href="#" class="product-title" itemprop="url">{{ $producto->detalle_producto }}</a>
                                         <div class="d-flex justify-content-center align-items-center mt-3">
                                             @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
-                                                <span class="product-price">Q.
-                                                    {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}</span>
+                                                <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                                    <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
+                                                    <meta itemprop="priceCurrency" content="GTQ">
+                                                    Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}
+                                                </span>
                                             @else
                                                 <span class="text-muted small">Precio no disponible</span>
                                             @endif
