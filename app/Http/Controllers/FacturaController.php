@@ -157,7 +157,7 @@ class FacturaController extends Controller
     {
         $request->validate([
             'facturas_id' => 'required|exists:facturas,id',
-            'no_cheque' => 'required|string|unique',
+            'no_cheque' => 'required|string|unique:cheques,no_cheque',
             'fecha_cobro' => 'required|date',
             'foto_ch' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -183,7 +183,7 @@ class FacturaController extends Controller
     {
         $request->validate([
             'facturas_id' => 'required|exists:facturas,id',
-            'no_autorizacion' => 'unique|required|string',
+            'no_autorizacion' => 'unique:tarjeta_credito,no_autorizacion|required|string',
             'fecha_pago' => 'required|date',
             'foto_tc' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -209,7 +209,7 @@ class FacturaController extends Controller
     {
         $request->validate([
             'facturas_id' => 'required|exists:facturas,id',
-            'no_deposito' => 'unique|required|string',
+            'no_deposito' => 'unique:depositos,no_deposito|required|string',
             'fecha_deposito' => 'required|date',
             'foto_deposito' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
