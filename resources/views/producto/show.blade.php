@@ -6,7 +6,7 @@
     </x-slot>
 
 
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-1">
         <div class="row justify-content-center">
             <div class="col-xl-10 col-lg-12">
 

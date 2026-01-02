@@ -15,7 +15,7 @@
         </script>
     @endif
 
-    <div class="py-9">
+    <div class="py-1">
         <div class="container-fluid">
             <div class="bg-white shadow-sm sm:rounded-lg">
 
@@ -73,6 +73,9 @@
         $(document).ready(function () {
             $('#tablaEmpresas').DataTable({
                 responsive: true,
+                scrollX: true,
+                autoWidth: false,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
                 language: {
                     "emptyTable": "No hay empresas registradas",
                     "lengthMenu": "Mostrar _MENU_ registros",
