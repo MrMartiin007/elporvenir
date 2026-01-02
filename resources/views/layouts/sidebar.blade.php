@@ -42,6 +42,16 @@
                 <span class="ms-2 sidebar-text">Venta</span>
             </a>
         </li>
+                <li>
+            <a href="{{ route('productos.consultar') }}"
+                class="nav-link {{ request()->routeIs('productos.consultar') ? 'active' : '' }}" title="Consultar"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-search fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Consultar</span>
+            </a>
+        </li>
         <li>
             <a href="{{ route('calendario.index') }}"
                 class="nav-link {{ request()->routeIs('calendario.*') ? 'active' : '' }}" title="Calendario"
@@ -103,16 +113,7 @@
         </li>
 
 
-        <li>
-            <a href="{{ route('productos.consultar') }}"
-                class="nav-link {{ request()->routeIs('productos.consultar') ? 'active' : '' }}" title="Consultar"
-                style="color: #5c3d42;">
-                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
-                    <i class="fas fa-search fa-lg"></i>
-                </div>
-                <span class="ms-2 sidebar-text">Consultar</span>
-            </a>
-        </li>
+
         @endrole
 
         @role('venta')

@@ -22,10 +22,10 @@ class ProductoRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'codigo_producto' => 'required|string',
-			'detalle_producto' => 'required|string',
-			'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'marcas_id' => 'required|string',
+            'codigo_producto' => 'required|string|max:100|unique:productos,codigo_producto',
+            'detalle_producto' => 'required|string',
+            'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'marcas_id' => 'required|exists:marcas,id',
         ];
     }
 }

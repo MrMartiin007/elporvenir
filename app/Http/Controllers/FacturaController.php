@@ -97,17 +97,18 @@ class FacturaController extends Controller
     public function update(Request $request, Factura $factura)
     {
         $request->validate([
-            'numero_factura' => 'required|string|max:255',
+            'numero_factura' => 'required|string|max:255|unique:facturas,numero_factura,' . $factura->id,
             'monto' => 'required|numeric',
-            'empresas_id' => 'required',
+            'empresas_id' => 'required|exists:empresas,id',
             'estado' => 'required',
             'foto_fac' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->except('foto_fac');
 
+        // Procesar la imagen si se subió una nueva
         if ($request->hasFile('foto_fac')) {
-            // Delete old image if exists
+            // Eliminar imagen anterior si existe
             if ($factura->foto_fac && Storage::disk('public')->exists($factura->foto_fac)) {
                 Storage::disk('public')->delete($factura->foto_fac);
             }

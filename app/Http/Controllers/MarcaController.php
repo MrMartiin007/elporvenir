@@ -80,10 +80,24 @@ class MarcaController extends Controller
      */
     public function update(MarcaRequest $request, Marca $marca)
     {
-        $marca->update($request->validated());
+        $data = $request->validated();
+
+        // Procesar la imagen si se subió una nueva
+        if ($request->hasFile('foto_marca')) {
+            // Eliminar la imagen anterior si existe
+            if ($marca->foto_marca && \Storage::disk('public')->exists($marca->foto_marca)) {
+                \Storage::disk('public')->delete($marca->foto_marca);
+            }
+
+            // Guardar la nueva imagen
+            $imagePath = $request->file('foto_marca')->store('marcas', 'public');
+            $data['foto_marca'] = $imagePath;
+        }
+
+        $marca->update($data);
 
         return redirect()->route('marcas.index')
-            ->with('success', 'Marca updated successfully');
+            ->with('success', 'Marca actualizada correctamente.');
     }
 
     public function destroy($id)

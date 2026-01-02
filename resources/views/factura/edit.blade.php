@@ -7,15 +7,15 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg bg-div">
                 <div class="p-6 text-gray-900">
                     <form action="{{ route('facturas.update', $factura->id) }}" method="POST"
                         enctype="multipart/form-data" class="guardar">
                         @csrf
                         @method('PUT')
-                        <div class="max-w-4xl w-full mx-auto sm:px-4 lg:px-6">
 
-                            <!-- Foto del producto - Drag & Drop -->
+                        <div class="max-w-4xl w-full mx-auto sm:px-4 lg:px-6">
+                            <!-- Foto de la Factura - Drag & Drop -->
                             <div class="mb-6">
                                 <x-input-label for="foto_fac" :value="__('Foto de la Factura')" />
 
@@ -30,19 +30,19 @@
                                                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
                                             </path>
                                         </svg>
-                                        <p class="mt-2 text-sm text-gray-600">Arrastra y suelta una nueva foto aquí</p>
-                                        <p class="mt-1 text-xs text-gray-500">o haz clic para seleccionar</p>
+                                        <p class="mt-2 text-sm text-gray-600">Arrastra una nueva foto aquí</p>
+                                        <p class="mt-1 text-xs text-gray-500">o haz clic para seleccionar (opcional)</p>
                                     </div>
 
                                     <div id="preview-container" class="{{ $factura->foto_fac ? '' : 'hidden' }}">
                                         @if($factura->foto_fac)
                                             <img id="foto_preview" src="{{ asset('storage/' . $factura->foto_fac) }}"
-                                                alt="Vista previa" class="mx-auto max-w-full h-auto rounded-lg"
-                                                style="max-height: 300px;">
-                                            <p id="file-name" class="mt-1 text-sm text-gray-700 text-center">Foto Actual</p>
+                                                alt="Factura actual" class="mx-auto max-w-full h-auto rounded-lg"
+                                                style="max-height: 200px;">
+                                            <p id="file-name" class="mt-2 text-sm text-gray-600 text-center">Foto actual</p>
                                         @else
                                             <img id="foto_preview" src="#" alt="Vista previa"
-                                                class="mx-auto max-w-full h-auto rounded-lg" style="max-height: 300px;">
+                                                class="mx-auto max-w-full h-auto rounded-lg" style="max-height: 200px;">
                                             <p id="file-name" class="mt-1 text-sm text-gray-700 text-center"></p>
                                         @endif
 
@@ -57,19 +57,22 @@
                                 <x-input-error :messages="$errors->get('foto_fac')" class="mt-2" />
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="mb-4">
-                                    <x-input-label for="numero_factura" :value="__('Número de Factura')" />
-                                    <x-text-input id="numero_factura" name="numero_factura" type="text"
-                                        class="mt-1 block w-full" :value="old('numero_factura', $factura->numero_factura)" required />
-                                    <x-input-error :messages="$errors->get('numero_factura')" class="mt-2" />
-                                </div>
+                            <!-- Campos del Formulario -->
+                            <div class="space-y-6">
+                                <div class="flex flex-wrap justify-between gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <x-input-label for="numero_factura" :value="__('Número de Factura')" />
+                                        <x-text-input id="numero_factura" name="numero_factura" type="text"
+                                            class="mt-1 block w-full" :value="old('numero_factura', $factura->numero_factura)" required />
+                                        <x-input-error :messages="$errors->get('numero_factura')" class="mt-2" />
+                                    </div>
 
-                                <div class="mb-4">
-                                    <x-input-label for="monto" :value="__('Monto (Q)')" />
-                                    <x-text-input id="monto" name="monto" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('monto', $factura->monto)" required />
-                                    <x-input-error :messages="$errors->get('monto')" class="mt-2" />
+                                    <div class="flex-1 min-w-0">
+                                        <x-input-label for="monto" :value="__('Monto (Q)')" />
+                                        <x-text-input id="monto" name="monto" type="number" step="0.01"
+                                            class="mt-1 block w-full" :value="old('monto', $factura->monto)" required />
+                                        <x-input-error :messages="$errors->get('monto')" class="mt-2" />
+                                    </div>
                                 </div>
 
                                 <div class="mb-4">
@@ -86,26 +89,22 @@
                                     <x-input-error :messages="$errors->get('empresas_id')" class="mt-2" />
                                 </div>
 
-                                <div class="mb-4">
-                                    <x-input-label for="estado" :value="__('Estado')" />
-                                    <select id="estado" name="estado"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                        required>
-                                        <option value="Pendiente" {{ old('estado', $factura->estado) == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                        <option value="Pagada" {{ old('estado', $factura->estado) == 'Pagada' ? 'selected' : '' }}>Pagada</option>
-                                        <option value="Anulada" {{ old('estado', $factura->estado) == 'Anulada' ? 'selected' : '' }}>Anulada</option>
-                                    </select>
-                                    <x-input-error :messages="$errors->get('estado')" class="mt-2" />
-                                </div>
-                            </div>
+                                {{-- Campo hidden para enviar el valor del estado --}}
+                                <input type="hidden" name="estado" value="{{ $factura->estado }}">
 
-                            <div class="flex items-center justify-end gap-4 mt-6">
-                                <a href="{{ route('facturas.index') }}" class="btn btn-secondary">
-                                    Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    Actualizar Factura
-                                </button>
+                                <!-- Botones -->
+                                <div class="flex items-center mt-6 space-x-4">
+                                    <a href="{{ route('facturas.index') }}">
+                                        <button type="button"
+                                            class="bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 border border-red-700 rounded">
+                                            Cancelar
+                                        </button>
+                                    </a>
+                                    <button type="submit"
+                                        class="bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 border border-blue-700 rounded">
+                                        Actualizar Factura
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>

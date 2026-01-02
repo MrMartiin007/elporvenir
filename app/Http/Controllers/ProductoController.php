@@ -113,30 +113,31 @@ class ProductoController extends Controller
         $request->validate([
             'codigo_producto' => 'required|string|max:100|unique:productos,codigo_producto,' . $producto->id,
             'detalle_producto' => 'required',
-            'foto_producto' => 'image',
+            'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'marcas_id' => 'required|exists:marcas,id',
-
-
-
         ]);
 
+        // Actualizar datos básicos
         $producto->update([
             'codigo_producto' => $request->codigo_producto,
             'detalle_producto' => $request->detalle_producto,
             'marcas_id' => $request->marcas_id,
         ]);
 
-
+        // Procesar la imagen si se subió una nueva
         if ($request->hasFile('foto_producto')) {
-            $foto = $request->file('foto_producto');
+            // Eliminar la imagen anterior si existe
+            if ($producto->foto_producto && \Storage::disk('public')->exists($producto->foto_producto)) {
+                \Storage::disk('public')->delete($producto->foto_producto);
+            }
 
-            $rutaFoto = $foto->store('productos', 'public');
-
+            // Guardar la nueva imagen
+            $rutaFoto = $request->file('foto_producto')->store('productos', 'public');
             $producto->update(['foto_producto' => $rutaFoto]);
         }
 
         return redirect()->route('productos.index')
-            ->with('success', 'Producto Actualizado Exitosamente.');
+            ->with('success', 'Producto actualizado exitosamente.');
     }
 
     public function destroy($id)

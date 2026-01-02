@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-9">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-xl sm:rounded-lg overflow-hidden">
                 <div class="p-6 text-gray-900">
@@ -71,10 +71,12 @@
                         </div>
 
                         <!-- CHEQUE -->
-                        <div class="hidden p-6 rounded-lg bg-gray-50" id="cheque" role="tabpanel" aria-labelledby="cheque-tab">
+                        <div class="hidden p-6 rounded-lg bg-gray-50" id="cheque" role="tabpanel"
+                            aria-labelledby="cheque-tab">
                             <div class="flex justify-between items-center mb-4 border-b pb-2">
                                 <h3 class="text-lg font-bold text-gray-800">Datos del Cheque</h3>
-                                <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">Total a Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
+                                <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">Total a
+                                    Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
                             </div>
                             <form action="{{ route('facturas.pagar_cheque') }}" method="POST"
                                 enctype="multipart/form-data" class="pagar-form">
@@ -109,10 +111,13 @@
                         </div>
 
                         <!-- TARJETA -->
-                        <div class="hidden p-6 rounded-lg bg-gray-50" id="tarjeta" role="tabpanel" aria-labelledby="tarjeta-tab">
+                        <div class="hidden p-6 rounded-lg bg-gray-50" id="tarjeta" role="tabpanel"
+                            aria-labelledby="tarjeta-tab">
                             <div class="flex justify-between items-center mb-4 border-b pb-2">
                                 <h3 class="text-lg font-bold text-gray-800">Datos de la Transacción</h3>
-                                <span class="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded">Total a Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
+                                <span
+                                    class="bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded">Total
+                                    a Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
                             </div>
                             <form action="{{ route('facturas.pagar_tarjeta') }}" method="POST"
                                 enctype="multipart/form-data" class="pagar-form">
@@ -147,10 +152,12 @@
                         </div>
 
                         <!-- DEPOSITO -->
-                        <div class="hidden p-6 rounded-lg bg-gray-50" id="deposito" role="tabpanel" aria-labelledby="deposito-tab">
-                           <div class="flex justify-between items-center mb-4 border-b pb-2">
+                        <div class="hidden p-6 rounded-lg bg-gray-50" id="deposito" role="tabpanel"
+                            aria-labelledby="deposito-tab">
+                            <div class="flex justify-between items-center mb-4 border-b pb-2">
                                 <h3 class="text-lg font-bold text-gray-800">Datos del Depósito</h3>
-                                <span class="bg-teal-100 text-teal-800 text-sm font-semibold px-3 py-1 rounded">Total a Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
+                                <span class="bg-teal-100 text-teal-800 text-sm font-semibold px-3 py-1 rounded">Total a
+                                    Pagar: Q. {{ number_format($factura->monto, 2) }}</span>
                             </div>
                             <form action="{{ route('facturas.pagar_deposito') }}" method="POST"
                                 enctype="multipart/form-data" class="pagar-form">

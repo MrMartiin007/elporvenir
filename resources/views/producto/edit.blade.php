@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-10">
+    <div class="py-9">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg bg-div">
                 <div class="p-6 text-gray-900">
@@ -24,34 +24,38 @@
 
                         <div class="max-w-4xl w-full mx-auto sm:px-4 lg:px-6">
                             <!-- Foto del producto -->
-                            <!-- dentro del formulario -->
                             <div class="mb-2">
                                 <x-input-label for="foto_producto" :value="__('Foto del Producto')" />
+
                                 <div id="drop-area"
                                     class="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition duration-150 ease-in-out">
-                                    <div id="drop-content">
+                                    <div id="drop-content" class="{{ $producto->foto_producto ? 'hidden' : '' }}">
                                         <svg class="mx-auto h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
                                             </path>
                                         </svg>
-                                        <p class="mt-1 text-sm text-gray-600">Arrastra y suelta la foto o haz clic para
-                                            seleccionar</p>
+                                        <p class="mt-1 text-sm text-gray-600">Arrastra una nueva foto aquí</p>
+                                        <p class="mt-1 text-xs text-gray-500">o haz clic para seleccionar (opcional)</p>
                                         <input type="file" id="foto_producto" name="foto_producto" class="hidden"
                                             accept="image/*" />
                                     </div>
 
-                                    <div id="preview-container"
-                                        class="mt-2 {{ $producto->foto_producto ? '' : 'hidden' }}">
-                                        <img id="foto_preview"
-                                            src="{{ $producto->foto_producto ? asset('storage/' . $producto->foto_producto) : '#' }}"
-                                            alt="Vista previa" class="mx-auto max-w-full h-auto rounded-lg"
-                                            style="max-height: 150px;">
-                                     
+                                    <div id="preview-container" class="{{ $producto->foto_producto ? '' : 'hidden' }}">
+                                        @if($producto->foto_producto)
+                                            <img id="foto_preview" src="{{ asset('storage/' . $producto->foto_producto) }}"
+                                                alt="Producto actual" class="mx-auto max-w-full h-auto rounded-lg"
+                                                style="max-height: 150px;">
+                                            <p id="file-name" class="mt-2 text-sm text-gray-600 text-center">Foto actual</p>
+                                        @else
+                                            <img id="foto_preview" src="#" alt="Vista previa"
+                                                class="mx-auto max-w-full h-auto rounded-lg" style="max-height: 150px;">
+                                            <p id="file-name" class="mt-1 text-sm text-gray-700 text-center"></p>
+                                        @endif
                                         <button type="button" onclick="removePreview(event)"
                                             class="mt-2 text-xs text-red-500 hover:text-red-700">
-                                            Eliminar
+                                            Cambiar imagen
                                         </button>
                                     </div>
                                 </div>
@@ -114,70 +118,70 @@
         </div>
     </div>
     <script>
-    const dropArea = document.getElementById('drop-area');
-    const dropContent = document.getElementById('drop-content');
-    const previewContainer = document.getElementById('preview-container');
-    const fileInput = document.getElementById('foto_producto');
-    const preview = document.getElementById('foto_preview');
-    const fileNameDisplay = document.getElementById('file-name');
+        const dropArea = document.getElementById('drop-area');
+        const dropContent = document.getElementById('drop-content');
+        const previewContainer = document.getElementById('preview-container');
+        const fileInput = document.getElementById('foto_producto');
+        const preview = document.getElementById('foto_preview');
+        const fileNameDisplay = document.getElementById('file-name');
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-    });
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    dropArea.addEventListener('click', () => fileInput.click());
-
-    dropArea.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const files = e.dataTransfer.files;
-        if (files.length) {
-            handleFiles(files);
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
-    }
 
-    fileInput.addEventListener('change', function () {
-        if (this.files.length) {
-            handleFiles(this.files);
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                handleFiles(files);
+            }
         }
-    });
 
-    function handleFiles(files) {
-        const file = files[0];
-        const isImage = file.type.startsWith('image/');
-        dropContent.classList.add('hidden');
-        previewContainer.classList.remove('hidden');
-        fileNameDisplay.textContent = file.name;
+        fileInput.addEventListener('change', function () {
+            if (this.files.length) {
+                handleFiles(this.files);
+            }
+        });
 
-        if (isImage) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            alert('Solo se permiten imágenes.');
-            removePreview();
+        function handleFiles(files) {
+            const file = files[0];
+            const isImage = file.type.startsWith('image/');
+            dropContent.classList.add('hidden');
+            previewContainer.classList.remove('hidden');
+            fileNameDisplay.textContent = file.name;
+
+            if (isImage) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Solo se permiten imágenes.');
+                removePreview();
+            }
         }
-    }
 
-    function removePreview(event) {
-        if (event) event.stopPropagation();
-        fileInput.value = '';
-        preview.src = '#';
-        preview.style.display = 'none';
-        dropContent.classList.remove('hidden');
-        previewContainer.classList.add('hidden');
-        fileNameDisplay.textContent = '';
-    }
-</script>
-<script>
+        function removePreview(event) {
+            if (event) event.stopPropagation();
+            fileInput.value = '';
+            preview.src = '#';
+            preview.style.display = 'none';
+            dropContent.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+            fileNameDisplay.textContent = '';
+        }
+    </script>
+    <script>
         $(document).ready(function () {
             $('#marcas_id').select2({
                 placeholder: "Selecciona una Marca",

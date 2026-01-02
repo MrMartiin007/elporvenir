@@ -42,7 +42,7 @@
 
                                     <div id="preview-container" class="mt-2 hidden">
                                         <img id="foto_preview" src="#" alt="Vista previa"
-                                            class="mx-auto max-w-full h-auto rounded-lg" style="max-height: 150px;">
+                                            class="mx-auto max-w-full h-auto rounded-lg" style="max-height: 120px;">
                                         <p id="file-name" class="mt-1 text-sm text-gray-700 text-center"></p>
 
                                         <button type="button" onclick="removePreview(event)"
