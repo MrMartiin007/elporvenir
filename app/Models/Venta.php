@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Venta extends Model
 {
-    
+
 
     protected $perPage = 20;
 
@@ -28,23 +28,23 @@ class Venta extends Model
      *
      * @var array
      */
-    protected $fillable = ['fecha_venta', 'cantidad_productos', 'total_vendido','estado','users_id'];
+    protected $fillable = ['fecha_venta', 'cantidad_productos', 'total_vendido', 'estado', 'users_id'];
 
-public function producto()
-{
-    return $this->hasMany(Producto::class, 'id');
-}
+    public function producto()
+    {
+        return $this->hasMany(Producto::class, 'id');
+    }
 
-public function detalles()
-{
-    return $this->hasMany(\App\Models\DetalleVenta::class, 'ventas_id');
-}
-// app/Models/Venta.php
+    public function detalles()
+    {
+        return $this->hasMany(\App\Models\DetalleVenta::class, 'ventas_id');
+    }
+    // app/Models/Venta.php
 
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
+    }
 
 
 }

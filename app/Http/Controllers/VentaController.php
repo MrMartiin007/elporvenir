@@ -22,9 +22,17 @@ class VentaController extends Controller
                 ->route('ventas.create', $ventaActiva->id);
         }
 
-        $ventas = Venta::where('users_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Si es superadmin, mostrar todas las ventas con relación de usuario
+        if (auth()->user()->hasRole('superadmin')) {
+            $ventas = Venta::with('user')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            // Usuario normal solo ve sus propias ventas
+            $ventas = Venta::where('users_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
 
         return view('venta.index', compact('ventas'));
     }

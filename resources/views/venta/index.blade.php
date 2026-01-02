@@ -45,6 +45,9 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Fecha Venta</th>
+                                    @role('superadmin')
+                                        <th>Usuario</th>
+                                    @endrole
                                     <th>Cantidad Productos</th>
                                     <th>Total Vendido</th>
                                     <th>Accion</th>
@@ -55,8 +58,11 @@
                                     <tr class="align-middle text-center">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($venta->fecha_venta)->format('d-m-Y') }}</td>
+                                        @role('superadmin')
+                                            <td>{{ $venta->user->name ?? 'N/A' }}</td>
+                                        @endrole
                                         <td class="align-middle text-center">{{ $venta->cantidad_productos }}</td>
-                                        <td class="align-middle text-center">{{ $venta->total_vendido }}</td>
+                                        <td class="align-middle text-center">Q {{ number_format($venta->total_vendido, 2) }}</td>
                                         <td>
                                             <a href="{{ route('ventas.show', $venta->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fa fa-eye"></i>
