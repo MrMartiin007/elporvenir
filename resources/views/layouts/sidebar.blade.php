@@ -116,12 +116,11 @@
                 class="nav-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}" title="Reporte"
                 style="color: #5c3d42;">
                 <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
-                    <i class="fas fa-file-invoice-dollar fa-lg"></i>
+                    <i class="fa-solid fa-chart-line"></i>
                 </div>
                 <span class="ms-2 sidebar-text">Reporte Venta</span>
             </a>
         </li>
-
 
         @endrole
 
