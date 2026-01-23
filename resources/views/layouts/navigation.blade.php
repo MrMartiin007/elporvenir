@@ -38,6 +38,9 @@
                         :active="request()->routeIs('productos.consultar')">
                         {{ __('Consultar Producto') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
+                        {{ __('Reportes') }}
+                    </x-nav-link>
                     @endrole
                     @role('venta')
                     <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">

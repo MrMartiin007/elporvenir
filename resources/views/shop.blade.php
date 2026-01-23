@@ -373,6 +373,46 @@
             transform: scale(1.1);
             color: white;
         }
+
+        .horizontal-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 5px;
+            /* Space for shadow if needed */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
+        .brand-pill {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            background: white;
+            color: #555;
+            border: 1px solid #eee;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        }
+
+        .brand-pill:hover {
+            background-color: var(--bs-primary-light);
+            color: var(--bs-primary-dark);
+        }
+
+        .brand-pill.active {
+            background-color: var(--bs-primary);
+            color: white;
+            border-color: var(--bs-primary);
+            box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
+        }
     </style>
 </head>
 
@@ -440,17 +480,62 @@
             <!-- Product Grid -->
             <div class="col-lg-9 order-1 order-lg-2">
 
+                <!-- Mobile: Sticky Search & Brand Nav -->
+                <div class="d-block d-lg-none mb-4">
+                    <!-- Search Bar -->
+                    <form action="{{ route('home') }}" method="GET" class="mb-3">
+                        @foreach(request()->except(['search', 'page']) as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+                        <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
+                            <span class="input-group-text bg-white border-0 ps-3"><i
+                                    class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="search" class="form-control border-0 py-2"
+                                placeholder="¿Qué estás buscando?" value="{{ $search ?? '' }}"
+                                style="box-shadow: none;">
+                            @if(request('marca')) <input type="hidden" name="marca" value="{{ request('marca') }}">
+                            @endif
+                            {{-- Sort logic is handled by hidden inputs if present in request, but simplified form here
+                            usually overrides --}}
+                        </div>
+                    </form>
+
+                    <!-- Horizontal Brand Pills -->
+                    <!-- Horizontal Brand Pills -->
+                    <div class="horizontal-scroll d-flex gap-2 pb-2 align-items-center ps-1">
+                        <!-- 'Todas' Pill -->
+                        <a href="{{ route('home', array_merge(request()->except(['marca', 'page']), ['marca' => null])) }}"
+                            class="brand-pill {{ !($marcaId ?? false) ? 'active' : '' }} d-flex align-items-center justify-content-center border shadow-sm"
+                            style="width: 50px; height: 50px; min-width: 50px; padding: 0; border-radius: 50%;">
+                            <span class="small fw-bold">Todas</span>
+                        </a>
+                        @foreach($marcas as $marca)
+                            <a href="{{ route('home', array_merge(request()->except(['marca', 'page']), ['marca' => $marca->id])) }}"
+                                class="brand-pill {{ ($marcaId ?? null) == $marca->id ? 'active' : '' }} p-0 d-flex align-items-center justify-content-center border shadow-sm"
+                                title="{{ $marca->nombre_marca }}"
+                                style="width: 50px; height: 50px; min-width: 50px; border-radius: 50%; overflow: hidden;">
+                                @if($marca->foto_marca)
+                                    <img src="{{ asset('storage/' . $marca->foto_marca) }}" alt="{{ $marca->nombre_marca }}"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    <span class="small fw-bold text-uppercase">{{ substr($marca->nombre_marca, 0, 2) }}</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
 
                 <!-- Sort/Filter Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                     <p class="mb-0 text-muted small text-nowrap">Resultados: {{ $productos->total() }}</p>
 
                     <div class="d-flex align-items-center gap-2">
-                        <!-- Mobile Filter Toggle -->
-                        <button class="btn btn-outline-dark btn-sm d-lg-none" type="button" data-bs-toggle="offcanvas"
+                        <!-- Mobile Filter Toggle (Hidden as we moved filters to main view) -->
+                        <!-- <button class="btn btn-outline-dark btn-sm d-lg-none" type="button" data-bs-toggle="offcanvas"
                             data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
                             <i class="fas fa-filter"></i> Filtros
-                        </button>
+                        </button> -->
 
                         <form id="sortForm" action="{{ route('home') }}" method="GET"
                             class="d-flex align-items-center mb-0">
@@ -485,15 +570,14 @@
                                         <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
                                         <meta itemprop="priceCurrency" content="GTQ">
                                     @endif
-                                    <link itemprop="availability" href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
-                                    
+                                    <link itemprop="availability"
+                                        href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
+
                                     <div class="card-img-wrapper">
                                         @if($producto->foto_producto)
-                                            <img src="{{ asset('storage/' . $producto->foto_producto) }}" 
-                                                 class="card-img-top"
-                                                 alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
-                                                 itemprop="image"
-                                                 loading="lazy">
+                                            <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
+                                                alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
+                                                itemprop="image" loading="lazy">
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
@@ -509,7 +593,8 @@
                                         <a href="#" class="product-title" itemprop="url">{{ $producto->detalle_producto }}</a>
                                         <div class="d-flex justify-content-center align-items-center mt-3">
                                             @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
-                                                <span class="product-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                                <span class="product-price" itemprop="offers" itemscope
+                                                    itemtype="https://schema.org/Offer">
                                                     <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
                                                     <meta itemprop="priceCurrency" content="GTQ">
                                                     Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}

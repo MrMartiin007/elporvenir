@@ -46,7 +46,7 @@
                                     <th>No</th>
                                     <th>Fecha Venta</th>
                                     @role('superadmin')
-                                        <th>Usuario</th>
+                                    <th>Usuario</th>
                                     @endrole
                                     <th>Cantidad Productos</th>
                                     <th>Total Vendido</th>
@@ -59,14 +59,28 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ \Carbon\Carbon::parse($venta->fecha_venta)->format('d-m-Y') }}</td>
                                         @role('superadmin')
-                                            <td>{{ $venta->user->name ?? 'N/A' }}</td>
+                                        <td>{{ $venta->user->name ?? 'N/A' }}</td>
                                         @endrole
                                         <td class="align-middle text-center">{{ $venta->cantidad_productos }}</td>
-                                        <td class="align-middle text-center">Q {{ number_format($venta->total_vendido, 2) }}</td>
+                                        <td class="align-middle text-center">Q {{ number_format($venta->total_vendido, 2) }}
+                                        </td>
                                         <td>
-                                            <a href="{{ route('ventas.show', $venta->id) }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('ventas.show', $venta->id) }}" class="btn btn-sm btn-info"
+                                                title="Ver Detalle">
                                                 <i class="fa fa-eye"></i>
                                             </a>
+
+                                            {{-- Solo permitir reabrir si es del día de hoy --}}
+                                            @if($venta->estado == 0 && \Carbon\Carbon::parse($venta->fecha_venta)->isToday())
+                                                <form action="{{ route('ventas.reabrir', $venta->id) }}" method="POST"
+                                                    class="d-inline form-reopen">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-sm btn-warning" title="Reabrir Venta">
+                                                        <i class="fas fa-undo"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
 
                                         </td>
                                     </tr>
@@ -108,6 +122,25 @@
 
         $(window).resize(function () {
             table.columns.adjust();
+        });
+    });
+    // SweetAlert2 para reabrir venta
+    $(document).on('submit', '.form-reopen', function(e) {
+        e.preventDefault();
+        let form = this;
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Vas a reabrir esta venta para editarla.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, reabrir',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
         });
     });
 </script>

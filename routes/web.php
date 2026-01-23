@@ -50,6 +50,9 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
         Route::resource('facturas', App\Http\Controllers\FacturaController::class);
 
+        // Reportes Module
+        Route::resource('reportes', App\Http\Controllers\ReporteController::class)->only(['index']);
+
         // Calendar Routes
         Route::get('/calendario', [App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');
         Route::patch('/cheques/{id}/confirmar', [App\Http\Controllers\CalendarioController::class, 'confirmarCheque'])->name('cheques.confirmar');
@@ -72,6 +75,7 @@ require __DIR__ . '/auth.php';
 
 Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
 Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
+Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');

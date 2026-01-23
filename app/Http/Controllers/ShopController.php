@@ -76,7 +76,7 @@ class ShopController extends Controller
         }
 
         $productos = $query->paginate(9);
-        $marcas = Marca::has('productos')->get();
+        $marcas = Marca::has('productos')->withCount('productos')->get();
 
         return view('shop', compact('productos', 'marcas', 'search', 'marcaId', 'sort'));
     }

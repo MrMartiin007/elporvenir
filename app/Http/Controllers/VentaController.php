@@ -68,10 +68,8 @@ class VentaController extends Controller
                     ->with('bad_status', 'El producto no tiene precio asignado.');
             }
 
-            if ($producto->stock < 1) {
-                return redirect()->route('ventas.create')
-                    ->with('bad_status', 'Stock insuficiente para este producto.');
-            }
+            // Validacion de stock eliminada a peticion
+            // if ($producto->stock < 1) { ... }
 
             DetalleVenta::create([
                 'ventas_id' => $venta->id,
@@ -80,9 +78,11 @@ class VentaController extends Controller
                 'precio_unitario' => $precioUnitario,
             ]);
 
-            // Descontar stock
-            $producto->stock -= 1;
-            $producto->save();
+            // Descontar stock (solo si es positivo, no permitir negativos en BD)
+            if ($producto->stock > 0) {
+                $producto->decrement('stock');
+            }
+            // Si es 0, se queda en 0.
 
             $venta->cantidad_productos = $venta->detalles()->sum('cantidad');
             $venta->total_vendido = $venta->detalles()
@@ -125,10 +125,8 @@ class VentaController extends Controller
             return redirect()->back()
                 ->with('error', 'Este producto no tiene precio registrado en una entrada.');
         }
-        if ($producto->stock < 1) {
-            return redirect()->back()
-                ->with('error', 'Stock insuficiente para este producto.');
-        }
+        // Validacion stock eliminada
+        // if ($producto->stock < 1) { ... }
 
         $precioUnitario = $producto->ultimaEntrada->precio_venta;
 
@@ -139,8 +137,10 @@ class VentaController extends Controller
             'precio_unitario' => $precioUnitario,
         ]);
 
-        $producto->stock -= 1;
-        $producto->save();
+        // Descontar stock si es posible, sino dejar en 0
+        if ($producto->stock > 0) {
+            $producto->decrement('stock');
+        }
 
 
 
@@ -190,10 +190,13 @@ class VentaController extends Controller
                 $dif = $nuevaCantidad - $cantidadActual;
 
                 if ($dif > 0) {
-                    if ($producto->stock < $dif) {
-                        return back()->with('bad_status', 'Stock insuficiente para aumentar la cantidad solicitada.');
+                    // Si aumenta cantidad, verificamos cuanto stock real podemos descontar
+                    // El usuario pidio permitir venta sin stock, manteniendo stock en 0 si no alcanza
+                    if ($producto->stock > 0) {
+                        $descontar = min($producto->stock, $dif);
+                        $producto->stock -= $descontar;
                     }
-                    $producto->stock -= $dif;
+                    // Si stock ya es 0 o menor, no hacemos nada al stock, pero permitimos el cambio en detalle
                 } else {
                     $producto->stock += abs($dif);
                 }
@@ -266,6 +269,29 @@ class VentaController extends Controller
 
         return redirect()->route('ventas.index')
             ->with('success', 'La venta ha sido cerrada correctamente.');
+    }
+
+    public function reabrir(Venta $venta)
+    {
+        // Verificar si ya tiene una venta activa para evitar colisiones
+        $ventaActiva = Venta::where('users_id', auth()->id())
+            ->where('estado', 1)
+            ->first();
+
+        if ($ventaActiva) {
+            return back()->with('error', 'Ya tienes una venta activa. Por favor ciérrala antes de reabrir esta.');
+        }
+
+        // Validar que la venta sea de hoy
+        if (!\Carbon\Carbon::parse($venta->fecha_venta)->isToday()) {
+            return back()->with('error', 'Solo se pueden reabrir ventas del día de hoy.');
+        }
+
+        $venta->estado = 1;
+        $venta->save();
+
+        return redirect()->route('ventas.create')
+            ->with('success', 'Venta reabierta. Puedes continuar editándola.');
     }
 }
 

@@ -26,7 +26,7 @@
                     <!-- Keep search and sort params when switching brands -->
                     <a href="{{ route('home', array_merge(request()->query(), ['marca' => $marca->id, 'page' => null])) }}">
                         {{ $marca->nombre_marca }}
-                        <span class="badge-count">{{ $marca->productos_count ?? $marca->productos()->count() }}</span>
+                        <span class="badge-count">{{ $marca->productos_count }}</span>
                     </a>
                 </li>
             @endforeach

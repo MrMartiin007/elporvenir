@@ -41,103 +41,113 @@
 
                         <strong class="text-center align-middle"> Productos Vendidos</strong>
                         @if($venta->detalles->count() > 0)
-                            <table class="table table-bordered table-striped " id="tablaProductos">
-                                <thead class="text-center">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Código</th>
-                                        <th>Producto</th>
-                                        <th>Foto</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio U</th>
-                                        <th>Descuento</th>
-                                        <th>Subtotal</th>
-                                        <th>Acccion</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($venta->detalles()->orderBy('created_at', 'desc')->get() as $detalle)
-                                        <tr class="text-center align-middle">
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $detalle->producto->codigo_producto }}</td>
-                                            <td>{{ $detalle->producto->detalle_producto }}</td>
-                                            <td>
-                                                @if($detalle->producto->foto_producto)
-                                                    <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
-                                                        class="rounded-circle object-cover cursor-pointer"
-                                                        style="width: 45px; height: 45px;" alt="Foto producto"
-                                                        data-bs-toggle="modal" data-bs-target="#fotoModal"
-                                                        onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
-                                                @else
-                                                    <span class="text-muted">Sin imagen</span>
-                                                @endif
-
-                                            </td>
-                                            <td class="text-center align-middle">
-                                                <input type="number" name="cantidad"
-                                                    value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
-                                                    form="f-actualizar-{{ $detalle->id }}"
-                                                    style="
-                                                            border: none; 
-                                                            border-bottom: 1px solid #333; 
-                                                            outline: none; 
-                                                            width: 80px; 
-                                                            text-align: center;
-                                                            padding: 2px 4px;
-                                                            background: transparent;
-                                                        " class="form-control-sm">
-                                            </td>
-                                            <td>Q {{ number_format($detalle->precio_unitario, 2) ?? 'favor verifique el precio'}}</td>
-                                            <td class="text-center align-middle">
-                                                <input type="number" name="descuento"
-                                                    value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
-                                                    max="{{ $detalle->precio_unitario }}" form="f-actualizar-{{ $detalle->id }}"
-                                                    style="
-                                                            border: none; 
-                                                            border-bottom: 1px solid #333; 
-                                                            outline: none; 
-                                                            width: 80px; 
-                                                            text-align: center;
-                                                            padding: 2px 4px;
-                                                            background: transparent;
-                                                        " class="form-control-sm">
-                                            </td>
-                                            <td>Q
-                                                {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
-                                            </td>
-                                            <td class="text-center align-middle">
-                                                <form id="f-actualizar-{{ $detalle->id }}"
-                                                    action="{{ route('ventas.update', $detalle->id) }}" method="POST"
-                                                    class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                </form>
-
-                                                {{-- Botón eliminar (opcional, si ya lo tienes en esta misma celda) --}}
-                                                <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
-                                                    class="d-inline"
-                                                    onsubmit="return confirm('¿Eliminar este producto de la venta?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped " id="tablaProductos">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th class="d-none d-md-table-cell">#</th>
+                                            <th class="d-none d-md-table-cell">Código</th>
+                                            <th>Producto</th>
+                                            <th class="d-none d-sm-table-cell">Foto</th>
+                                            <th>Cant.</th>
+                                            <th>Precio</th>
+                                            <th class="d-none d-sm-table-cell">Desc.</th>
+                                            <th>Subtotal</th>
+                                            <th>Accion</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="text-end">
-                                        <th colspan="7">Total Vendido</th>
-                                        <th>Q {{ number_format($venta->total_vendido, 2) }}</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($venta->detalles()->orderBy('created_at', 'desc')->get() as $detalle)
+                                            <tr class="text-center align-middle">
+                                                <td class="d-none d-md-table-cell">{{ $loop->iteration }}</td>
+                                                <td class="d-none d-md-table-cell">{{ $detalle->producto->codigo_producto }}</td>
+                                                <td>
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span>{{ $detalle->producto->detalle_producto }}</span>
+                                                        {{-- Mobile only info --}}
+                                                        <small class="d-md-none text-muted">{{ $detalle->producto->codigo_producto }}</small>
+                                                    </div>
+                                                </td>
+                                                <td class="d-none d-sm-table-cell">
+                                                    @if($detalle->producto->foto_producto)
+                                                        <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
+                                                            class="rounded-circle object-cover cursor-pointer"
+                                                            style="width: 45px; height: 45px;" alt="Foto producto"
+                                                            data-bs-toggle="modal" data-bs-target="#fotoModal"
+                                                            onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
+                                                    @else
+                                                        <span class="text-muted">Sin imagen</span>
+                                                    @endif
+    
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <input type="number" name="cantidad"
+                                                        value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
+                                                        form="f-actualizar-{{ $detalle->id }}"
+                                                        style="
+                                                                border: none; 
+                                                                border-bottom: 1px solid #333; 
+                                                                outline: none; 
+                                                                width: 50px; 
+                                                                text-align: center;
+                                                                padding: 2px 0px;
+                                                                background: transparent;
+                                                            " class="form-control-sm">
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex flex-column">
+                                                        <span>Q{{ number_format($detalle->precio_unitario, 2) }}</span>
+                                                        @if($detalle->descuento > 0)
+                                                            <small class="d-sm-none text-success">-Q{{ $detalle->descuento }}</small>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td class="text-center align-middle d-none d-sm-table-cell">
+                                                    <input type="number" name="descuento"
+                                                        value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
+                                                        max="{{ $detalle->precio_unitario }}" form="f-actualizar-{{ $detalle->id }}"
+                                                        style="
+                                                                border: none; 
+                                                                border-bottom: 1px solid #333; 
+                                                                outline: none; 
+                                                                width: 60px; 
+                                                                text-align: center;
+                                                                padding: 2px 0px;
+                                                                background: transparent;
+                                                            " class="form-control-sm">
+                                                </td>
+                                                <td class="fw-bold">Q
+                                                    {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button type="submit" form="f-actualizar-{{ $detalle->id }}" class="btn btn-primary" title="Actualizar">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
+                                                            class="d-inline"
+                                                            onsubmit="return confirm('¿Eliminar este producto de la venta?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger" title="Eliminar">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+    
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="text-end">
+                                            <th colspan="7" class="d-none d-sm-table-cell">Total Vendido</th>
+                                            <th colspan="3" class="d-sm-none">Total</th>
+                                            <th>Q {{ number_format($venta->total_vendido, 2) }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         @endif
 
                         <div class="mt-3">
