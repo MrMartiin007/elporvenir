@@ -35,18 +35,6 @@ class ShopController extends Controller
 
         // Sorting
         $sort = $request->input('sort');
-        if ($sort == 'price_asc') {
-            // Join with entradas to sort by price
-            $query->select('productos.*')
-                ->join('entradas', 'productos.id', '=', 'entradas.productos_id') // Assuming FK exists or logic allows
-                ->orderBy('entradas.precio_venta', 'asc')
-                ->distinct();
-            // Note: this is tricky if multiple entries. 
-            // A better approach for the 'latest' price is complex in SQL without subqueries or window functions.
-            // Given the structure, let's try a simpler approach if the relationship 'ultimaEntrada' is loaded.
-            // Eloquent sorting by related model attribute is hard.
-            // Let's use a subquery sort or simple join if possible.
-        }
 
         // Actually, let's stick to the previous 'ultimaEntrada' logic. sorting by a hasOne latest relation requires join.
         // Simplified approach for now:
