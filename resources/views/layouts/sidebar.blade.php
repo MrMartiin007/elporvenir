@@ -42,7 +42,7 @@
                 <span class="ms-2 sidebar-text">Venta</span>
             </a>
         </li>
-                <li>
+        <li>
             <a href="{{ route('productos.consultar') }}"
                 class="nav-link {{ request()->routeIs('productos.consultar') ? 'active' : '' }}" title="Consultar"
                 style="color: #5c3d42;">
@@ -109,6 +109,15 @@
                     <i class="fas fa-file-invoice-dollar fa-lg"></i>
                 </div>
                 <span class="ms-2 sidebar-text">Facturas</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('pagos.index') }}" class="nav-link {{ request()->routeIs('pagos.*') ? 'active' : '' }}"
+                title="pagos" style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fa-solid fa-money-check-dollar"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Pagos</span>
             </a>
         </li>
         <li>

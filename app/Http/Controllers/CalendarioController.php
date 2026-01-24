@@ -76,6 +76,54 @@ class CalendarioController extends Controller
             }
         }
 
+        // Fetch Facturas pagadas en Efectivo (Estado 2 = Pagada Efectivo)
+        $facturasEfectivo = \App\Models\Factura::with(['empresa'])
+            ->where('estado', 2)
+            ->get();
+
+        foreach ($facturasEfectivo as $factura) {
+            if ($factura->empresa) {
+                $events[] = [
+                    'title' => $factura->empresa->nombre_empresa . ' - Q.' . number_format($factura->monto, 2),
+                    'start' => $factura->updated_at->format('Y-m-d'), // Fecha de pago (cuando se actualizó)
+                    'color' => '#9ca3af', // Gray (Confirmed/Completed)
+                    'textColor' => '#ffffff',
+                    'extendedProps' => [
+                        'type' => 'Efectivo',
+                        'id' => $factura->id,
+                        'factura_id' => $factura->id,
+                        'monto' => $factura->monto,
+                        'no_doc' => 'N/A',
+                        'estado' => 2, // Confirmado (ya pagado)
+                        'foto' => $factura->foto_fac ? asset('storage/' . $factura->foto_fac) : null
+                    ]
+                ];
+            }
+        }
+
+        // Fetch Depósitos (Estado 5 = Pagada con Depósito)
+        $depositos = \App\Models\Deposito::with(['factura.empresa'])->get();
+
+        foreach ($depositos as $deposito) {
+            if ($deposito->factura && $deposito->factura->empresa) {
+                $events[] = [
+                    'title' => $deposito->factura->empresa->nombre_empresa . ' - Q.' . number_format($deposito->factura->monto, 2),
+                    'start' => $deposito->fecha_deposito,
+                    'color' => '#9ca3af', // Gray (Confirmed/Completed)
+                    'textColor' => '#ffffff',
+                    'extendedProps' => [
+                        'type' => 'Depósito',
+                        'id' => $deposito->id,
+                        'factura_id' => $deposito->factura->id,
+                        'monto' => $deposito->factura->monto,
+                        'no_doc' => $deposito->no_deposito,
+                        'estado' => 2, // Confirmado (ya pagado)
+                        'foto' => $deposito->foto_deposito ? asset('storage/' . $deposito->foto_deposito) : null
+                    ]
+                ];
+            }
+        }
+
         return view('calendario.index', compact('events'));
     }
 

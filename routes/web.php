@@ -66,6 +66,8 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::post('facturas/pagar-tarjeta', [App\Http\Controllers\FacturaController::class, 'pagarTarjeta'])->name('facturas.pagar_tarjeta');
         Route::post('facturas/pagar-deposito', [App\Http\Controllers\FacturaController::class, 'pagarDeposito'])->name('facturas.pagar_deposito');
 
+        // Payments Module
+        Route::get('/pagos', [App\Http\Controllers\PagoController::class, 'index'])->name('pagos.index');
 
     });
 });

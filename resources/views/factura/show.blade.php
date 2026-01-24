@@ -184,11 +184,11 @@
                                         </div>
                                     </div>
                                     @if($factura->deposito->foto_deposito)
-                                        <div class="mt-2 text-right">
-                                            <button
-                                                onclick="showImage('{{ asset('storage/' . $factura->deposito->foto_deposito) }}')"
-                                                data-bs-toggle="modal" data-bs-target="#imageModal"
-                                                class="text-xs text-blue-600 hover:underline">Ver Boleta</button>
+                                        <div class="mt-2">
+                                            <p class="text-xs text-gray-400 mb-1">Comprobante:</p>
+                                            <img src="{{ asset('storage/' . $factura->deposito->foto_deposito) }}" alt="Foto Voucher"
+                                                class="h-20 w-auto object-cover rounded cursor-pointer border hover:opacity-75"
+                                                onclick="showImage(this.src)" data-bs-toggle="modal" data-bs-target="#imageModal">
                                         </div>
                                     @endif
                                 </div>

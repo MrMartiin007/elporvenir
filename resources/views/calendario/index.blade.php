@@ -62,8 +62,8 @@
                 eventClick: function (info) {
                     let props = info.event.extendedProps;
 
-                    // Direct Navigation if already confirmed (Status 2) OR Voided (Status 0)
-                    if (props.estado == 2 || props.estado == 0) {
+                    // Direct Navigation if already confirmed (Status 2), Voided (Status 0), or payment types that are always confirmed (Efectivo, Depósito)
+                    if (props.estado == 2 || props.estado == 0 || props.type === 'Efectivo' || props.type === 'Depósito') {
                         window.location.href = `/admin/facturas/${props.factura_id}`;
                         return;
                     }
