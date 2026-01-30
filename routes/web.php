@@ -78,6 +78,7 @@ require __DIR__ . '/auth.php';
 Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
 Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
 Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
+Route::delete('/ventas/codigo/{id}', [VentaController::class, 'eliminarCodigoNoEncontrado'])->name('ventas.eliminar-codigo');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');

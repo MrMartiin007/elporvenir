@@ -46,5 +46,11 @@ class Venta extends Model
         return $this->belongsTo(User::class, 'users_id');
     }
 
+    public function codigosNoEncontrados()
+    {
+        return $this->hasMany(\App\Models\CodigoNoEncontrado::class, 'ventas_id');
+    }
+
+
 
 }

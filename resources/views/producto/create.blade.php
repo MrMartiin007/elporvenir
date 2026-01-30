@@ -112,7 +112,7 @@
                                     <div class="flex-1 min-w-0">
                                         <x-input-label for="codigo_producto" :value="__('Código del Producto')" />
                                         <x-text-input id="codigo_producto" class="block mt-1 w-full" type="text"
-                                            name="codigo_producto" :value="old('codigo_producto')" required
+                                            name="codigo_producto" :value="old('codigo_producto', $codigoPrellenado ?? '')" required
                                             autocomplete="codigo_producto" />
                                         <x-input-error :messages="$errors->get('codigo_producto')" class="mt-2" />
                                     </div>

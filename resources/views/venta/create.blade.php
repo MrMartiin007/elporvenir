@@ -85,15 +85,17 @@
                                                 <td class="text-center align-middle">
                                                     <input type="number" name="cantidad"
                                                         value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
-                                                        form="f-actualizar-{{ $detalle->id }}" style="
-                                                                                        border: none; 
-                                                                                        border-bottom: 1px solid #333; 
-                                                                                        outline: none; 
-                                                                                        width: 50px; 
-                                                                                        text-align: center;
-                                                                                        padding: 2px 0px;
-                                                                                        background: transparent;
-                                                                                    " class="form-control-sm">
+                                                        form="f-actualizar-{{ $detalle->id }}"
+                                                        style="
+                                                                                                                                                                                                border: none; 
+                                                                                                                                                                                                border-bottom: 1px solid #333; 
+                                                                                                                                                                                                outline: none; 
+                                                                                                                                                                                                width: 50px; 
+                                                                                                                                                                                                text-align: center;
+                                                                                                                                                                                                padding: 2px 0px;
+                                                                                                                                                                                                background: transparent;
+                                                                                                                                                                                            "
+                                                        class="form-control-sm">
                                                 </td>
                                                 <td>
                                                     <div class="d-flex flex-column">
@@ -169,6 +171,58 @@
                                     Q{{ number_format($venta->total_vendido, 2) }}
                                 </span>
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Códigos No Encontrados -->
+                    <div class="card mb-3">
+                        <div class="card-header text-dark">
+                            <strong>⚠️ Códigos No Encontrados</strong>
+                            @if($venta->codigosNoEncontrados->count() > 0)
+                                <span class="badge bg-danger">{{ $venta->codigosNoEncontrados->count() }}</span>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            @if($venta->codigosNoEncontrados->count() > 0)
+                                <div class="list-group">
+                                    @foreach($venta->codigosNoEncontrados as $codigo)
+                                        <div class="list-group-item p-3 border-start border-4 border-warning">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1 me-3">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <span class="badge bg-dark me-2">
+                                                            <i class="fas fa-barcode"></i>
+                                                        </span>
+                                                        <strong class="text-dark">{{ $codigo->codigo }}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    {{-- Botón para buscar en Google --}}
+                                                    <a href="https://www.google.com/search?q={{ urlencode($codigo->codigo) }}"
+                                                        target="_blank"
+                                                        class="btn btn-sm btn-outline-primary d-flex align-items-center"
+                                                        title="Buscar en Google">
+                                                        <i class="fab fa-google me-1"></i>
+                                                        <span class="d-none d-md-inline"></span>
+                                                    </a>
+
+                                                    {{-- Botón para crear producto con código prellenado --}}
+                                                    <a href="{{ route('productos.create', ['codigo' => $codigo->codigo]) }}"
+                                                        target="_blank" class="btn btn-sm btn-success d-flex align-items-center"
+                                                        title="Crear Producto">
+                                                        <i class="fas fa-plus-circle me-1"></i>
+                                                        <span class="d-none d-md-inline"></span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted text-center mb-0">
+                                    <small>No hay códigos sin registrar</small>
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>

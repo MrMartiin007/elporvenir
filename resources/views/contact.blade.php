@@ -216,16 +216,6 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{{ route('contact') }}">Contacto</a></li>
-                    @auth
-                        <li class="nav-item ms-lg-3">
-                            <a href="{{ url('/dashboard') }}" class="btn btn-theme px-3 py-2" style="font-size: 0.9rem;">Mi
-                                Cuenta</a>
-                        </li>
-                    @else
-                        <li class="nav-item ms-lg-3">
-                            <a href="{{ route('login') }}" class="nav-link"><i class="fas fa-user"></i> Login</a>
-                        </li>
-                    @endauth
                 </ul>
             </div>
         </div>

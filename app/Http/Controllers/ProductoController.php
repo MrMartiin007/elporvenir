@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CodigoNoEncontrado;
 use App\Models\Entrada;
 use App\Models\Marca;
 use App\Models\Producto;
@@ -47,7 +48,11 @@ class ProductoController extends Controller
     {
         $producto = new Producto();
         $marcas = Marca::all();
-        return view('producto.create', compact('producto', 'marcas'));
+
+        // Recibir código desde query string si existe
+        $codigoPrellenado = request('codigo');
+
+        return view('producto.create', compact('producto', 'marcas', 'codigoPrellenado'));
     }
 
     /**
@@ -78,6 +83,9 @@ class ProductoController extends Controller
             'precio_docena' => $request->input('precio_docena'),
             'fecha_ingreso' => now(),
         ]);
+
+        // Eliminar el código de la lista de códigos no encontrados si existe
+        CodigoNoEncontrado::where('codigo', $producto->codigo_producto)->delete();
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto y entrada inicial creados exitosamente.');

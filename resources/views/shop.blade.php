@@ -441,15 +441,6 @@
                     <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link {{ Route::is('contact') ? 'active' : '' }}"
                             href="{{ route('contact') }}">Contacto</a></li>
-                    @auth
-                        <li class="nav-item ms-lg-3">
-                            <a href="{{ url('/dashboard') }}" class="btn btn-theme btn-sm">Mi Cuenta</a>
-                        </li>
-                    @else
-                        <li class="nav-item ms-lg-3">
-                            <a href="{{ route('login') }}" class="nav-link"><i class="fas fa-user"></i> Login</a>
-                        </li>
-                    @endauth
                 </ul>
             </div>
         </div>
@@ -484,19 +475,16 @@
                 <div class="d-block d-lg-none mb-4">
                     <!-- Search Bar -->
                     <form action="{{ route('home') }}" method="GET" class="mb-3">
-                        @foreach(request()->except(['search', 'page']) as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
+                        {{-- Keep sort if present, but clear marca when searching --}}
+                        @if(request('sort'))
+                            <input type="hidden" name="sort" value="{{ request('sort') }}">
+                        @endif
                         <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
                             <span class="input-group-text bg-white border-0 ps-3"><i
                                     class="fas fa-search text-muted"></i></span>
                             <input type="text" name="search" class="form-control border-0 py-2"
                                 placeholder="¿Qué estás buscando?" value="{{ $search ?? '' }}"
                                 style="box-shadow: none;">
-                            @if(request('marca')) <input type="hidden" name="marca" value="{{ request('marca') }}">
-                            @endif
-                            {{-- Sort logic is handled by hidden inputs if present in request, but simplified form here
-                            usually overrides --}}
                         </div>
                     </form>
 
@@ -504,13 +492,14 @@
                     <!-- Horizontal Brand Pills -->
                     <div class="horizontal-scroll d-flex gap-2 pb-2 align-items-center ps-1">
                         <!-- 'Todas' Pill -->
-                        <a href="{{ route('home', array_merge(request()->except(['marca', 'page']), ['marca' => null])) }}"
+                        <a href="{{ route('home', request()->only('sort')) }}"
                             class="brand-pill {{ !($marcaId ?? false) ? 'active' : '' }} d-flex align-items-center justify-content-center border shadow-sm"
                             style="width: 50px; height: 50px; min-width: 50px; padding: 0; border-radius: 50%;">
                             <span class="small fw-bold">Todas</span>
                         </a>
                         @foreach($marcas as $marca)
-                            <a href="{{ route('home', array_merge(request()->except(['marca', 'page']), ['marca' => $marca->id])) }}"
+                            {{-- Clear search when selecting brand, keep only sort --}}
+                            <a href="{{ route('home', array_merge(request()->only('sort'), ['marca' => $marca->id])) }}"
                                 class="brand-pill {{ ($marcaId ?? null) == $marca->id ? 'active' : '' }} p-0 d-flex align-items-center justify-content-center border shadow-sm"
                                 title="{{ $marca->nombre_marca }}"
                                 style="width: 50px; height: 50px; min-width: 50px; border-radius: 50%; overflow: hidden;">
@@ -611,7 +600,7 @@
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center mt-5">
-                        {{ $productos->appends(['search' => $search, 'marca' => $marcaId])->links('pagination::bootstrap-5') }}
+                        {{ $productos->appends(['search' => $search, 'marca' => $marcaId, 'sort' => $sort ?? null])->links('vendor.pagination.shop-pagination') }}
                     </div>
                 @else
                     <div class="alert alert-info text-center py-5">

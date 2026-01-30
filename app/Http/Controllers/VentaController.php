@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CodigoNoEncontrado;
 use App\Models\DetalleVenta;
 use App\Models\Producto;
 use App\Models\Venta;
@@ -57,8 +58,14 @@ class VentaController extends Controller
                 ->first();
 
             if (!$producto) {
+                // Registrar el código no encontrado
+                CodigoNoEncontrado::create([
+                    'codigo' => $codigo,
+                    'ventas_id' => $venta->id,
+                ]);
+
                 return redirect()->route('ventas.create')
-                    ->with('bad_status', 'Producto no encontrado.');
+                    ->with('bad_status', 'Producto no encontrado. Código registrado para revisión.');
             }
 
             $precioUnitario = optional($producto->ultimaEntrada)->precio_venta;
@@ -97,6 +104,9 @@ class VentaController extends Controller
             $productosFiltrados = Producto::where('codigo_producto', $request->buscar)
                 ->get();
         }
+
+        // Cargar códigos no encontrados para mostrar en la vista
+        $venta->load('codigosNoEncontrados');
 
         return view('venta.create', compact('venta', 'productosFiltrados'));
     }
@@ -292,6 +302,15 @@ class VentaController extends Controller
 
         return redirect()->route('ventas.create')
             ->with('success', 'Venta reabierta. Puedes continuar editándola.');
+    }
+
+    public function eliminarCodigoNoEncontrado($id)
+    {
+        $codigo = CodigoNoEncontrado::findOrFail($id);
+        $codigo->delete();
+
+        return redirect()->route('ventas.create')
+            ->with('success', 'Código eliminado de la lista.');
     }
 }
 
