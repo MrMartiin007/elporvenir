@@ -63,7 +63,7 @@ class ShopController extends Controller
                 break;
         }
 
-        $productos = $query->paginate(9);
+        $productos = $query->paginate(12);  // 12 products: 6 rows of 2 (mobile) or 4 rows of 3 (desktop)
         $marcas = Marca::has('productos')->withCount('productos')->get();
 
         return view('shop', compact('productos', 'marcas', 'search', 'marcaId', 'sort'));

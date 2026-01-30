@@ -413,6 +413,34 @@
             border-color: var(--bs-primary);
             box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
         }
+
+        /* Mobile Product Grid Optimizations */
+        @media (max-width: 767px) {
+            .card-product {
+                border-radius: 10px;
+            }
+
+            .card-img-wrapper {
+                height: 200px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .product-title {
+                font-size: 0.9rem;
+                line-height: 1.3;
+            }
+
+            .category-badge {
+                font-size: 0.65rem;
+            }
+
+            .product-price {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 
@@ -548,7 +576,7 @@
                 </div>
 
                 @if($productos->count() > 0)
-                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="row row-cols-2 row-cols-md-3 g-3 g-md-4">
                         @foreach($productos as $producto)
                             <div class="col">
                                 <div class="card card-product" itemscope itemtype="https://schema.org/Product">
