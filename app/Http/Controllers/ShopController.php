@@ -66,7 +66,32 @@ class ShopController extends Controller
         $productos = $query->paginate(12);  // 12 products: 6 rows of 2 (mobile) or 4 rows of 3 (desktop)
         $marcas = Marca::has('productos')->withCount('productos')->get();
 
-        return view('shop', compact('productos', 'marcas', 'search', 'marcaId', 'sort'));
+        // Contador del carrito para el navbar
+        $carritoCount = collect(session()->get('carrito', []))->sum('cantidad');
+
+        return view('shop', compact('productos', 'marcas', 'search', 'marcaId', 'sort', 'carritoCount'));
+    }
+
+    public function showProduct($id)
+    {
+        $producto = Producto::with(['marca', 'ultimaEntrada', 'entradas'])->findOrFail($id);
+
+        // Productos relacionados (misma marca, excluyendo el actual)
+        $relacionados = collect();
+        if ($producto->marcas_id) {
+            $relacionados = Producto::with(['marca', 'ultimaEntrada'])
+                ->where('marcas_id', $producto->marcas_id)
+                ->where('id', '!=', $producto->id)
+                ->whereHas('ultimaEntrada')
+                ->inRandomOrder()
+                ->take(4)
+                ->get();
+        }
+
+        $carritoCount = collect(session()->get('carrito', []))->sum('cantidad');
+        $enCarrito = session('carrito') && isset(session('carrito')[$producto->id]);
+
+        return view('product-detail', compact('producto', 'relacionados', 'carritoCount', 'enCarrito'));
     }
 
     public function contact()

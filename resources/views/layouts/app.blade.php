@@ -29,7 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css"
         rel="stylesheet">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -61,8 +61,73 @@
             <!-- Page Heading -->
             @if (isset($header))
                 <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        <div>
+                            {{ $header }}
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            {{-- Configuración de Envío --}}
+                            <div class="relative">
+                                <button id="tarifaBtn"
+                                    class="flex items-center text-gray-500 hover:text-gray-700 focus:outline-none transition"
+                                    onclick="toggleTarifaDropdown()">
+                                    <div
+                                        class="flex items-center bg-gray-100 rounded-full px-3 py-1 border border-gray-200 hover:bg-gray-200">
+                                        <i class="fas fa-truck text-blue-500 mr-2"></i>
+                                        <span
+                                            class="text-sm font-bold text-gray-700">Q.{{ isset($tarifaActual) ? number_format($tarifaActual->costo, 2) : '0.00' }}</span>
+                                        <i class="fas fa-chevron-down text-xs ml-2 text-gray-400"></i>
+                                    </div>
+                                </button>
+
+                                {{-- Dropdown Form --}}
+                                <div id="tarifaDropdown"
+                                    class="hidden absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100 ring-1 ring-black ring-opacity-5">
+                                    <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                                        <p class="text-sm font-medium text-gray-900">Tarifa de Envío</p>
+                                        <p class="text-xs text-gray-500">Define el costo global de envío.</p>
+                                    </div>
+                                    <div class="p-4">
+                                        <form action="{{ route('configuracion.tarifa.store') }}" method="POST">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label for="costoEnvio"
+                                                    class="block text-xs font-medium text-gray-700 mb-1">Nuevo Costo
+                                                    (Q)</label>
+                                                <div class="relative rounded-md shadow-sm">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <span class="text-gray-500 sm:text-sm">Q</span>
+                                                    </div>
+                                                    <input type="number" name="costo" id="costoEnvio" step="0.01" min="0"
+                                                        class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 sm:text-sm border-gray-300 rounded-md"
+                                                        placeholder="0.00" required>
+                                                </div>
+                                            </div>
+                                            <button type="submit"
+                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xs transition duration-150 ease-in-out">
+                                                Actualizar Tarifa
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Notificación de Pedidos --}}
+                            <div class="relative">
+                                <a href="{{ route('pedidos.index') }}" class="text-gray-500 hover:text-gray-700 relative"
+                                    title="Pedidos Pendientes">
+                                    <i class="fas fa-bell fa-lg"></i>
+                                    @if(isset($pedidosPendientes))
+                                        <span
+                                            class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                            {{ $pedidosPendientes }}
+                                        </span>
+                                    @endif
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </header>
             @endif
@@ -73,6 +138,23 @@
             </main>
         </div>
     </div>
+    </div>
+
+    <script>
+        function toggleTarifaDropdown() {
+            const dropdown = document.getElementById('tarifaDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Cerrar dropdown al hacer click fuera
+        window.addEventListener('click', function (e) {
+            const btn = document.getElementById('tarifaBtn');
+            const dropdown = document.getElementById('tarifaDropdown');
+            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -23,6 +23,8 @@
         "@context": "https://schema.org",
         "@type": "BeautySalon",
         "name": "Beauty Center El Porvenir",
+        "alternateName": ["El Porvenir", "Tienda El Porvenir", "BC El Porvenir"],
+        "description": "El Porvenir es un beauty center y tienda de cosméticos en Puerto Barrios, Izabal, Guatemala. Productos de belleza, maquillaje y cuidado personal de las mejores marcas con envío a toda Guatemala.",
         "image": "{{ asset('logo.jpg') }}",
         "@id": "https://elporvenir.shop/",
         "url": "https://elporvenir.shop/",
@@ -160,6 +162,9 @@
         .card-body {
             padding: 1.5rem;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .category-badge {
@@ -459,9 +464,23 @@
                     class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
                 Beauty Center <span>El Porvenir</span>
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            {{-- Carrito visible siempre en móvil (a la derecha) --}}
+            <a class="nav-link position-relative d-lg-none ms-auto" href="{{ route('shop.index') }}"
+                title="Ver Carrito">
+                <i class="fas fa-shopping-cart" style="font-size: 1.9rem;"></i>
+                @if(($carritoCount ?? 0) > 0)
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                        style="background-color: var(--bs-primary); color: white; font-size: 0.7rem;">
+                        {{ $carritoCount }}
+                        <span class="visually-hidden">productos en carrito</span>
+                    </span>
+                @endif
+            </a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link {{ Route::is('home') ? 'active' : '' }}"
@@ -469,13 +488,27 @@
                     <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link {{ Route::is('contact') ? 'active' : '' }}"
                             href="{{ route('contact') }}">Contacto</a></li>
+
+                    {{-- Carrito de Compras (solo desktop, en móvil está fuera del menú) --}}
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="nav-link position-relative" href="{{ route('shop.index') }}" title="Ver Carrito">
+                            <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
+                            @if(($carritoCount ?? 0) > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                    style="background-color: var(--bs-primary); color: white; font-size: 0.7rem;">
+                                    {{ $carritoCount }}
+                                    <span class="visually-hidden">productos en carrito</span>
+                                </span>
+                            @endif
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Content -->
-    <div class="container my-5">
+    <div class="container mt-3 mt-lg-5 mb-5">
         <div class="row">
 
             <!-- Sidebar (Desktop: Static | Mobile: Offcanvas) -->
@@ -576,7 +609,7 @@
                 </div>
 
                 @if($productos->count() > 0)
-                    <div class="row row-cols-2 row-cols-md-3 g-3 g-md-4">
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
                         @foreach($productos as $producto)
                             <div class="col">
                                 <div class="card card-product" itemscope itemtype="https://schema.org/Product">
@@ -590,7 +623,7 @@
                                     <link itemprop="availability"
                                         href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
 
-                                    <div class="card-img-wrapper">
+                                    <a href="{{ route('producto.show', $producto->id) }}" class="card-img-wrapper d-block">
                                         @if($producto->foto_producto)
                                             <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
                                                 alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
@@ -598,28 +631,51 @@
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
-                                        @if($producto->stock <= 0)
-                                            <span class="position-absolute top-0 end-0 badge bg-secondary m-2">Agotado</span>
-                                        @elseif($producto->stock < 5)
+                                        @if($producto->stock < 5)
                                             <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">¡Pocas
                                                 unidades!</span>
                                         @endif
-                                    </div>
+                                    </a>
                                     <div class="card-body">
-                                        <span class="category-badge">{{ $producto->marca->nombre_marca ?? 'General' }}</span>
-                                        <a href="#" class="product-title" itemprop="url">{{ $producto->detalle_producto }}</a>
-                                        <div class="d-flex justify-content-center align-items-center mt-3">
-                                            @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
-                                                <span class="product-price" itemprop="offers" itemscope
-                                                    itemtype="https://schema.org/Offer">
-                                                    <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
-                                                    <meta itemprop="priceCurrency" content="GTQ">
-                                                    Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}
-                                                </span>
-                                            @else
-                                                <span class="text-muted small">Precio no disponible</span>
-                                            @endif
+                                        <div>
+                                            <span
+                                                class="category-badge">{{ $producto->marca->nombre_marca ?? 'General' }}</span>
+                                            <a href="{{ route('producto.show', $producto->id) }}" class="product-title"
+                                                itemprop="url">{{ $producto->detalle_producto }}</a>
+                                            <div class="d-flex justify-content-center align-items-center mt-3">
+                                                @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
+                                                    <span class="product-price" itemprop="offers" itemscope
+                                                        itemtype="https://schema.org/Offer">
+                                                        <meta itemprop="price"
+                                                            content="{{ $producto->ultimaEntrada->precio_venta }}">
+                                                        <meta itemprop="priceCurrency" content="GTQ">
+                                                        Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted small">Precio no disponible</span>
+                                                @endif
+                                            </div>
                                         </div>
+
+                                        {{-- Botón Agregar al Carrito - Mobile Optimized con estado --}}
+                                        @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
+                                            @php
+                                                $enCarrito = session('carrito') && isset(session('carrito')[$producto->id]);
+                                            @endphp
+                                            <form action="{{ route('shop.agregar') }}" method="POST" class="mt-auto">
+                                                @csrf
+                                                <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                                                <input type="hidden" name="cantidad" value="1">
+                                                <button type="submit" class="btn w-100 {{ $enCarrito ? '' : 'btn-theme' }}"
+                                                    style="font-size: 0.9rem; padding: 0.6rem 1rem; {{ $enCarrito ? 'background-color: var(--bs-primary); color: white; border: none; border-radius: 50px;' : '' }}">
+                                                    @if($enCarrito)
+                                                        <i class="fas fa-check me-1"></i> Agregado
+                                                    @else
+                                                        <i class="fas fa-cart-plus me-1"></i> Agregar
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

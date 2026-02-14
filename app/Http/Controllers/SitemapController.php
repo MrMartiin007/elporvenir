@@ -24,10 +24,10 @@ class SitemapController extends Controller
         // Página de contacto
         $sitemap .= $this->addUrl('https://elporvenir.shop/contacto', '0.8', 'weekly', now()->toIso8601String());
 
-        // Agregar cada producto
+        // Agregar cada producto con su URL individual
         foreach ($productos as $producto) {
             $sitemap .= $this->addUrl(
-                'https://elporvenir.shop/', // Por ahora apunta al home, luego se puede crear página individual
+                route('producto.show', $producto->id),
                 '0.6',
                 'weekly',
                 $producto->updated_at->toIso8601String()

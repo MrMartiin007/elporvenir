@@ -53,6 +53,16 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('pedidos.index') }}"
+                class="nav-link {{ request()->routeIs('pedidos.*') ? 'active' : '' }}" title="Pedidos Online"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-shopping-basket fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Pedidos Online</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('calendario.index') }}"
                 class="nav-link {{ request()->routeIs('calendario.*') ? 'active' : '' }}" title="Calendario"
                 style="color: #5c3d42;">
@@ -89,6 +99,16 @@
                     <i class="fas fa-tags fa-lg"></i>
                 </div>
                 <span class="ms-2 sidebar-text">Marcas</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('ubicaciones.index') }}"
+                class="nav-link {{ request()->routeIs('ubicaciones.*') ? 'active' : '' }}" title="Ubicaciones"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-map-marker-alt fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Ubicaciones</span>
             </a>
         </li>
         <li>
@@ -170,6 +190,16 @@
                     <i class="fas fa-tags fa-lg"></i>
                 </div>
                 <span class="ms-2 sidebar-text">Marcas</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('ubicaciones.index') }}"
+                class="nav-link {{ request()->routeIs('ubicaciones.*') ? 'active' : '' }}" title="Ubicaciones"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-map-marker-alt fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Ubicaciones</span>
             </a>
         </li>
         <li>

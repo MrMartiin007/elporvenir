@@ -42,107 +42,226 @@
                         <strong class="text-center align-middle"> Productos Vendidos</strong>
                         @if($venta->detalles->count() > 0)
                             <div class="table-responsive">
-                                <table class="table table-hover table-bordered" id="tablaProductos">
-                                    <thead class="text-center">
-                                        <tr>
-                                            <th class="d-none d-md-table-cell">#</th>
-                                            <th class="d-none d-md-table-cell">Código</th>
-                                            <th>Producto</th>
-                                            <th class="d-none d-sm-table-cell">Foto</th>
-                                            <th>Cant.</th>
-                                            <th>Precio</th>
-                                            <th class="d-none d-sm-table-cell">Desc.</th>
-                                            <th>Subtotal</th>
-                                            <th>Accion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($venta->detalles()->orderBy('created_at', 'desc')->get() as $detalle)
-                                            <tr class="text-center align-middle">
-                                                <td class="d-none d-md-table-cell">{{ $loop->iteration }}</td>
-                                                <td class="d-none d-md-table-cell">{{ $detalle->producto->codigo_producto }}
-                                                </td>
-                                                <td>
-                                                    <div>
-                                                        <span>{{ $detalle->producto->detalle_producto }}</span>
-                                                        {{-- Mobile only info --}}
-                                                        <small
-                                                            class="d-md-none text-muted">{{ $detalle->producto->codigo_producto }}</small>
-                                                    </div>
-                                                </td>
-                                                <td class="d-none d-sm-table-cell">
-                                                    @if($detalle->producto->foto_producto)
-                                                        <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
-                                                            class="rounded-circle object-cover cursor-pointer"
-                                                            style="width: 45px; height: 45px;" alt="Foto producto"
-                                                            data-bs-toggle="modal" data-bs-target="#fotoModal"
-                                                            onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
-                                                    @else
-                                                        <span class="text-muted">Sin imagen</span>
-                                                    @endif
-
-                                                </td>
-                                                <td class="text-center align-middle">
-                                                    <input type="number" name="cantidad"
-                                                        value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
-                                                        form="f-actualizar-{{ $detalle->id }}"
-                                                        style="
-                                                                                                                                                                                                border: none; 
-                                                                                                                                                                                                border-bottom: 1px solid #333; 
-                                                                                                                                                                                                outline: none; 
-                                                                                                                                                                                                width: 50px; 
-                                                                                                                                                                                                text-align: center;
-                                                                                                                                                                                                padding: 2px 0px;
-                                                                                                                                                                                                background: transparent;
-                                                                                                                                                                                            "
-                                                        class="form-control-sm">
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex flex-column">
-                                                        <span>Q{{ number_format($detalle->precio_unitario, 2) }}</span>
-                                                        @if($detalle->descuento > 0)
+                                {{-- Desktop View (Table) --}}
+                                <div class="d-none d-md-block">
+                                    <table class="table table-hover table-bordered" id="tablaProductos">
+                                        <thead class="text-center bg-light">
+                                            <tr>
+                                                <th class="d-none d-md-table-cell text-nowrap" style="width: 5%;">#</th>
+                                                <th class="d-none d-lg-table-cell text-nowrap" style="width: 10%;">Código
+                                                </th>
+                                                <th style="min-width: 150px;">Producto</th>
+                                                <th class="d-none d-sm-table-cell" style="width: 10%;">Foto</th>
+                                                <th style="width: 10%;">Cant.</th>
+                                                <th class="d-none d-sm-table-cell text-nowrap" style="width: 10%;">Precio
+                                                </th>
+                                                <th class="d-none d-md-table-cell text-nowrap" style="width: 10%;">Desc.
+                                                </th>
+                                                <th class="text-nowrap" style="width: 10%;">Subtotal</th>
+                                                <th style="width: 10%;">Accion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($venta->detalles()->orderBy('created_at', 'desc')->get() as $detalle)
+                                                <tr class="align-middle">
+                                                    <td class="d-none d-md-table-cell text-center">{{ $loop->iteration }}</td>
+                                                    <td class="d-none d-lg-table-cell text-center">
+                                                        {{ $detalle->producto->codigo_producto }}
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-column">
+                                                            <span
+                                                                class="fw-bold text-dark">{{ $detalle->producto->detalle_producto }}</span>
                                                             <small
-                                                                class="d-sm-none text-success">-Q{{ $detalle->descuento }}</small>
+                                                                class="d-lg-none text-muted">{{ $detalle->producto->codigo_producto }}</small>
+                                                        </div>
+                                                    </td>
+                                                    <td class="d-none d-sm-table-cell text-center">
+                                                        @if($detalle->producto->foto_producto)
+                                                            <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
+                                                                class="rounded-3 shadow-sm object-cover cursor-pointer"
+                                                                style="width: 45px; height: 45px;" alt="Foto" data-bs-toggle="modal"
+                                                                data-bs-target="#fotoModal"
+                                                                onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
+                                                        @else
+                                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted"
+                                                                style="width: 45px; height: 45px;">
+                                                                <i class="fas fa-image"></i>
+                                                            </div>
                                                         @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="number" name="cantidad"
+                                                            value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
+                                                            form="f-actualizar-desktop-{{ $detalle->id }}"
+                                                            class="text-center fw-bold text-center mx-auto"
+                                                            style="max-width: 60px; border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 2px;"
+                                                            onfocus="this.style.borderBottomColor='#0d6efd'"
+                                                            onblur="this.style.borderBottomColor='#ced4da'">
+                                                    </td>
+                                                    <td class="d-none d-sm-table-cell text-center text-nowrap">
+                                                        @if($detalle->descuento > 0 && $detalle->descuento < $detalle->precio_unitario)
+                                                            <div class="d-flex flex-column align-items-center" style="line-height: 1.2;">
+                                                                <span class="text-decoration-line-through text-muted small">
+                                                                    Q{{ number_format($detalle->precio_unitario, 2) }}
+                                                                </span>
+                                                                <span class="fw-bold text-dark">
+                                                                    Q{{ number_format($detalle->precio_unitario - $detalle->descuento, 2) }}
+                                                                </span>
+                                                            </div>
+                                                        @else
+                                                            Q{{ number_format($detalle->precio_unitario, 2) }}
+                                                        @endif
+                                                    </td>
+                                                    <td class="d-none d-md-table-cell text-center">
+                                                        <input type="number" name="descuento"
+                                                            value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
+                                                            min="0" max="{{ $detalle->precio_unitario }}"
+                                                            form="f-actualizar-desktop-{{ $detalle->id }}"
+                                                            class="text-center mx-auto"
+                                                            style="max-width: 70px; border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 2px;"
+                                                            placeholder="0.00" onfocus="this.style.borderBottomColor='#0d6efd'"
+                                                            onblur="this.style.borderBottomColor='#ced4da'">
+                                                    </td>
+                                                    <td class="fw-bold text-center text-nowrap text-primary">
+                                                        Q
+                                                        {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                                            <button type="submit" form="f-actualizar-desktop-{{ $detalle->id }}"
+                                                                class="btn btn-outline-success btn-sm rounded-circle d-flex align-items-center justify-content-center p-0"
+                                                                style="width: 32px; height: 32px;" title="Actualizar">
+                                                                <i class="fas fa-check" style="font-size: 14px;"></i>
+                                                            </button>
+                                                            <form action="{{ route('ventas.destroy', $detalle->id) }}"
+                                                                method="POST" class="d-inline"
+                                                                onsubmit="return confirm('¿Eliminar este producto de la venta?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center p-0"
+                                                                    style="width: 32px; height: 32px;" title="Eliminar">
+                                                                    <i class="fas fa-trash-alt" style="font-size: 14px;"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {{-- Mobile View (Cards) --}}
+                                <div class="d-md-none space-y-3">
+                                    @foreach($venta->detalles()->orderBy('created_at', 'desc')->get() as $detalle)
+                                        <div class="card shadow-sm border-0 mb-3 rounded-3">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        {{-- Image --}}
+                                                        @if($detalle->producto->foto_producto)
+                                                            <img src="{{ asset('storage/' . $detalle->producto->foto_producto) }}"
+                                                                class="rounded-3 shadow-sm object-cover"
+                                                                style="width: 60px; height: 60px;" alt="Foto" data-bs-toggle="modal"
+                                                                data-bs-target="#fotoModal"
+                                                                onclick="mostrarImagen('{{ asset('storage/' . $detalle->producto->foto_producto) }}')">
+                                                        @else
+                                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted"
+                                                                style="width: 60px; height: 60px;">
+                                                                <i class="fas fa-camera fa-lg"></i>
+                                                            </div>
+                                                        @endif
+
+                                                        {{-- Product Info --}}
+                                                        <div>
+                                                            <h6 class="fw-bold text-dark mb-0 text-break"
+                                                                style="max-width: 180px;">
+                                                                {{ $detalle->producto->detalle_producto }}
+                                                            </h6>
+                                                            <small class="text-muted d-block">{{ $detalle->producto->codigo_producto }}</small>
+                                                            
+                                                            {{-- Unit Price Breakdown for Mobile --}}
+                                                            <div class="small text-muted mt-1">
+                                                                @if($detalle->descuento > 0)
+                                                                     <span class="text-decoration-line-through me-1">Q{{ number_format($detalle->precio_unitario, 2) }}</span>
+                                                                     <span class="fw-bold text-dark">Q{{ number_format($detalle->precio_unitario - $detalle->descuento, 2) }} c/u</span>
+                                                                @else
+                                                                    <span>Q{{ number_format($detalle->precio_unitario, 2) }} c/u</span>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="text-primary fw-bold mt-1">
+                                                                Q
+                                                                {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </td>
-                                                <td class="text-center align-middle d-none d-sm-table-cell">
-                                                    <input type="number" name="descuento"
-                                                        value="{{ old('descuento', $detalle->descuento) }}" step="0.01" min="0"
-                                                        max="{{ $detalle->precio_unitario }}"
-                                                        form="f-actualizar-{{ $detalle->id }}"
-                                                        style="border: none; border-bottom: 1px solid #333; outline: none; width: 60px; text-align: center;padding: 2px 0px;background: transparent;"
-                                                        class="form-control-sm">
-                                                </td>
-                                                <td class="fw-bold">Q
-                                                    {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
-                                                </td>
-                                                <td class="text-center align-middle">
-                                                    <div class="btn-group btn-group-sm" role="group">
-                                                        <button type="submit" form="f-actualizar-{{ $detalle->id }}"
-                                                            class="btn btn-primary" title="Actualizar">
+
+                                                    {{-- Delete Button (Top Right) --}}
+                                                    <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
+                                                        onsubmit="return confirm('¿Eliminar este producto?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center p-0"
+                                                            style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                                {{-- Controls Row --}}
+                                                <div class="d-flex align-items-center gap-2 mt-3 bg-light p-2 rounded-3">
+                                                    <div class="flex-grow-1">
+                                                        <label class="small text-muted mb-1 d-block">Cantidad</label>
+                                                        <input type="number" name="cantidad"
+                                                            value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
+                                                            form="f-actualizar-mobile-{{ $detalle->id }}"
+                                                            class="text-center fw-bold w-100"
+                                                            style="border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 5px;"
+                                                            onfocus="this.style.borderBottomColor='#0d6efd'"
+                                                            onblur="this.style.borderBottomColor='#ced4da'">
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <label class="small text-muted mb-1 d-block">Desc.</label>
+                                                        <input type="number" name="descuento"
+                                                            value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
+                                                            min="0" max="{{ $detalle->precio_unitario }}"
+                                                            form="f-actualizar-mobile-{{ $detalle->id }}"
+                                                            class="text-center w-100"
+                                                            style="border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 5px;"
+                                                            placeholder="0.00" onfocus="this.style.borderBottomColor='#0d6efd'"
+                                                            onblur="this.style.borderBottomColor='#ced4da'">
+                                                    </div>
+
+                                                    <div class="align-self-end pb-1">
+                                                        <button type="submit" form="f-actualizar-mobile-{{ $detalle->id }}"
+                                                            class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                            style="width: 36px; height: 36px;" title="Guardar Cambios">
                                                             <i class="fas fa-check"></i>
                                                         </button>
-                                                        <form action="{{ route('ventas.destroy', $detalle->id) }}" method="POST"
-                                                            class="d-inline"
-                                                            onsubmit="return confirm('¿Eliminar este producto de la venta?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger" title="Eliminar">
-                                                                <i class="fas fa-trash-alt"></i>
-                                                            </button>
-                                                        </form>
                                                     </div>
-                                                </td>
-
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
 
                                 {{-- Formularios fuera del tbody para evitar conflicto con DataTable --}}
                                 @foreach($venta->detalles as $detalle)
-                                    <form id="f-actualizar-{{ $detalle->id }}"
+                                    {{-- Formulario para Desktop --}}
+                                    <form id="f-actualizar-desktop-{{ $detalle->id }}"
+                                        action="{{ route('ventas.update', $detalle->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('PATCH')
+                                    </form>
+
+                                    {{-- Formulario para Mobile --}}
+                                    <form id="f-actualizar-mobile-{{ $detalle->id }}"
                                         action="{{ route('ventas.update', $detalle->id) }}" method="POST"
                                         style="display: none;">
                                         @csrf
