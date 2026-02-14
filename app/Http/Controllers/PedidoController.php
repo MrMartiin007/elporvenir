@@ -276,7 +276,8 @@ class PedidoController extends Controller
     public function updateDetail(Request $request, $pedidoId, $detalleId)
     {
         $request->validate([
-            'cantidad' => 'required|integer|min:1'
+            'cantidad' => 'nullable|integer|min:1',
+            'descuento' => 'nullable|numeric|min:0'
         ]);
 
         $detalle = DetallePedido::findOrFail($detalleId);
@@ -287,50 +288,59 @@ class PedidoController extends Controller
             return back()->with('error', 'El detalle no pertenece al pedido especificado.');
         }
 
-        $nuevaCantidad = (int) $request->cantidad;
+        // Validación de descuento
+        if ($request->filled('descuento')) {
+            if ($request->descuento > $detalle->precio_unitario) {
+                return back()->with('error', 'El descuento no puede ser mayor al precio del producto.');
+            }
+            $detalle->descuento = $request->descuento;
+        }
+
+        $nuevaCantidad = $request->filled('cantidad') ? (int) $request->cantidad : $detalle->cantidad;
         $cantidadAnterior = (int) $detalle->cantidad;
 
-        if ($nuevaCantidad === $cantidadAnterior) {
-            return back();
-        }
+        // Si solo se actualiza descuento, nuevaCantidad = cantidadAnterior, diff = 0.
+        // Solo verificamos stock si cambia la cantidad.
+        if ($nuevaCantidad !== $cantidadAnterior) {
 
-        DB::beginTransaction();
-        try {
-            // Si el pedido ya estaba CONFIRMADO (o en proceso), ajustar stock
-            if (in_array($pedido->estado, ['confirmado', 'enviado', 'entregado'])) {
-                $producto = Producto::find($detalle->productos_id);
+            DB::beginTransaction();
+            try {
+                // Si el pedido ya estaba CONFIRMADO (o en proceso), ajustar stock
+                if (in_array($pedido->estado, ['confirmado', 'enviado', 'entregado'])) {
+                    $producto = Producto::find($detalle->productos_id);
 
-                if ($producto) {
-                    $diferencia = $nuevaCantidad - $cantidadAnterior;
+                    if ($producto) {
+                        $diferencia = $nuevaCantidad - $cantidadAnterior;
 
-                    if ($diferencia > 0) {
-                        // Aumentó la cantidad: Intentar descontar stock
-                        if ($producto->stock > 0) {
-                            $descontar = min($producto->stock, $diferencia);
-                            $producto->decrement('stock', $descontar);
+                        if ($diferencia > 0) {
+                            // Aumentó la cantidad: Intentar descontar stock
+                            if ($producto->stock > 0) {
+                                $descontar = min($producto->stock, $diferencia);
+                                $producto->decrement('stock', $descontar);
+                            }
+                        } elseif ($diferencia < 0) {
+                            // Disminuyó la cantidad: Devolver stock siempre
+                            $producto->increment('stock', abs($diferencia));
                         }
-                    } elseif ($diferencia < 0) {
-                        // Disminuyó la cantidad: Devolver stock siempre
-                        $producto->increment('stock', abs($diferencia));
                     }
                 }
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', 'Error al actualizar stock: ' . $e->getMessage());
             }
-
-            // Actualizar detalle
-            $detalle->cantidad = $nuevaCantidad;
-            $detalle->subtotal = $detalle->precio_unitario * $nuevaCantidad; // Recalcular subtotal línea
-            $detalle->save();
-
-            // Recalcular totales del pedido
-            $this->recalculateTotals($pedido);
-
             DB::commit();
-            return back()->with('success', 'Cantidad actualizada correctamente.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error al actualizar cantidad: ' . $e->getMessage());
         }
+
+        // Actualizar detalle (Cantidad y Subtotal)
+        $detalle->cantidad = $nuevaCantidad;
+        // Subtotal = (Precio - Descuento) * Cantidad
+        $detalle->subtotal = ($detalle->precio_unitario - ($detalle->descuento ?? 0)) * $nuevaCantidad;
+        $detalle->save();
+
+        // Recalcular totales del pedido
+        $this->recalculateTotals($pedido);
+
+        return back()->with('success', 'Detalle actualizado correctamente.');
     }
 
     /**

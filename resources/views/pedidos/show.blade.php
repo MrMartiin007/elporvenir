@@ -21,7 +21,7 @@
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-medium text-gray-900">Productos</h3>
                                 @if(in_array($pedido->estado, ['pendiente', 'confirmado']))
-                                        <button type="button"
+                                    <button type="button"
                                         class="px-3 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150"
                                         data-bs-toggle="modal" data-bs-target="#searchProductModal">
                                         <i class="fas fa-plus mr-1"></i> Agregar Producto
@@ -44,6 +44,9 @@
                                             <th
                                                 class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
                                                 Precio</th>
+                                            <th
+                                                class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                                                Desc.</th>
                                             <th
                                                 class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
                                                 Cant.</th>
@@ -79,38 +82,68 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-500 text-right">
-                                                    Q. {{ number_format($detalle->precio_unitario, 2) }}
+                                                    @if($detalle->descuento > 0 && $detalle->descuento < $detalle->precio_unitario)
+                                                        <div class="flex flex-col items-end">
+                                                            <span class="text-xs text-gray-400 line-through">Q. {{ number_format($detalle->precio_unitario, 2) }}</span>
+                                                            <span class="font-bold text-gray-900">Q. {{ number_format($detalle->precio_unitario - $detalle->descuento, 2) }}</span>
+                                                        </div>
+                                                    @else
+                                                        Q. {{ number_format($detalle->precio_unitario, 2) }}
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    @if(in_array($pedido->estado, ['pendiente', 'confirmado']))
+                                                        <input type="number" name="descuento" form="update-form-{{ $detalle->id }}"
+                                                            value="{{ $detalle->descuento }}" step="0.01" min="0" max="{{ $detalle->precio_unitario }}"
+                                                            class="w-20 h-8 text-center text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                                            placeholder="0.00">
+                                                    @else
+                                                        @if($detalle->descuento > 0)
+                                                            <span class="text-red-600 font-medium">- Q. {{ number_format($detalle->descuento, 2) }}</span>
+                                                        @else
+                                                            <span class="text-gray-400">-</span>
+                                                        @endif
+                                                    @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-500 text-center"
                                                     style="min-width: 120px;">
-                                                    <form
-                                                        action="{{ route('pedidos.detalles.update', [$pedido->id, $detalle->id]) }}"
-                                                        method="POST" class="flex justify-center items-center">
-                                                        @csrf @method('PATCH')
-                                                        <input type="number" name="cantidad"
-                                                            value="{{ $detalle->cantidad }}" min="1"
-                                                            class="w-16 h-8 text-center text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                        <button type="submit" class="ml-2 text-blue-600 hover:text-blue-900"
-                                                            title="Actualizar Cantidad">
-                                                            <i class="fas fa-sync-alt"></i>
-                                                        </button>
-                                                    </form>
+                                                    @if(in_array($pedido->estado, ['pendiente', 'confirmado']))
+                                                        <form id="update-form-{{ $detalle->id }}"
+                                                            action="{{ route('pedidos.detalles.update', [$pedido->id, $detalle->id]) }}"
+                                                            method="POST" class="flex justify-center items-center">
+                                                            @csrf @method('PATCH')
+                                                            <input type="number" name="cantidad"
+                                                                value="{{ $detalle->cantidad }}" min="1"
+                                                                class="w-16 h-8 text-center text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                                            <button type="submit" class="ml-2 text-blue-600 hover:text-blue-900"
+                                                                title="Actualizar Cantidad">
+                                                                <i class="fas fa-sync-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-gray-900 font-medium">{{ $detalle->cantidad }}</span>
+                                                    @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm font-medium text-gray-900 text-right">
                                                     Q. {{ number_format($detalle->subtotal, 2) }}
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <form id="delete-form-{{ $detalle->id }}"
-                                                        action="{{ route('pedidos.detalles.destroy', [$pedido->id, $detalle->id]) }}"
-                                                        method="POST">
-                                                        @csrf @method('DELETE')
-                                                        <button type="button"
-                                                            onclick="confirmDelete('delete-form-{{ $detalle->id }}')"
-                                                            class="text-red-600 hover:text-red-900"
-                                                            title="Eliminar Producto">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                    @if(in_array($pedido->estado, ['pendiente', 'confirmado']))
+                                                        <form id="delete-form-{{ $detalle->id }}"
+                                                            action="{{ route('pedidos.detalles.destroy', [$pedido->id, $detalle->id]) }}"
+                                                            method="POST">
+                                                            @csrf @method('DELETE')
+                                                            <button type="button"
+                                                                onclick="confirmDelete('delete-form-{{ $detalle->id }}')"
+                                                                class="text-red-600 hover:text-red-900"
+                                                                title="Eliminar Producto">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-gray-400" title="No editable"><i
+                                                                class="fas fa-lock"></i></span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
