@@ -470,7 +470,7 @@
             </button>
 
             {{-- Carrito visible siempre en móvil (a la derecha) --}}
-            <a class="nav-link position-relative d-lg-none ms-auto" href="{{ route('shop.index') }}"
+            <a class="nav-link position-relative d-lg-none ms-auto" href="{{ route('cart.index') }}"
                 title="Ver Carrito">
                 <i class="fas fa-shopping-cart" style="font-size: 1.9rem;"></i>
                 @if(($carritoCount ?? 0) > 0)
@@ -491,7 +491,7 @@
 
                     {{-- Carrito de Compras (solo desktop, en móvil está fuera del menú) --}}
                     <li class="nav-item d-none d-lg-block">
-                        <a class="nav-link position-relative" href="{{ route('shop.index') }}" title="Ver Carrito">
+                        <a class="nav-link position-relative" href="{{ route('cart.index') }}" title="Ver Carrito">
                             <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
                             @if(($carritoCount ?? 0) > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
@@ -662,7 +662,7 @@
                                             @php
                                                 $enCarrito = session('carrito') && isset(session('carrito')[$producto->id]);
                                             @endphp
-                                            <form action="{{ route('shop.agregar') }}" method="POST" class="mt-auto">
+                                            <form action="{{ route('cart.agregar') }}" method="POST" class="mt-auto">
                                                 @csrf
                                                 <input type="hidden" name="producto_id" value="{{ $producto->id }}">
                                                 <input type="hidden" name="cantidad" value="1">

@@ -51,7 +51,7 @@
                                         
                                         {{-- Cantidad (Mobile: debajo, Desktop: al lado) --}}
                                         <div class="col-6 col-md-3 mt-2 mt-md-0">
-                                            <form action="{{ route('shop.actualizar') }}" method="POST" class="d-flex align-items-center">
+                                            <form action="{{ route('cart.actualizar') }}" method="POST" class="d-flex align-items-center">
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="id" value="{{ $id }}">
@@ -69,7 +69,7 @@
                                             <p class="mb-2 fw-bold" style="color: var(--bs-primary-dark);">
                                                 Q. {{ number_format($subtotal, 2) }}
                                             </p>
-                                            <form action="{{ route('shop.eliminar', $id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('cart.eliminar', $id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" 
@@ -92,7 +92,7 @@
                         <i class="fas fa-arrow-left me-1"></i>
                         <span class="d-none d-sm-inline"></span>Seguir Comprando
                     </a>
-                    <form action="{{ route('shop.vaciar') }}" method="POST" class="d-inline">
+                    <form action="{{ route('cart.vaciar') }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger" 
@@ -137,7 +137,7 @@
                             </span>
                         </div>
                         
-                        <a href="{{ route('shop.checkout.index') }}" class="btn btn-theme w-100 py-3 mb-2">
+                        <a href="{{ route('cart.checkout.index') }}" class="btn btn-theme w-100 py-3 mb-2">
                             <i class="fas fa-check-circle me-2"></i>Finalizar Pedido
                         </a>
                         

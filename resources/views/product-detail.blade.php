@@ -763,7 +763,7 @@
             </a>
 
             {{-- Carrito visible siempre en móvil --}}
-            <a class="nav-link position-relative d-lg-none ms-auto me-2" href="{{ route('shop.index') }}"
+            <a class="nav-link position-relative d-lg-none ms-auto me-2" href="{{ route('cart.index') }}"
                 title="Ver Carrito">
                 <i class="fas fa-shopping-cart" style="font-size: 1.5rem;"></i>
                 @if(($carritoCount ?? 0) > 0)
@@ -791,7 +791,7 @@
                         </form>
                     </li>
                     <li class="nav-item d-none d-lg-block">
-                        <a class="nav-link position-relative" href="{{ route('shop.index') }}" title="Ver Carrito">
+                        <a class="nav-link position-relative" href="{{ route('cart.index') }}" title="Ver Carrito">
                             <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
                             @if(($carritoCount ?? 0) > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
@@ -891,7 +891,7 @@
                 <!-- Actions (desktop only) -->
                 <div class="d-flex flex-column gap-3 desktop-actions">
                     @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
-                        <form action="{{ route('shop.agregar') }}" method="POST">
+                        <form action="{{ route('cart.agregar') }}" method="POST">
                             @csrf
                             <input type="hidden" name="producto_id" value="{{ $producto->id }}">
                             <input type="hidden" name="cantidad" value="1">
@@ -999,7 +999,7 @@
     <div class="mobile-action-bar">
         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
             <span class="mobile-price">Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}</span>
-            <form action="{{ route('shop.agregar') }}" method="POST" style="flex: 1;">
+            <form action="{{ route('cart.agregar') }}" method="POST" style="flex: 1;">
                 @csrf
                 <input type="hidden" name="producto_id" value="{{ $producto->id }}">
                 <input type="hidden" name="cantidad" value="1">

@@ -126,7 +126,7 @@
             </a>
 
             {{-- Carrito visible siempre en móvil --}}
-            <a class="nav-link position-relative d-lg-none me-2" href="{{ route('shop.index') }}" title="Ver Carrito">
+            <a class="nav-link position-relative d-lg-none me-2" href="{{ route('cart.index') }}" title="Ver Carrito">
                 <i class="fas fa-shopping-cart" style="font-size: 1.3rem;"></i>
                 @if(session('carrito') && count(session('carrito')) > 0)
                     @php $count = collect(session('carrito'))->sum('cantidad'); @endphp
@@ -148,7 +148,7 @@
 
                     {{-- Carrito (solo desktop, en móvil está fuera del menú) --}}
                     <li class="nav-item d-none d-lg-block">
-                        <a class="nav-link position-relative" href="{{ route('shop.index') }}" title="Ver Carrito">
+                        <a class="nav-link position-relative" href="{{ route('cart.index') }}" title="Ver Carrito">
                             <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
                             @if(session('carrito') && count(session('carrito')) > 0)
                                 @php $count = collect(session('carrito'))->sum('cantidad'); @endphp

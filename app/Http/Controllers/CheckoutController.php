@@ -19,7 +19,7 @@ class CheckoutController extends Controller
         $carrito = session()->get('carrito', []);
 
         if (empty($carrito)) {
-            return redirect()->route('shop.index')->with('error', 'Tu carrito está vacío');
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío');
         }
 
         // Calcular totales
@@ -70,7 +70,7 @@ class CheckoutController extends Controller
         $carrito = session()->get('carrito', []);
 
         if (empty($carrito)) {
-            return redirect()->route('shop.index')->with('error', 'Tu carrito está vacío');
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío');
         }
 
         // Iniciar transacción
@@ -129,7 +129,7 @@ class CheckoutController extends Controller
             session()->forget('carrito');
 
             // Redirigir a confirmación
-            return redirect()->route('shop.checkout.confirmacion', $pedido->id)
+            return redirect()->route('cart.checkout.confirmacion', $pedido->id)
                 ->with('success', '¡Pedido realizado con éxito!');
 
         } catch (\Exception $e) {

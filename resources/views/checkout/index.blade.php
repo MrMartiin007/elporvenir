@@ -50,7 +50,7 @@
                     <div class="card-body">
                         <h5 class="card-title mb-4"><i class="fas fa-user me-2"></i>Tus Datos</h5>
 
-                        <form id="checkout-form" action="{{ route('shop.checkout.procesar') }}" method="POST">
+                        <form id="checkout-form" action="{{ route('cart.checkout.procesar') }}" method="POST">
                             @csrf
                             <input type="hidden" name="g-recaptcha-response" id="recaptcha-token">
 
@@ -147,7 +147,7 @@
                                 <button type="submit" class="btn btn-theme py-3">
                                     <i class="fas fa-paper-plane me-2"></i>Confirmar Pedido
                                 </button>
-                                <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Volver al Carrito
                                 </a>
                             </div>
@@ -208,7 +208,7 @@
             municipioSelect.innerHTML = '<option value="">Cargando municipios...</option>';
 
             // Cargar municipios vía AJAX
-            fetch(`/shop/checkout/municipios/${departamentoId}`)
+            fetch(`/cart/checkout/municipios/${departamentoId}`)
                 .then(response => response.json())
                 .then(data => {
                     let options = '<option value="">Selecciona un municipio</option>';

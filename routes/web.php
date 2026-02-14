@@ -26,7 +26,7 @@ Route::get('/producto/{id}', [App\Http\Controllers\ShopController::class, 'showP
 Route::get('/contacto', [App\Http\Controllers\ShopController::class, 'contact'])->name('contact');
 
 // Rutas del carrito/shop (públicas - no requieren autenticación)
-Route::prefix('shop')->name('shop.')->group(function () {
+Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CarritoController::class, 'index'])->name('index');
     Route::post('/agregar', [CarritoController::class, 'agregar'])->name('agregar');
     Route::patch('/actualizar', [CarritoController::class, 'actualizar'])->name('actualizar');
