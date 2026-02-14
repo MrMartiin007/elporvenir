@@ -226,7 +226,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="{{ $config['icon'] }}"></path>
                             </svg>
-                            <div class="text-2xl font-bold text-{{ $config['color'] }}-700">{{ $cantidad }}</div>
+                            <div class="text-2xl font-bold text-{{ $config['color'] }}-700">
+                                {{ number_format($cantidad, 0) }}</div>
                             <div class="text-xs font-medium text-{{ $config['color'] }}-600 mb-1">{{ $config['label'] }}
                             </div>
                             <div class="text-xs text-gray-500">Q{{ number_format($monto, 2) }}</div>

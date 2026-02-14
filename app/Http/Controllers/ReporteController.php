@@ -224,7 +224,7 @@ class ReporteController extends Controller
         }
 
         $pedidosPorEstado = $queryPedidosEstado
-            ->selectRaw('estado, COUNT(*) as total, SUM(total) as monto')
+            ->selectRaw('estado, COUNT(*) as total, SUM(total - IFNULL(envio, 0)) as monto')
             ->groupBy('estado')
             ->get()
             ->keyBy('estado');
