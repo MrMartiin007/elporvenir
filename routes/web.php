@@ -22,7 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\ShopController::class, 'shop'])->name('home');
-Route::get('/producto/{id}', [App\Http\Controllers\ShopController::class, 'showProduct'])->name('producto.show');
+Route::get('/producto/{hash}-{slug?}', [App\Http\Controllers\ShopController::class, 'showProduct'])
+    ->name('producto.show');
 Route::get('/contacto', [App\Http\Controllers\ShopController::class, 'contact'])->name('contact');
 
 // Rutas del carrito/shop (públicas - no requieren autenticación)

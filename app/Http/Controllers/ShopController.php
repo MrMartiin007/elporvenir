@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use App\Models\Marca;
+use App\Helpers\IdObfuscator;
 use Carbon\Carbon;
 
 use App\Models\Factura;
@@ -72,8 +73,14 @@ class ShopController extends Controller
         return view('shop', compact('productos', 'marcas', 'search', 'marcaId', 'sort', 'carritoCount'));
     }
 
-    public function showProduct($id)
+    public function showProduct($hash, $slug = null)
     {
+        $id = IdObfuscator::decode($hash);
+
+        if (!$id) {
+            abort(404);
+        }
+
         $producto = Producto::with(['marca', 'ultimaEntrada', 'entradas'])->findOrFail($id);
 
         // Productos relacionados (misma marca, excluyendo el actual)

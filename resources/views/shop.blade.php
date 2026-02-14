@@ -623,7 +623,8 @@
                                     <link itemprop="availability"
                                         href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
 
-                                    <a href="{{ route('producto.show', $producto->id) }}" class="card-img-wrapper d-block">
+                                    <a href="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
+                                        class="card-img-wrapper d-block">
                                         @if($producto->foto_producto)
                                             <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
                                                 alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
@@ -640,8 +641,8 @@
                                         <div>
                                             <span
                                                 class="category-badge">{{ $producto->marca->nombre_marca ?? 'General' }}</span>
-                                            <a href="{{ route('producto.show', $producto->id) }}" class="product-title"
-                                                itemprop="url">{{ $producto->detalle_producto }}</a>
+                                            <a href="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
+                                                class="product-title" itemprop="url">{{ $producto->detalle_producto }}</a>
                                             <div class="d-flex justify-content-center align-items-center mt-3">
                                                 @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
                                                     <span class="product-price" itemprop="offers" itemscope

@@ -8,7 +8,7 @@
         description="Compra {{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'las mejores marcas' }} en Beauty Center El Porvenir, Puerto Barrios. {{ $producto->ultimaEntrada ? 'Precio: Q. ' . number_format($producto->ultimaEntrada->precio_venta, 2) : '' }} ¡Envío a toda Guatemala!"
         keywords="{{ $producto->detalle_producto }}, {{ $producto->marca->nombre_marca ?? '' }}, cosméticos, belleza, Puerto Barrios, Guatemala"
         :image="$producto->foto_producto ? asset('storage/' . $producto->foto_producto) : asset('logo.jpg')"
-        url="{{ route('producto.show', $producto->id) }}" type="product" />
+        url="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}" type="product" />
 
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
             "offers": {
                 "@type": "Offer",
-                "url": "{{ route('producto.show', $producto->id) }}",
+                "url": "{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}",
                 "priceCurrency": "GTQ",
                 "price": "{{ $producto->ultimaEntrada->precio_venta }}",
                 "availability": "https://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}",
@@ -45,7 +45,7 @@
                 }
             },
         @endif
-        "url": "{{ route('producto.show', $producto->id) }}"
+        "url": "{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
     }
     </script>
 
@@ -938,7 +938,8 @@
                 <div class="row row-cols-2 row-cols-md-4 g-3">
                     @foreach($relacionados as $rel)
                         <div class="col">
-                            <a href="{{ route('producto.show', $rel->id) }}" class="card card-product text-decoration-none">
+                            <a href="{{ route('producto.show', ['hash' => $rel->hash_id, 'slug' => $rel->slug]) }}"
+                                class="card card-product text-decoration-none">
                                 <div class="card-img-wrapper">
                                     @if($rel->foto_producto)
                                         <img src="{{ asset('storage/' . $rel->foto_producto) }}" class="card-img-top"
