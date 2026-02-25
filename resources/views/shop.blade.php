@@ -632,6 +632,10 @@
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
+                                        @if($producto->oferta)
+                                            <span class="position-absolute top-0 start-0 badge bg-danger text-white m-2"
+                                                style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🌟 OFERTA</span>
+                                        @endif
                                         @if($producto->stock < 5)
                                             <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">¡Pocas
                                                 unidades!</span>

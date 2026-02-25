@@ -30,7 +30,7 @@ class Producto extends Model
      *
      * @var array
      */
-    protected $fillable = ['codigo_producto', 'detalle_producto', 'foto_producto', 'marcas_id'];
+    protected $fillable = ['codigo_producto', 'detalle_producto', 'foto_producto', 'marcas_id', 'oferta'];
 
 
     public function marca()

@@ -859,6 +859,12 @@
                     </a>
                 @endif
 
+                @if($producto->oferta)
+                    <span class="badge bg-danger text-white mb-2 py-1 px-3 mt-1"
+                        style="font-size: 0.85rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 50px;">🌟 OFERTA
+                        DESTACADA</span>
+                @endif
+
                 <h1 class="product-title">{{ $producto->detalle_producto }}</h1>
 
                 @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)

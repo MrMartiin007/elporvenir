@@ -92,6 +92,7 @@
 
                                         <td>
                                             <div class="btn-group" role="group">
+
                                                 <a href="{{ route('productos.show', $producto->id) }}" class="btn btn-sm"
                                                     style="color: #d63384; border-color: #d63384;" title="Ver">
                                                     <i class="fa fa-eye"></i>
@@ -110,6 +111,12 @@
                                                         <i class="fa fa-trash"></i>
                                                     </button>
                                                 </form>
+                                                @if($producto->oferta)
+                                                    <a href="#" style="color: #ffc107; border-color: #ffc107;"
+                                                        title="Producto en Oferta" disabled>
+                                                        <i class="fa fa-sun"></i>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

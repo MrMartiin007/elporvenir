@@ -45,6 +45,7 @@ class ShopController extends Controller
                     $join->on('entradas.productos_id', '=', 'productos.id')
                         ->whereRaw('entradas.id = (select id from entradas where entradas.productos_id = productos.id order by created_at desc limit 1)');
                 })
+                    ->orderByDesc('productos.oferta')
                     ->orderBy('entradas.precio_venta', 'asc')
                     ->select('productos.*');
                 break;
@@ -53,14 +54,15 @@ class ShopController extends Controller
                     $join->on('entradas.productos_id', '=', 'productos.id')
                         ->whereRaw('entradas.id = (select id from entradas where entradas.productos_id = productos.id order by created_at desc limit 1)');
                 })
+                    ->orderByDesc('productos.oferta')
                     ->orderBy('entradas.precio_venta', 'desc')
                     ->select('productos.*');
                 break;
             case 'oldest':
-                $query->orderBy('created_at', 'asc');
+                $query->orderByDesc('oferta')->orderBy('updated_at', 'asc');
                 break;
             default: // newest
-                $query->orderBy('created_at', 'desc');
+                $query->orderByDesc('oferta')->orderBy('updated_at', 'desc');
                 break;
         }
 

@@ -117,6 +117,20 @@
                                         <x-input-error :messages="$errors->get('codigo_producto')" class="mt-2" />
                                     </div>
                                 </div>
+                                
+                                <!-- Opciones Extras (Oferta) -->
+                                <div class="mt-4 p-4 rounded-lg bg-light border">
+                                    <div class="form-check form-switch d-flex align-items-center">
+                                        <input class="form-check-input mb-0 me-3" type="checkbox" role="switch" id="oferta" name="oferta" value="1"
+                                            {{ old('oferta') ? 'checked' : '' }} style="width: 3em; height: 1.5em; cursor: pointer;">
+                                        <label class="form-check-label mb-0 font-weight-bold ml-3" for="oferta" style="font-size: 1.1rem; color: #212529; cursor: pointer;">
+                                            🌟 Marcar como Producto en Oferta / Destacado
+                                        </label>
+                                    </div>
+                                    <p class="mt-2 text-muted" style="margin-left: 3.8rem; font-size: 0.9rem;">
+                                        Si está marcado, este producto aparecerá en primera fila en el catálogo público con una etiqueta de "Oferta".
+                                    </p>
+                                </div>
                             </div>
                         </div>
 

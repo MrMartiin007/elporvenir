@@ -30,7 +30,7 @@ class ProductoController extends Controller
                         $q->where('nombre_marca', 'like', "%{$buscar}%");
                     });
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->paginate(10)
             ->appends(['buscar' => $buscar]); // mantiene el filtro en la paginación
 
@@ -64,6 +64,7 @@ class ProductoController extends Controller
     {
 
         $data = $request->validated();
+        $data['oferta'] = $request->has('oferta') ? 1 : 0;
 
         // Procesar la imagen si existe
         if ($request->hasFile('foto_producto')) {
@@ -123,6 +124,7 @@ class ProductoController extends Controller
             'detalle_producto' => 'required',
             'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'marcas_id' => 'required|exists:marcas,id',
+            'oferta' => 'boolean',
         ]);
 
         // Actualizar datos básicos
@@ -130,6 +132,7 @@ class ProductoController extends Controller
             'codigo_producto' => $request->codigo_producto,
             'detalle_producto' => $request->detalle_producto,
             'marcas_id' => $request->marcas_id,
+            'oferta' => $request->has('oferta') ? 1 : 0,
         ]);
 
         // Procesar la imagen si se subió una nueva
