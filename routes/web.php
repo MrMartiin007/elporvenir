@@ -22,6 +22,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\ShopController::class, 'shop'])->name('home');
+
+// Rutas Legacy (antiguas) para SEO (Google Search Console 404s)
+Route::get('/producto/{id}', function ($id) {
+    if (is_numeric($id)) {
+        $producto = \App\Models\Producto::find($id);
+        if ($producto) {
+            $hash = \App\Helpers\IdObfuscator::encode($producto->id);
+            $newSlug = \Illuminate\Support\Str::slug($producto->detalle_producto);
+            return redirect()->route('producto.show', ['hash' => $hash, 'slug' => $newSlug], 301);
+        }
+    }
+    abort(404);
+})->where('id', '[0-9]+');
+
 Route::get('/producto/{hash}-{slug?}', [App\Http\Controllers\ShopController::class, 'showProduct'])
     ->name('producto.show');
 Route::get('/contacto', [App\Http\Controllers\ShopController::class, 'contact'])->name('contact');

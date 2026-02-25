@@ -67,6 +67,11 @@ class ShopController extends Controller
         }
 
         $productos = $query->paginate(12);  // 12 products: 6 rows of 2 (mobile) or 4 rows of 3 (desktop)
+
+        // Fix SEO Soft 404s: If the requested page is beyond the last page
+        if ($productos->isEmpty() && $productos->currentPage() > 1) {
+            abort(404);
+        }
         $marcas = Marca::has('productos')->withCount('productos')->get();
 
         // Contador del carrito para el navbar
@@ -79,11 +84,24 @@ class ShopController extends Controller
     {
         $id = IdObfuscator::decode($hash);
 
-        if (!$id) {
-            abort(404);
+        $producto = null;
+        if ($id) {
+            $producto = Producto::with(['marca', 'ultimaEntrada', 'entradas'])->find($id);
         }
 
-        $producto = Producto::with(['marca', 'ultimaEntrada', 'entradas'])->findOrFail($id);
+        // Fallback for legacy URLs (e.g. /producto/2814) that somehow made it here
+        if (!$producto && is_numeric($hash)) {
+            $legacyProduct = Producto::find((int) $hash);
+            if ($legacyProduct) {
+                $newHash = IdObfuscator::encode($legacyProduct->id);
+                $newSlug = \Illuminate\Support\Str::slug($legacyProduct->detalle_producto);
+                return redirect()->route('producto.show', ['hash' => $newHash, 'slug' => $newSlug], 301);
+            }
+        }
+
+        if (!$producto) {
+            abort(404);
+        }
 
         // Productos relacionados (misma marca, excluyendo el actual)
         $relacionados = collect();
