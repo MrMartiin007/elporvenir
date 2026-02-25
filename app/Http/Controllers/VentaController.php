@@ -6,6 +6,7 @@ use App\Models\CodigoNoEncontrado;
 use App\Models\DetalleVenta;
 use App\Models\Producto;
 use App\Models\Venta;
+use App\Models\ProductoEliminadoVenta;
 use App\Http\Requests\VentaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,9 +24,10 @@ class VentaController extends Controller
                 ->route('ventas.create', $ventaActiva->id);
         }
 
-        // Si es superadmin, mostrar todas las ventas con relación de usuario
+        // Si es superadmin, mostrar todas las ventas con relación de usuario y contar cuántos productos se eliminaron
         if (auth()->user()->hasRole('superadmin')) {
             $ventas = Venta::with('user')
+                ->withCount('productosEliminados')
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else {
@@ -49,6 +51,14 @@ class VentaController extends Controller
         if (!$venta) {
             return redirect()->route('ventas.index')
                 ->with('error', 'No hay una venta activa.');
+        }
+
+        $ventasActivasOtrosUsuarios = collect();
+        if (auth()->user()->hasRole('superadmin')) {
+            $ventasActivasOtrosUsuarios = Venta::with('user')
+                ->where('users_id', '!=', auth()->id())
+                ->where('estado', 1)
+                ->get();
         }
 
         if ($request->filled('scan')) {
@@ -108,7 +118,7 @@ class VentaController extends Controller
         // Cargar códigos no encontrados para mostrar en la vista
         $venta->load('codigosNoEncontrados');
 
-        return view('venta.create', compact('venta', 'productosFiltrados'));
+        return view('venta.create', compact('venta', 'productosFiltrados', 'ventasActivasOtrosUsuarios'));
     }
 
 
@@ -166,7 +176,7 @@ class VentaController extends Controller
     public function show($id)
     {
         // Buscar la venta con sus detalles y productos relacionados
-        $venta = Venta::with('detalles.producto')->findOrFail($id);
+        $venta = Venta::with(['detalles.producto', 'codigosNoEncontrados'])->findOrFail($id);
 
         return view('venta.show', compact('venta'));
     }
@@ -241,6 +251,16 @@ class VentaController extends Controller
         $venta = $detalle->venta;
         $producto = $detalle->producto;
 
+        // --- INICIO: REGISTRO DE ELIMINACIÓN ---
+        ProductoEliminadoVenta::create([
+            'ventas_id' => $venta->id,
+            'productos_id' => $producto->id,
+            'users_id' => auth()->id(), // Quién lo eliminó (cajero activo)
+            'cantidad' => $detalle->cantidad,
+            'precio_unitario' => $detalle->precio_unitario,
+            'importe_total' => $detalle->cantidad * $detalle->precio_unitario
+        ]);
+        // --- FIN: REGISTRO DE ELIMINACIÓN ---
 
         $producto->stock += $detalle->cantidad;
         $producto->save();
@@ -311,6 +331,22 @@ class VentaController extends Controller
 
         return redirect()->route('ventas.create')
             ->with('success', 'Código eliminado de la lista.');
+    }
+
+    public function verEliminados(Venta $venta)
+    {
+        // Solo permitir si el usuario es superadmin
+        if (!auth()->user()->hasRole('superadmin')) {
+            abort(403, 'No tienes permiso para ver esta sección.');
+        }
+
+        // Cargar los productos eliminados con sus relaciones
+        $eliminados = \App\Models\ProductoEliminadoVenta::with(['producto', 'user'])
+            ->where('ventas_id', $venta->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('venta.eliminados', compact('venta', 'eliminados'));
     }
 }
 

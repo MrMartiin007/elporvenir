@@ -51,6 +51,11 @@ class Venta extends Model
         return $this->hasMany(\App\Models\CodigoNoEncontrado::class, 'ventas_id');
     }
 
+    public function productosEliminados()
+    {
+        return $this->hasMany(\App\Models\ProductoEliminadoVenta::class, 'ventas_id');
+    }
+
 
 
 }

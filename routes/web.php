@@ -123,6 +123,7 @@ Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ven
 Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
 Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
 Route::delete('/ventas/codigo/{id}', [VentaController::class, 'eliminarCodigoNoEncontrado'])->name('ventas.eliminar-codigo');
+Route::get('/ventas/{venta}/eliminados', [VentaController::class, 'verEliminados'])->name('ventas.eliminados');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');

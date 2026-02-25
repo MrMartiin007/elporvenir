@@ -82,6 +82,15 @@
                                                 </form>
                                             @endif
 
+                                            @role('superadmin')
+                                            @if($venta->estado == 0 && $venta->productos_eliminados_count > 0)
+                                                <a href="{{ route('ventas.eliminados', $venta->id) }}"
+                                                    class="btn btn-sm btn-danger ms-1" title="Ver Productos Eliminados">
+                                                    <i class="fas fa-trash-restore"></i>
+                                                </a>
+                                            @endif
+                                            @endrole
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -125,7 +134,7 @@
         });
     });
     // SweetAlert2 para reabrir venta
-    $(document).on('submit', '.form-reopen', function(e) {
+    $(document).on('submit', '.form-reopen', function (e) {
         e.preventDefault();
         let form = this;
         Swal.fire({

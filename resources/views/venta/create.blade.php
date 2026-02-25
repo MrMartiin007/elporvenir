@@ -279,8 +279,22 @@
                 <!-- 📋 Resumen lateral -->
                 <div class="col-md-3">
                     <div class="card mb-3">
-                        <div class="card-header  text-dark">
+                        <div class="card-header text-dark d-flex justify-content-between align-items-center">
                             <strong>Resumen de la Venta</strong>
+                            @role('superadmin')
+                                @if(isset($ventasActivasOtrosUsuarios) && $ventasActivasOtrosUsuarios->count() > 0)
+                                    <div class="d-flex gap-1" title="Usuarios con ventas activas">
+                                        @foreach($ventasActivasOtrosUsuarios as $vActiva)
+                                            <a href="{{ route('ventas.show', $vActiva->id) }}" target="_blank"
+                                                class="rounded-circle bg-primary opacity-75 shadow-sm" 
+                                                style="width: 10px; height: 10px; display: inline-block; transition: all 0.2s;"
+                                                onmouseover="this.style.transform='scale(1.3)'; this.style.opacity='1';"
+                                                onmouseout="this.style.transform='scale(1)'; this.style.opacity='0.75';"
+                                                title="Revisar carrito de {{ $vActiva->user->name }}"></a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endrole
                         </div>
                         <div class="card-body">
                             <p><strong>Fecha:</strong> {{ $venta->fecha_venta }}</p>
