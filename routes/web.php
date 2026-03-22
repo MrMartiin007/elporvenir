@@ -98,6 +98,9 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         // Reportes Module
         Route::resource('reportes', App\Http\Controllers\ReporteController::class)->only(['index']);
 
+        // Inventario Module
+        Route::get('/inventario', [App\Http\Controllers\InventarioController::class, 'index'])->name('inventario.index');
+
         // Calendar Routes
         Route::get('/calendario', [App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');
         Route::patch('/cheques/{id}/confirmar', [App\Http\Controllers\CalendarioController::class, 'confirmarCheque'])->name('cheques.confirmar');

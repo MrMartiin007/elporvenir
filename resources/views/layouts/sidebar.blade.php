@@ -150,6 +150,16 @@
                 <span class="ms-2 sidebar-text">Reporte Venta</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route('inventario.index') }}"
+                class="nav-link {{ request()->routeIs('inventario.*') ? 'active' : '' }}" title="Inventario"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-warehouse fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Inventario</span>
+            </a>
+        </li>
 
         @endrole
 
