@@ -34,7 +34,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($auditorias as $auditoria)
+                        @foreach($auditorias as $auditoria)
                             <tr class="align-middle text-center">
                                 <td>{{ $auditoria->id }}</td>
                                 <td>{{ \Carbon\Carbon::parse($auditoria->fecha_auditoria)->format('d/m/Y H:i') }}</td>
@@ -58,11 +58,7 @@
                                     @endif
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">No hay auditorías registradas aún.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>

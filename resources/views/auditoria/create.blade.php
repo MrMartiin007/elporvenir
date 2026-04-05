@@ -168,7 +168,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($auditoria->detalles as $detalle)
+                        @foreach($auditoria->detalles as $detalle)
                             <tr class="align-middle text-center">
                                 <td>{{ $detalle->created_at->format('H:i') }}</td>
                                 <td class="text-start">
@@ -187,12 +187,7 @@
                                 <td>{{ number_format($detalle->precio_venta_anterior, 2) }}</td>
                                 <td>{{ number_format($detalle->precio_venta_nuevo, 2) }}</td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center text-muted">Aún no se ha auditado ningún producto en esta
-                                    sesión.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>

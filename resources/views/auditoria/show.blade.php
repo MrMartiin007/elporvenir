@@ -16,7 +16,8 @@
             <div class="row fw-bold text-center">
                 <div class="col-md-3">
                     <span class="text-muted d-block text-uppercase text-xs">Fecha</span>
-                    <span class="fs-5">{{ \Carbon\Carbon::parse($auditoria->fecha_auditoria)->format('d/m/Y H:i') }}</span>
+                    <span
+                        class="fs-5">{{ \Carbon\Carbon::parse($auditoria->fecha_auditoria)->format('d/m/Y H:i') }}</span>
                 </div>
                 <div class="col-md-3">
                     <span class="text-muted d-block text-uppercase text-xs">Auditor</span>
@@ -28,7 +29,7 @@
                 </div>
                 <div class="col-md-3">
                     <span class="text-muted d-block text-uppercase text-xs">Total Auditado</span>
-                    <span class="fs-5 text-success">$ {{ number_format($auditoria->total_auditado, 2) }}</span>
+                    <span class="fs-5 text-success">Q {{ number_format($auditoria->total_auditado, 2) }}</span>
                 </div>
             </div>
         </div>
@@ -50,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($auditoria->detalles as $detalle)
+                        @foreach($auditoria->detalles as $detalle)
                             <tr class="align-middle text-center">
                                 <td>{{ $detalle->created_at->format('d/m/Y H:i:s') }}</td>
                                 <td class="text-start">
@@ -59,7 +60,8 @@
                                 </td>
                                 <td>{{ $detalle->stock_anterior }}</td>
                                 <td>
-                                    <span class="badge {{ $detalle->stock_anterior != $detalle->stock_nuevo ? 'bg-success' : 'bg-secondary' }}">
+                                    <span
+                                        class="badge {{ $detalle->stock_anterior != $detalle->stock_nuevo ? 'bg-success' : 'bg-secondary' }}">
                                         {{ $detalle->stock_nuevo }}
                                     </span>
                                 </td>
@@ -68,11 +70,7 @@
                                 <td>{{ number_format($detalle->precio_venta_anterior, 2) }}</td>
                                 <td>{{ number_format($detalle->precio_venta_nuevo, 2) }}</td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center text-muted">No hay registros para mostrar.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -80,7 +78,7 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             if ($.fn.DataTable.isDataTable('#tablaDetalleAuditorias')) {
                 $('#tablaDetalleAuditorias').DataTable().destroy();
             }
@@ -88,7 +86,7 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
                 },
-                "order": [[ 0, "desc" ]] // sort by hora desc
+                "order": [[0, "desc"]] // sort by hora desc
             });
         });
     </script>
