@@ -40,7 +40,7 @@
                                 <td>{{ \Carbon\Carbon::parse($auditoria->fecha_auditoria)->format('d/m/Y H:i') }}</td>
                                 <td>{{ $auditoria->user?->name ?? '—' }}</td>
                                 <td><span class="badge bg-secondary">{{ $auditoria->cantidad_productos }}</span></td>
-                                <td>$ {{ number_format($auditoria->total_auditado, 2) }}</td>
+                                <td>Q {{ number_format($auditoria->total_auditado, 2) }}</td>
                                 <td>
                                     @if($auditoria->estado == 1)
                                         <span class="badge bg-success">En progreso</span>
@@ -50,9 +50,11 @@
                                 </td>
                                 <td>
                                     @if($auditoria->estado == 1 && $auditoria->users_id == auth()->id())
-                                        <a href="{{ route('auditoria.create') }}" class="btn btn-sm btn-warning">Continuar Auditoría</a>
+                                        <a href="{{ route('auditoria.create') }}" class="btn btn-sm btn-warning">Continuar
+                                            Auditoría</a>
                                     @else
-                                        <a href="{{ route('auditoria.show', $auditoria->id) }}" class="btn btn-sm btn-info text-white">Ver Detalles</a>
+                                        <a href="{{ route('auditoria.show', $auditoria->id) }}"
+                                            class="btn btn-sm btn-info text-white">Ver Detalles</a>
                                     @endif
                                 </td>
                             </tr>
@@ -68,7 +70,7 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             if ($.fn.DataTable.isDataTable('#tablaAuditorias')) {
                 $('#tablaAuditorias').DataTable().destroy();
             }
@@ -76,7 +78,7 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
                 },
-                "order": [[ 0, "desc" ]]
+                "order": [[0, "desc"]]
             });
         });
     </script>
