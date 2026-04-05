@@ -38,12 +38,10 @@
                         <select name="anio"
                             class="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm"
                             onchange="this.form.submit()">
+                            <option value="todos" {{ $anio === 'todos' ? 'selected' : '' }}>Todos los años</option>
                             @foreach($aniosDisponibles as $a)
                                 <option value="{{ $a }}" {{ $anio == $a ? 'selected' : '' }}>{{ $a }}</option>
                             @endforeach
-                            @if($aniosDisponibles->isEmpty())
-                                <option value="{{ date('Y') }}">{{ date('Y') }}</option>
-                            @endif
                         </select>
 
                         {{-- Mes --}}
@@ -64,6 +62,11 @@
                             <option value="11" {{ $mes == '11' ? 'selected' : '' }}>Noviembre</option>
                             <option value="12" {{ $mes == '12' ? 'selected' : '' }}>Diciembre</option>
                         </select>
+
+                        <button type="submit" formaction="{{ route('inventario.exportar') }}" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm ml-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Descargar Excel
+                        </button>
                     </form>
                 </div>
             </div>
@@ -132,30 +135,6 @@
                         {{ number_format($cantidadEnCero) }}
                     </div>
                     <div class="mt-2 text-sm text-gray-500">Productos con stock = 0</div>
-                </div>
-            </div>
-
-            {{-- ─────────────────────────────────────────────────────────────
-                 Gráfica General: Valor depositado en Inventario en el tiempo
-            ───────────────────────────────────────────────────────────────── --}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">
-                            @if($mes === 'todos')
-                                Valor Total del Inventario — Año {{ $anio }}
-                            @else
-                                Valor Total del Inventario — {{ $mesesNombre[(int)$mes] ?? '' }} {{ $anio }}
-                            @endif
-                        </h3>
-                        <p class="text-sm text-gray-500">Evolución real del valor del stock descontando ventas y sumando entradas</p>
-                    </div>
-                    <span class="text-xs text-gray-400 border border-gray-200 rounded-full px-3 py-1">
-                        Precio Costo (Q)
-                    </span>
-                </div>
-                <div class="relative h-80 w-full">
-                    <canvas id="costoChart"></canvas>
                 </div>
             </div>
 
@@ -317,74 +296,6 @@
                 });
             }
 
-            // ── Chart: Valor General (Line Chart) ────────────────────────────
-            const costoCtxEl = document.getElementById('costoChart');
-            if (costoCtxEl) {
-                const costoCtx    = costoCtxEl.getContext('2d');
-                const costoData   = @json(array_values($datosGraficoCosto));
-                const costoLabels = @json($labelsGrafico);
-
-                let gradientCosto = costoCtx.createLinearGradient(0, 0, 0, 350);
-                gradientCosto.addColorStop(0, 'rgba(16, 185, 129, 0.25)'); // Emerald color transparent
-                gradientCosto.addColorStop(1, 'rgba(16, 185, 129, 0)');
-
-                new Chart(costoCtx, {
-                    type: 'line',
-                    data: {
-                        labels: costoLabels,
-                        datasets: [{
-                            label: 'Valor del Inventario (Q)',
-                            data: costoData,
-                            borderColor: '#10B981', // Emerald-500
-                            backgroundColor: gradientCosto,
-                            borderWidth: 3,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#10B981',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(17, 24, 39, 0.9)', // Gray-900
-                                titleFont: { family: "'Inter', sans-serif", size: 13 },
-                                bodyFont: { family: "'Inter', sans-serif", size: 14, weight: 'bold' },
-                                padding: 12,
-                                cornerRadius: 8,
-                                callbacks: {
-                                    label: function (ctx) {
-                                        return 'Q' + new Intl.NumberFormat('es-GT').format(ctx.parsed.y);
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: '#F3F4F6', drawBorder: false },
-                                ticks: {
-                                    callback: function (v) { return 'Q' + new Intl.NumberFormat('es-GT').format(v); },
-                                    font: { family: "'Inter', sans-serif", color: '#6B7280' }
-                                }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { font: { family: "'Inter', sans-serif", color: '#6B7280' } }
-                            }
-                        },
-                        interaction: { intersect: false, mode: 'index' }
-                    }
-                });
-            }
         });
     </script>
 </x-app-layout>

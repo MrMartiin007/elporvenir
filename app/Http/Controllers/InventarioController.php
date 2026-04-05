@@ -12,11 +12,11 @@ class InventarioController extends Controller
 {
     public function index(Request $request)
     {
-        $anio = (int) $request->input('anio', Carbon::now()->year);
+        $anio = $request->input('anio', 'todos');
         $mes  = $request->input('mes', 'todos');
 
-        // ─── Años disponibles (basado en entradas) ───────────────────────────
-        $aniosDisponibles = Entrada::selectRaw('YEAR(fecha_ingreso) as anio')
+        // ─── Años disponibles (basado en updated_at) ──────────────────────────
+        $aniosDisponibles = Producto::selectRaw('YEAR(updated_at) as anio')
             ->distinct()
             ->orderByDesc('anio')
             ->pluck('anio')
@@ -27,14 +27,23 @@ class InventarioController extends Controller
             $aniosDisponibles = collect([Carbon::now()->year]);
         }
         
-        // Si el año consultado no está, incluirlo de todas formas en el dropdown
-        if (!$aniosDisponibles->contains($anio)) {
-            $aniosDisponibles->push($anio);
+        if ($anio !== 'todos' && !$aniosDisponibles->contains((int)$anio)) {
+            $aniosDisponibles->push((int)$anio);
             $aniosDisponibles = $aniosDisponibles->sortDesc()->values();
         }
 
-        // ─── Cargar todos los productos con relaciones ───────────────────────
-        $todosLosProductos = Producto::with(['ultimaEntrada', 'marca'])->get();
+        // ─── Cargar productos con relaciones filtrando por fecha ────────────
+        $query = Producto::with(['ultimaEntrada', 'marca']);
+        
+        if ($anio !== 'todos') {
+            $query->whereYear('updated_at', $anio);
+        }
+        
+        if ($mes !== 'todos') {
+            $query->whereMonth('updated_at', $mes);
+        }
+        
+        $todosLosProductos = $query->get();
 
         $costoPorProducto = [];
         foreach ($todosLosProductos as $p) {
@@ -60,126 +69,70 @@ class InventarioController extends Controller
             ->take(10)
             ->values();
 
-        // ─── Gráfica de Valor Histórico (Ingeniería Inversa) ────────────────
-        // Calculamos el valor del inventario en el tiempo revirtiendo los movimientos
-        // desde el stock actual exacto. 
-        $now = Carbon::now();
-        $startOfChart = ($mes === 'todos') 
-            ? Carbon::create($anio, 1, 1)->startOfDay()
-            : Carbon::create($anio, $mes, 1)->startOfDay();
-
-        // Limitar la fecha de inicio al momento actual si la consulta es futura
-        if ($startOfChart > $now) {
-            $startOfChart = clone $now; 
-        }
-
-        $entradasFuturas = Entrada::where('fecha_ingreso', '>=', $startOfChart)
-            ->where('fecha_ingreso', '<=', $now)
-            ->get(['productos_id', 'cantidad', 'fecha_ingreso']);
-
-        $ventasFuturas = DB::table('detalle_ventas')
-            ->join('ventas', 'detalle_ventas.ventas_id', '=', 'ventas.id')
-            ->where('ventas.fecha_venta', '>=', $startOfChart)
-            ->where('ventas.fecha_venta', '<=', $now)
-            ->select('detalle_ventas.productos_id', 'detalle_ventas.cantidad', 'ventas.fecha_venta')
-            ->get();
-
-        // Valor base (antes de aplicar los movimientos del período en la gráfica)
-        $valorAcumulado = $valorInventario;
-
-        foreach ($entradasFuturas as $e) {
-            $costo = $costoPorProducto[$e->productos_id] ?? 0;
-            // Para ir al pasado, restamos lo que entró después
-            $valorAcumulado -= ((int) $e->cantidad * $costo); 
-        }
-
-        foreach ($ventasFuturas as $v) {
-            $costo = $costoPorProducto[$v->productos_id] ?? 0;
-            // Para ir al pasado, sumamos lo que salió después
-            $valorAcumulado += ((int) $v->cantidad * $costo); 
-        }
-
-        // Construir la gráfica y sumar mes a mes (o día a día)
-        $datosGraficoCosto = [];
-
-        if ($mes === 'todos') {
-            for ($m = 1; $m <= 12; $m++) {
-                // Movimientos de ESTE mes
-                $entradasMes = $entradasFuturas->filter(function($e) use ($m, $anio) {
-                    $d = Carbon::parse($e->fecha_ingreso);
-                    return $d->month == $m && $d->year == $anio;
-                });
-                
-                $ventasMes = $ventasFuturas->filter(function($v) use ($m, $anio) {
-                    $d = Carbon::parse($v->fecha_venta);
-                    return $d->month == $m && $d->year == $anio;
-                });
-
-                // Avanzamos hacia adelante de nuevo, mes a mes
-                foreach ($entradasMes as $e) {
-                    $costo = $costoPorProducto[$e->productos_id] ?? 0;
-                    $valorAcumulado += ((int) $e->cantidad * $costo); // Entró -> Sube el stock
-                }
-                foreach ($ventasMes as $v) {
-                    $costo = $costoPorProducto[$v->productos_id] ?? 0;
-                    $valorAcumulado -= ((int) $v->cantidad * $costo); // Salió -> Baja el stock
-                }
-
-                $datosGraficoCosto[$m] = $valorAcumulado;
-            }
-        } else {
-            $diasEnMes = Carbon::createFromDate($anio, $mes)->daysInMonth;
-            for ($d = 1; $d <= $diasEnMes; $d++) {
-                // Movimientos de ESTE día
-                $entradasDia = $entradasFuturas->filter(function($e) use ($d, $mes, $anio) {
-                    $dt = Carbon::parse($e->fecha_ingreso);
-                    return $dt->day == $d && $dt->month == $mes && $dt->year == $anio;
-                });
-                
-                $ventasDia = $ventasFuturas->filter(function($v) use ($d, $mes, $anio) {
-                    $dt = Carbon::parse($v->fecha_venta);
-                    return $dt->day == $d && $dt->month == $mes && $dt->year == $anio;
-                });
-
-                // Avanzamos hacia adelante de nuevo, día a día
-                foreach ($entradasDia as $e) {
-                    $costo = $costoPorProducto[$e->productos_id] ?? 0;
-                    $valorAcumulado += ((int) $e->cantidad * $costo);
-                }
-                foreach ($ventasDia as $v) {
-                    $costo = $costoPorProducto[$v->productos_id] ?? 0;
-                    $valorAcumulado -= ((int) $v->cantidad * $costo);
-                }
-
-                $datosGraficoCosto[$d] = $valorAcumulado;
-            }
-        }
-
-        $mesesNombre = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo',  6 => 'Junio',   7 => 'Julio',  8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-        ];
-
-        if ($mes === 'todos') {
-            $labelsGrafico = array_values($mesesNombre);
-        } else {
-            $labelsGrafico = array_map(fn($d) => (string)$d, array_keys($datosGraficoCosto));
-        }
-
         return view('inventario.index', compact(
             'anio',
             'mes',
             'aniosDisponibles',
-            'mesesNombre',
             'totalProductos',
             'stockTotal',
             'valorInventario',
             'productosEnCero',
             'cantidadEnCero',
-            'topProductos',
-            'datosGraficoCosto',
-            'labelsGrafico'
+            'topProductos'
         ));
+    }
+
+    public function exportarExcel(Request $request)
+    {
+        $anio = $request->input('anio', 'todos');
+        $mes  = $request->input('mes', 'todos');
+
+        $query = Producto::with(['ultimaEntrada']);
+        
+        if ($anio !== 'todos') {
+            $query->whereYear('updated_at', $anio);
+        }
+        
+        if ($mes !== 'todos') {
+            $query->whereMonth('updated_at', $mes);
+        }
+        
+        $productos = $query->get();
+
+        $filename = "inventario_{$anio}_{$mes}.csv";
+        
+        $headers = [
+            "Content-type"        => "text/csv; charset=utf-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use($productos) {
+            $file = fopen('php://output', 'w');
+            
+            // BOM charset para Excel
+            fputs($file, "\xEF\xBB\xBF");
+            
+            fputcsv($file, ['Codigo Producto', 'Descripcion de Producto', 'Cantidad (Stock)', 'Precio Costo', 'Total'], ';');
+
+            foreach ($productos as $producto) {
+                $costo = (float) optional($producto->ultimaEntrada)->precio_costo;
+                $total = $producto->stock * $costo;
+                
+                fputcsv($file, [
+                    $producto->codigo_producto,
+                    $producto->detalle_producto,
+                    $producto->stock,
+                    number_format($costo, 2, '.', ''),
+                    number_format($total, 2, '.', '')
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

@@ -125,6 +125,7 @@ class ProductoController extends Controller
             'foto_producto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'marcas_id' => 'required|exists:marcas,id',
             'oferta' => 'boolean',
+            'stock' => 'required|integer|min:0',
         ]);
 
         // Actualizar datos básicos
@@ -133,6 +134,7 @@ class ProductoController extends Controller
             'detalle_producto' => $request->detalle_producto,
             'marcas_id' => $request->marcas_id,
             'oferta' => $request->has('oferta') ? 1 : 0,
+            'stock' => $request->stock,
         ]);
 
         // Procesar la imagen si se subió una nueva

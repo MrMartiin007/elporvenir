@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EntradaController;
@@ -100,6 +101,15 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 
         // Inventario Module
         Route::get('/inventario', [App\Http\Controllers\InventarioController::class, 'index'])->name('inventario.index');
+        Route::get('/inventario/exportar', [App\Http\Controllers\InventarioController::class, 'exportarExcel'])->name('inventario.exportar');
+
+        // Auditoria Module
+        Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+        Route::get('/auditoria/iniciar', [AuditoriaController::class, 'iniciarAuditoria'])->name('auditoria.iniciar');
+        Route::get('/auditoria/create', [AuditoriaController::class, 'create'])->name('auditoria.create');
+        Route::post('/auditoria', [AuditoriaController::class, 'store'])->name('auditoria.store');
+        Route::post('/auditoria/{auditoria}/cerrar', [AuditoriaController::class, 'cerrarAuditoria'])->name('auditoria.cerrar');
+        Route::get('/auditoria/{id}', [AuditoriaController::class, 'show'])->name('auditoria.show');
 
         // Calendar Routes
         Route::get('/calendario', [App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');

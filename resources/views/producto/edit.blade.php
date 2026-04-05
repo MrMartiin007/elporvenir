@@ -94,6 +94,13 @@
                                             name="codigo_producto" :value="old('codigo_producto', $producto->codigo_producto)" required />
                                         <x-input-error :messages="$errors->get('codigo_producto')" class="mt-2" />
                                     </div>
+                                    <div class="flex-1 min-w-0">
+                                        <x-input-label for="stock" :value="__('Stock (unidades)')" />
+                                        <x-text-input id="stock" class="block mt-1 w-full" type="number" min="0"
+                                            name="stock" :value="old('stock', $producto->stock)" required />
+                                        <x-input-error :messages="$errors->get('stock')" class="mt-2" />
+                                        <p class="mt-1 text-xs text-gray-500">⚠️ Editar directamente el stock puede afectar el inventario.</p>
+                                    </div>
                                 </div>
 
                                 <!-- Opciones Extras (Oferta) -->
