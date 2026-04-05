@@ -99,40 +99,46 @@ class InventarioController extends Controller
         
         $productos = $query->get();
 
-        $filename = "inventario_{$anio}_{$mes}.csv";
+        $filename = "inventario_{$anio}_{$mes}.xls";
         
         $headers = [
-            "Content-type"        => "text/csv; charset=utf-8",
+            "Content-type"        => "application/vnd.ms-excel; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$filename",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
-        $callback = function() use($productos) {
-            $file = fopen('php://output', 'w');
+        // Usamos una tabla HTML que Excel puede leer nativamente para conservar el "estilo bonito" (colores, negritas)
+        $html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+        $html .= '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>';
+        $html .= '<body>';
+        $html .= '<table border="1" cellpadding="5" cellspacing="0">';
+        // Cabeceras con estilo (Color verde esmeralda para combinar con el diseño)
+        $html .= '<thead><tr>';
+        $html .= '<th style="background-color: #10B981; color: white; font-weight: bold; width: 120px;">Código Producto</th>';
+        $html .= '<th style="background-color: #10B981; color: white; font-weight: bold; width: 350px;">Descripción de Producto</th>';
+        $html .= '<th style="background-color: #10B981; color: white; font-weight: bold; width: 120px;">Cantidad (Stock)</th>';
+        $html .= '<th style="background-color: #10B981; color: white; font-weight: bold; width: 120px;">Precio Costo</th>';
+        $html .= '<th style="background-color: #10B981; color: white; font-weight: bold; width: 120px;">Total</th>';
+        $html .= '</tr></thead>';
+        $html .= '<tbody>';
+
+        foreach ($productos as $producto) {
+            $costo = (float) optional($producto->ultimaEntrada)->precio_costo;
+            $total = $producto->stock * $costo;
             
-            // BOM charset para Excel
-            fputs($file, "\xEF\xBB\xBF");
-            
-            fputcsv($file, ['Codigo Producto', 'Descripcion de Producto', 'Cantidad (Stock)', 'Precio Costo', 'Total'], ';');
+            $html .= '<tr>';
+            $html .= '<td style="text-align: center;">' . htmlspecialchars($producto->codigo_producto) . '</td>';
+            $html .= '<td>' . htmlspecialchars($producto->detalle_producto) . '</td>';
+            $html .= '<td style="text-align: center; font-weight: bold;">' . $producto->stock . '</td>';
+            $html .= '<td style="text-align: right;">Q' . number_format($costo, 2, '.', ',') . '</td>';
+            $html .= '<td style="text-align: right; color: #10B981; font-weight: bold;">Q' . number_format($total, 2, '.', ',') . '</td>';
+            $html .= '</tr>';
+        }
 
-            foreach ($productos as $producto) {
-                $costo = (float) optional($producto->ultimaEntrada)->precio_costo;
-                $total = $producto->stock * $costo;
-                
-                fputcsv($file, [
-                    $producto->codigo_producto,
-                    $producto->detalle_producto,
-                    $producto->stock,
-                    number_format($costo, 2, '.', ''),
-                    number_format($total, 2, '.', '')
-                ], ';');
-            }
+        $html .= '</tbody></table></body></html>';
 
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return response($html, 200, $headers);
     }
 }
