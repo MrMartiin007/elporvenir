@@ -232,6 +232,26 @@
                 <span class="ms-2 sidebar-text">Entradas</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route('auditoria.index') }}"
+                class="nav-link {{ request()->routeIs('auditoria.*') ? 'active' : '' }}" title="Auditoría"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-clipboard-check fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Auditoría</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('pedidos.index') }}"
+                class="nav-link {{ request()->routeIs('pedidos.*') ? 'active' : '' }}" title="Pedidos Online"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Pedidos Online</span>
+            </a>
+        </li>
         @endrole
     </ul>
 

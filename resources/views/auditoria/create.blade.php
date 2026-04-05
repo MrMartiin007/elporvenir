@@ -143,59 +143,104 @@
             </div>
         @endif
 
-        {{-- Registros actuales de la sesión --}}
-        <div class="bg-white shadow-sm sm:rounded-lg p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">📋 Registros de esta sesión</h5>
-                <form action="{{ route('auditoria.cerrar', $auditoria->id) }}" method="POST"
-                    onsubmit="return confirm('¿Estás seguro de que quieres cerrar esta auditoría? Ya no podrás editarla.');">
-                    @csrf
-                    <button type="submit" class="btn btn-danger fw-bold btn-sm">❌ Cerrar Auditoría</button>
-                </form>
+        <div class="row">
+            {{-- Tabla Izquierda --}}
+            <div class="col-lg-9 mb-4">
+                <div class="bg-white shadow-sm sm:rounded-lg p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">📋 Registros de esta sesión</h5>
+                    </div>
+                    <div class="table-responsive-md">
+                        <table class="table table-hover table-bordered table-sm" id="tablaDetalleAuditorias">
+                            <thead class="text-center table-dark">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción</th>
+                                    <th>Stock</th>
+                                    <th>Precio Costo</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($auditoria->detalles as $detalle)
+                                    @php
+                                        $subtotal = $detalle->stock_nuevo * $detalle->precio_costo_nuevo;
+                                    @endphp
+                                    <tr class="align-middle text-center">
+                                        <td class="font-mono text-xs">{{ $detalle->producto?->codigo_producto }}</td>
+                                        <td class="text-start">
+                                            <strong>{{ $detalle->producto?->detalle_producto ?? '—' }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge {{ $detalle->stock_anterior != $detalle->stock_nuevo ? 'bg-success' : 'bg-secondary' }}">
+                                                {{ $detalle->stock_nuevo }}
+                                            </span>
+                                        </td>
+                                        <td>Q {{ number_format($detalle->precio_costo_nuevo, 2) }}</td>
+                                        <td class="fw-bold text-success">Q {{ number_format($subtotal, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="table-responsive-md">
-                <table class="table table-hover table-bordered table-sm" id="tablaDetalleAuditorias">
-                    <thead class="text-center table-dark">
-                        <tr>
-                            <th>Hora</th>
-                            <th>Producto</th>
-                            <th>Stock Anterior</th>
-                            <th>Stock Nuevo</th>
-                            <th>Costo Ant.</th>
-                            <th>Costo Nuevo</th>
-                            <th>Venta Ant.</th>
-                            <th>Venta Nueva</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($auditoria->detalles as $detalle)
-                            <tr class="align-middle text-center">
-                                <td>{{ $detalle->created_at->format('H:i') }}</td>
-                                <td class="text-start">
-                                    <small class="text-muted">{{ $detalle->producto?->codigo_producto }}</small><br>
-                                    <strong>{{ $detalle->producto?->detalle_producto ?? '—' }}</strong>
-                                </td>
-                                <td>{{ $detalle->stock_anterior }}</td>
-                                <td>
-                                    <span
-                                        class="badge {{ $detalle->stock_anterior != $detalle->stock_nuevo ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $detalle->stock_nuevo }}
-                                    </span>
-                                </td>
-                                <td>{{ number_format($detalle->precio_costo_anterior, 2) }}</td>
-                                <td>{{ number_format($detalle->precio_costo_nuevo, 2) }}</td>
-                                <td>{{ number_format($detalle->precio_venta_anterior, 2) }}</td>
-                                <td>{{ number_format($detalle->precio_venta_nuevo, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+            {{-- Card Resumen Derecha --}}
+            <div class="col-lg-3">
+                <div class="bg-white shadow-sm sm:rounded-lg p-4 position-sticky" style="top: 20px;">
+                    <h5 class="fw-bold mb-4 text-center">Resumen de Sesión</h5>
+                    @php
+                        $sumTotal = 0;
+                        foreach($auditoria->detalles as $d) {
+                            $sumTotal += ($d->stock_nuevo * $d->precio_costo_nuevo);
+                        }
+                    @endphp
+                    
+                    <div class="mb-3">
+                        <span class="text-muted d-block text-uppercase text-xs fw-bold">Fecha</span>
+                        <span class="fs-6 d-block">{{ \Carbon\Carbon::parse($auditoria->fecha_auditoria)->format('d/m/Y H:i') }}</span>
+                    </div>
+                    
+                    <div class="mb-3 border-top pt-3">
+                        <span class="text-muted d-block text-uppercase text-xs fw-bold">Productos Auditados</span>
+                        <span class="fs-4 d-block text-primary fw-bold">{{ $auditoria->cantidad_productos }}</span>
+                    </div>
+
+                    <div class="mb-4 border-top pt-3">
+                        <span class="text-muted d-block text-uppercase text-xs fw-bold">Total Valorado (Costo)</span>
+                        <span class="fs-4 d-block text-success fw-bold">Q {{ number_format($sumTotal, 2) }}</span>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <form action="{{ route('auditoria.cerrar', $auditoria->id) }}" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de que quieres cerrar esta auditoría? Ya no podrás editarla.');">
+                            @csrf
+                            <button type="submit" class="btn btn-danger fw-bold w-100 py-2">
+                                ❌ Cerrar Auditoría
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if ($.fn.DataTable.isDataTable('#tablaDetalleAuditorias')) {
+                $('#tablaDetalleAuditorias').DataTable().destroy();
+            }
+            $('#tablaDetalleAuditorias').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
+                },
+                "order": [], // Let the backend feed it descending automatically
+                "pageLength": 10
+            });
+        });
+
         document.querySelectorAll('.guardar').forEach(form => {
             form.addEventListener('submit', function (e) {
                 if (!form.checkValidity()) {

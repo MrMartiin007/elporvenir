@@ -63,7 +63,9 @@ class AuditoriaController extends Controller
         $productosFiltrados = collect();
         $ultimaEntrada = null;
 
-        $auditoria = Auditoria::with(['detalles.producto', 'detalles.user'])
+        $auditoria = Auditoria::with(['detalles' => function($query) {
+            $query->orderBy('id', 'desc');
+        }, 'detalles.producto', 'detalles.user'])
             ->where('users_id', auth()->id())
             ->where('estado', 1)
             ->first();
@@ -156,9 +158,9 @@ class AuditoriaController extends Controller
         ]);
 
         // 4. Actualizar totales en la sesión de auditoría
-        $auditoria->cantidad_productos = $auditoria->detalles()->count(); // Cada registro es un producto auditado
-        // total sum of precio_costo_nuevo of all details
-        $auditoria->total_auditado = $auditoria->detalles()->sum('precio_costo_nuevo');
+        $auditoria->cantidad_productos = $auditoria->detalles()->count();
+        // total sum of (stock_nuevo * precio_costo_nuevo) of all details
+        $auditoria->total_auditado = $auditoria->detalles()->sum(\DB::raw('stock_nuevo * precio_costo_nuevo'));
         $auditoria->save();
 
         return redirect()->route('auditoria.create')
@@ -182,7 +184,9 @@ class AuditoriaController extends Controller
      */
     public function show($id)
     {
-        $auditoria = Auditoria::with(['detalles.producto', 'user'])->findOrFail($id);
+        $auditoria = Auditoria::with(['detalles' => function($query) {
+            $query->orderBy('id', 'desc');
+        }, 'detalles.producto', 'user'])->findOrFail($id);
         
         return view('auditoria.show', compact('auditoria'));
     }

@@ -84,6 +84,22 @@ Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
         Route::put('/ubicaciones/municipio/{id}', [App\Http\Controllers\UbicacionController::class, 'updateMunicipio'])->name('ubicaciones.municipio.update');
         Route::delete('/ubicaciones/municipio/{id}', [App\Http\Controllers\UbicacionController::class, 'destroyMunicipio'])->name('ubicaciones.municipio.destroy');
         Route::patch('/ubicaciones/toggle/{tipo}/{id}', [App\Http\Controllers\UbicacionController::class, 'toggleActivo'])->name('ubicaciones.toggle');
+
+        // Pedidos Online (Order Management)
+        Route::resource('pedidos', App\Http\Controllers\PedidoController::class)->only(['index', 'show']);
+        Route::patch('pedidos/{id}/status', [App\Http\Controllers\PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus');
+        Route::get('pedidos/productos/buscar', [App\Http\Controllers\PedidoController::class, 'searchProducts'])->name('pedidos.productos.buscar');
+        Route::post('pedidos/{pedido}/detalles', [App\Http\Controllers\PedidoController::class, 'addDetail'])->name('pedidos.detalles.store');
+        Route::post('pedidos/{pedido}/enviar', [App\Http\Controllers\PedidoController::class, 'markAsShipped'])->name('pedidos.enviar');
+
+        // Auditoria Module
+        Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+        Route::get('/auditoria/iniciar', [AuditoriaController::class, 'iniciarAuditoria'])->name('auditoria.iniciar');
+        Route::get('/auditoria/create', [AuditoriaController::class, 'create'])->name('auditoria.create');
+        Route::post('/auditoria', [AuditoriaController::class, 'store'])->name('auditoria.store');
+        Route::post('/auditoria/{auditoria}/cerrar', [AuditoriaController::class, 'cerrarAuditoria'])->name('auditoria.cerrar');
+        Route::get('/auditoria/{id}', [AuditoriaController::class, 'show'])->name('auditoria.show');
+
     });
 });
 
@@ -103,13 +119,7 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::get('/inventario', [App\Http\Controllers\InventarioController::class, 'index'])->name('inventario.index');
         Route::get('/inventario/exportar', [App\Http\Controllers\InventarioController::class, 'exportarExcel'])->name('inventario.exportar');
 
-        // Auditoria Module
-        Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
-        Route::get('/auditoria/iniciar', [AuditoriaController::class, 'iniciarAuditoria'])->name('auditoria.iniciar');
-        Route::get('/auditoria/create', [AuditoriaController::class, 'create'])->name('auditoria.create');
-        Route::post('/auditoria', [AuditoriaController::class, 'store'])->name('auditoria.store');
-        Route::post('/auditoria/{auditoria}/cerrar', [AuditoriaController::class, 'cerrarAuditoria'])->name('auditoria.cerrar');
-        Route::get('/auditoria/{id}', [AuditoriaController::class, 'show'])->name('auditoria.show');
+
 
         // Calendar Routes
         Route::get('/calendario', [App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');
@@ -127,12 +137,7 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         // Payments Module
         Route::get('/pagos', [App\Http\Controllers\PagoController::class, 'index'])->name('pagos.index');
 
-        // Pedidos Online (Order Management)
-        Route::resource('pedidos', App\Http\Controllers\PedidoController::class)->only(['index', 'show']);
-        Route::patch('pedidos/{id}/status', [App\Http\Controllers\PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus');
-        Route::get('pedidos/productos/buscar', [App\Http\Controllers\PedidoController::class, 'searchProducts'])->name('pedidos.productos.buscar');
-        Route::post('pedidos/{pedido}/detalles', [App\Http\Controllers\PedidoController::class, 'addDetail'])->name('pedidos.detalles.store');
-        Route::post('pedidos/{pedido}/enviar', [App\Http\Controllers\PedidoController::class, 'markAsShipped'])->name('pedidos.enviar');
+
 
         // Configuración de Tarifas
         Route::post('configuracion/tarifa', [App\Http\Controllers\ConfiguracionController::class, 'storeTarifa'])->name('configuracion.tarifa.store');
