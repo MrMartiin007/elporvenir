@@ -15,7 +15,7 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
         <div class="mb-4">
             <a href="{{ route('auditoria.iniciar') }}" class="btn btn-warning fw-bold">
-                ➕ Iniciar Auditoría Diaria
+                ➕ Iniciar Auditoría
             </a>
         </div>
 
