@@ -143,19 +143,39 @@ class AuditoriaController extends Controller
         }
 
         // 3. Registrar en detalle_auditorias
-        DetalleAuditoria::create([
-            'auditorias_id'        => $auditoria->id,
-            'productos_id'         => $producto->id,
-            'user_id'              => Auth::id(),
-            'stock_anterior'       => $stockAnterior,
-            'stock_nuevo'          => $request->stock_nuevo,
-            'precio_costo_anterior'  => $costoanterior,
-            'precio_costo_nuevo'     => $request->precio_costo,
-            'precio_venta_anterior'  => $ventaAnterior,
-            'precio_venta_nuevo'     => $request->precio_venta,
-            'precio_docena_anterior' => $docenaAnterior,
-            'precio_docena_nuevo'    => $request->precio_docena,
-        ]);
+        // Si el mismo producto ya fue escaneado en esta sesión, actualizamos el registro
+        // existente en vez de crear uno nuevo (evita duplicados y sumas incorrectas).
+        $detalleExistente = DetalleAuditoria::where('auditorias_id', $auditoria->id)
+            ->where('productos_id', $producto->id)
+            ->first();
+
+        if ($detalleExistente) {
+            // Conservamos el stock_anterior original (del primer escaneo) para mantener trazabilidad
+            $detalleExistente->update([
+                'user_id'                => Auth::id(),
+                'stock_nuevo'            => $request->stock_nuevo,
+                'precio_costo_anterior'  => $costoanterior,
+                'precio_costo_nuevo'     => $request->precio_costo,
+                'precio_venta_anterior'  => $ventaAnterior,
+                'precio_venta_nuevo'     => $request->precio_venta,
+                'precio_docena_anterior' => $docenaAnterior,
+                'precio_docena_nuevo'    => $request->precio_docena,
+            ]);
+        } else {
+            DetalleAuditoria::create([
+                'auditorias_id'          => $auditoria->id,
+                'productos_id'           => $producto->id,
+                'user_id'                => Auth::id(),
+                'stock_anterior'         => $stockAnterior,
+                'stock_nuevo'            => $request->stock_nuevo,
+                'precio_costo_anterior'  => $costoanterior,
+                'precio_costo_nuevo'     => $request->precio_costo,
+                'precio_venta_anterior'  => $ventaAnterior,
+                'precio_venta_nuevo'     => $request->precio_venta,
+                'precio_docena_anterior' => $docenaAnterior,
+                'precio_docena_nuevo'    => $request->precio_docena,
+            ]);
+        }
 
         // 4. Actualizar totales en la sesión de auditoría
         $auditoria->cantidad_productos = $auditoria->detalles()->count();
