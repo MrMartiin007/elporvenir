@@ -64,7 +64,7 @@ class AuditoriaController extends Controller
         $ultimaEntrada = null;
 
         $auditoria = Auditoria::with(['detalles' => function($query) {
-            $query->orderBy('id', 'desc');
+            $query->orderBy('updated_at', 'desc');
         }, 'detalles.producto', 'detalles.user'])
             ->where('users_id', auth()->id())
             ->where('estado', 1)
@@ -205,7 +205,7 @@ class AuditoriaController extends Controller
     public function show($id)
     {
         $auditoria = Auditoria::with(['detalles' => function($query) {
-            $query->orderBy('id', 'desc');
+            $query->orderBy('updated_at', 'desc');
         }, 'detalles.producto', 'user'])->findOrFail($id);
         
         return view('auditoria.show', compact('auditoria'));
