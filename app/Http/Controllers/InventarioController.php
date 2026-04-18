@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetalleAuditoria;
 use App\Models\Entrada;
 use App\Models\Producto;
 use Carbon\Carbon;
@@ -69,6 +70,20 @@ class InventarioController extends Controller
             ->take(10)
             ->values();
 
+        // ─── Productos NO auditados ──────────────────────────────────────────
+        // Productos que nunca aparecieron en ningún detalle de auditoría
+        // (sin importar si la sesión está abierta o cerrada).
+        $idsAuditados = DB::table('detalle_auditorias')
+            ->pluck('productos_id')
+            ->unique();
+
+        $productosNoAuditados = Producto::with(['marca', 'ultimaEntrada'])
+            ->whereNotIn('id', $idsAuditados)
+            ->orderBy('detalle_producto')
+            ->get();
+
+        $cantidadNoAuditados = $productosNoAuditados->count();
+
         return view('inventario.index', compact(
             'anio',
             'mes',
@@ -78,7 +93,9 @@ class InventarioController extends Controller
             'valorInventario',
             'productosEnCero',
             'cantidadEnCero',
-            'topProductos'
+            'topProductos',
+            'productosNoAuditados',
+            'cantidadNoAuditados'
         ));
     }
 

@@ -74,7 +74,7 @@
             {{-- ─────────────────────────────────────────────────────────────
                  KPI Cards (Sólo la fila principal)
             ───────────────────────────────────────────────────────────────── --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 {{-- Card 1: Total Productos --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition hover:shadow-md">
                     <div class="flex items-center justify-between mb-4">
@@ -135,6 +135,23 @@
                         {{ number_format($cantidadEnCero) }}
                     </div>
                     <div class="mt-2 text-sm text-gray-500">Productos con stock = 0</div>
+                </div>
+
+                {{-- Card 5: Productos No Auditados --}}
+                <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-6 transition hover:shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-full {{ $cantidadNoAuditados > 0 ? 'bg-orange-50 text-orange-600' : 'bg-gray-50 text-gray-400' }}">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sin Auditar</span>
+                    </div>
+                    <div class="text-3xl font-bold {{ $cantidadNoAuditados > 0 ? 'text-orange-600' : 'text-gray-400' }}">
+                        {{ number_format($cantidadNoAuditados) }}
+                    </div>
+                    <div class="mt-2 text-sm text-gray-500">Productos no auditados</div>
                 </div>
             </div>
 
@@ -252,6 +269,85 @@
             </div>
             @endif
 
+            {{-- ─────────────────────────────────────────────────────────────
+                 Tabla: Productos No Auditados
+            ───────────────────────────────────────────────────────────────── --}}
+            <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-6 mt-8">
+                <h3 class="text-lg font-bold text-orange-700 mb-6 flex items-center">
+                    <span class="bg-orange-100 text-orange-600 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                    </span>
+                    Productos No Auditados
+                    <span class="ml-3 inline-flex items-center justify-center px-3 py-0.5 rounded-full text-sm font-bold bg-orange-100 text-orange-700">
+                        {{ $cantidadNoAuditados }}
+                    </span>
+                </h3>
+
+                @if($productosNoAuditados->isNotEmpty())
+                    <p class="text-sm text-gray-500 mb-4">
+                        Estos productos aún no han sido revisados en ninguna auditoría cerrada. Se recomienda incluirlos en la próxima sesión de auditoría.
+                    </p>
+                    <div class="overflow-x-auto rounded-lg border border-orange-100">
+                        <table id="tablaNoAuditados" class="w-full text-sm text-left text-gray-600" style="width:100%">
+                            <thead class="text-xs text-orange-800 uppercase bg-orange-50 border-b border-orange-100">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold">Código</th>
+                                    <th class="px-6 py-4 font-semibold">Producto</th>
+                                    <th class="px-6 py-4 font-semibold">Marca</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Stock Actual</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Precio Costo</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($productosNoAuditados as $producto)
+                                    @php
+                                        $precioCostoNA = (float) optional($producto->ultimaEntrada)->precio_costo;
+                                    @endphp
+                                    <tr class="bg-white border-b border-orange-50 hover:bg-orange-50/40 transition-colors">
+                                        <td class="px-6 py-4 font-mono text-xs text-gray-500">{{ $producto->codigo_producto }}</td>
+                                        <td class="px-6 py-4 font-medium text-gray-800">{{ $producto->detalle_producto }}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                {{ optional($producto->marca)->nombre_marca ?? '—' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded text-xs font-bold
+                                                {{ $producto->stock > 0 ? 'bg-indigo-50 text-indigo-700' : 'bg-red-50 text-red-700' }}">
+                                                {{ number_format((int)$producto->stock) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right tabular-nums text-gray-600">
+                                            Q{{ number_format($precioCostoNA, 2) }}
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{{ route('auditoria.index') }}"
+                                                class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Auditar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="flex flex-col items-center justify-center py-12 text-gray-400">
+                        <svg class="w-12 h-12 mb-3 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="text-sm font-medium text-green-600">¡Todos los productos han sido auditados! 🎉</p>
+                    </div>
+                @endif
+            </div>
+
         </div>
     </div>
 
@@ -292,6 +388,17 @@
                     columnDefs: [
                         { orderable: false, targets: [3] }, 
                         { className: 'text-right', targets: [3] }
+                    ]
+                });
+            }
+
+            if (document.getElementById('tablaNoAuditados')) {
+                $('#tablaNoAuditados').DataTable({
+                    ...dtOptions,
+                    order: [[1, 'asc']], // ordenar por nombre de producto
+                    columnDefs: [
+                        { orderable: false, targets: [5] },
+                        { className: 'text-right', targets: [3, 4, 5] }
                     ]
                 });
             }
