@@ -339,7 +339,7 @@
                                             Q{{ number_format($precioCostoNA, 2) }}
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <a href="{{ route('auditoria.index') }}"
+                                            <a href="{{ route('auditoria.ir', $producto->codigo_producto) }}"
                                                 class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>

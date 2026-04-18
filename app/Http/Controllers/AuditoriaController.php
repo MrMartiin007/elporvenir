@@ -56,6 +56,32 @@ class AuditoriaController extends Controller
     }
 
     /**
+     * Desde Inventario: lleva directo a auditar un producto específico.
+     * Si no hay sesión activa, crea una automáticamente.
+     */
+    public function irAuditarProducto($codigo)
+    {
+        // Buscar si ya hay una auditoría activa para este usuario
+        $auditoriaActiva = Auditoria::where('users_id', auth()->id())
+            ->where('estado', 1)
+            ->first();
+
+        // Si no hay sesión activa, crear una nueva automáticamente
+        if (!$auditoriaActiva) {
+            Auditoria::create([
+                'fecha_auditoria' => now(),
+                'cantidad_productos' => 0,
+                'total_auditado' => 0,
+                'estado' => 1,
+                'users_id' => auth()->id(),
+            ]);
+        }
+
+        // Redirigir al escáner con el código pre-cargado
+        return redirect()->route('auditoria.create', ['buscar' => $codigo]);
+    }
+
+    /**
      * Muestra la interfaz de escáner y la lista de productos auditados en la sesión actual.
      */
     public function create(Request $request)

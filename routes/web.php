@@ -96,6 +96,7 @@ Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
         Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
         Route::get('/auditoria/iniciar', [AuditoriaController::class, 'iniciarAuditoria'])->name('auditoria.iniciar');
         Route::get('/auditoria/create', [AuditoriaController::class, 'create'])->name('auditoria.create');
+        Route::get('/auditoria/ir/{codigo}', [AuditoriaController::class, 'irAuditarProducto'])->name('auditoria.ir');
         Route::post('/auditoria', [AuditoriaController::class, 'store'])->name('auditoria.store');
         Route::post('/auditoria/{auditoria}/cerrar', [AuditoriaController::class, 'cerrarAuditoria'])->name('auditoria.cerrar');
         Route::get('/auditoria/{id}', [AuditoriaController::class, 'show'])->name('auditoria.show');
