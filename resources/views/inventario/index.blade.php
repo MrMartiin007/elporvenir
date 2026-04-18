@@ -294,6 +294,7 @@
                         <table id="tablaNoAuditados" class="w-full text-sm text-left text-gray-600" style="width:100%">
                             <thead class="text-xs text-orange-800 uppercase bg-orange-50 border-b border-orange-100">
                                 <tr>
+                                    <th class="px-4 py-4 font-semibold">Foto</th>
                                     <th class="px-6 py-4 font-semibold">Código</th>
                                     <th class="px-6 py-4 font-semibold">Producto</th>
                                     <th class="px-6 py-4 font-semibold">Marca</th>
@@ -308,6 +309,19 @@
                                         $precioCostoNA = (float) optional($producto->ultimaEntrada)->precio_costo;
                                     @endphp
                                     <tr class="bg-white border-b border-orange-50 hover:bg-orange-50/40 transition-colors">
+                                        <td class="px-4 py-3">
+                                            @if($producto->foto_producto)
+                                                <img src="{{ asset('storage/' . $producto->foto_producto) }}"
+                                                    alt="{{ $producto->detalle_producto }}"
+                                                    class="w-12 h-12 object-cover rounded-lg border border-orange-100 shadow-sm">
+                                            @else
+                                                <div class="w-12 h-12 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center">
+                                                    <svg class="w-6 h-6 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 font-mono text-xs text-gray-500">{{ $producto->codigo_producto }}</td>
                                         <td class="px-6 py-4 font-medium text-gray-800">{{ $producto->detalle_producto }}</td>
                                         <td class="px-6 py-4">
@@ -395,10 +409,10 @@
             if (document.getElementById('tablaNoAuditados')) {
                 $('#tablaNoAuditados').DataTable({
                     ...dtOptions,
-                    order: [[1, 'asc']], // ordenar por nombre de producto
+                    order: [[2, 'asc']], // ordenar por nombre de producto (col 2 ahora con foto en col 0)
                     columnDefs: [
-                        { orderable: false, targets: [5] },
-                        { className: 'text-right', targets: [3, 4, 5] }
+                        { orderable: false, targets: [0, 6] }, // foto y acción no ordenables
+                        { className: 'text-right', targets: [4, 5, 6] }
                     ]
                 });
             }
