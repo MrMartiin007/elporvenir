@@ -105,10 +105,10 @@
                                                     <td class="text-center">
                                                         <input type="number" name="cantidad"
                                                             value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
-                                                            form="f-actualizar-desktop-{{ $detalle->id }}"
                                                             class="text-center fw-bold text-center mx-auto"
                                                             style="max-width: 60px; border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 2px;"
-                                                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                                                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                                                            onchange="actualizarDetalle(this, {{ $detalle->id }})"
                                                             onfocus="this.style.borderBottomColor='#0d6efd'"
                                                             onblur="this.style.borderBottomColor='#ced4da'">
                                                     </td>
@@ -130,17 +130,16 @@
                                                         <input type="number" name="descuento"
                                                             value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
                                                             min="0" max="{{ $detalle->precio_unitario }}"
-                                                            form="f-actualizar-desktop-{{ $detalle->id }}"
                                                             class="text-center mx-auto"
                                                             style="max-width: 70px; border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 2px;"
                                                             placeholder="0.00" 
-                                                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                                                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                                                            onchange="actualizarDetalle(this, {{ $detalle->id }})"
                                                             onfocus="this.style.borderBottomColor='#0d6efd'"
                                                             onblur="this.style.borderBottomColor='#ced4da'">
                                                     </td>
-                                                    <td class="fw-bold text-center text-nowrap text-primary">
-                                                        Q
-                                                        {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                                    <td class="fw-bold text-center text-nowrap text-primary subtotal-text" id="subtotal-desktop-{{ $detalle->id }}">
+                                                        Q{{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
                                                     </td>
                                                     <td class="text-center">
                                                         <div class="d-flex justify-content-center align-items-center gap-2">
@@ -202,9 +201,8 @@
                                                                 @endif
                                                             </div>
 
-                                                            <div class="text-primary fw-bold mt-1">
-                                                                Q
-                                                                {{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
+                                                            <div class="text-primary fw-bold mt-1 subtotal-text" id="subtotal-mobile-{{ $detalle->id }}">
+                                                                Q{{ number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2) }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -228,10 +226,10 @@
                                                         <label class="small text-muted mb-1 d-block">Cantidad</label>
                                                         <input type="number" name="cantidad"
                                                             value="{{ old('cantidad', $detalle->cantidad) }}" min="1"
-                                                            form="f-actualizar-mobile-{{ $detalle->id }}"
                                                             class="text-center fw-bold w-100"
                                                             style="border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 5px;"
-                                                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                                                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                                                            onchange="actualizarDetalle(this, {{ $detalle->id }})"
                                                             onfocus="this.style.borderBottomColor='#0d6efd'"
                                                             onblur="this.style.borderBottomColor='#ced4da'">
                                                     </div>
@@ -241,11 +239,11 @@
                                                         <input type="number" name="descuento"
                                                             value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
                                                             min="0" max="{{ $detalle->precio_unitario }}"
-                                                            form="f-actualizar-mobile-{{ $detalle->id }}"
                                                             class="text-center w-100"
                                                             style="border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 5px;"
                                                             placeholder="0.00" 
-                                                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                                                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                                                            onchange="actualizarDetalle(this, {{ $detalle->id }})"
                                                             onfocus="this.style.borderBottomColor='#0d6efd'"
                                                             onblur="this.style.borderBottomColor='#ced4da'">
                                                     </div>
@@ -440,8 +438,59 @@
     }
 
     // ─── Formato de número ───────────────────────────────────────────────────────
-    function fmt(n) {
-        return parseFloat(n).toFixed(2);
+    function fmt(num) {
+        return parseFloat(num).toFixed(2);
+    }
+
+    // ─── Actualización AJAX de Cantidad / Descuento ─────────────────────────────
+    function actualizarDetalle(input, id) {
+        const fieldName = input.name; // 'cantidad' o 'descuento'
+        const value = input.value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        input.disabled = true;
+
+        fetch(`/admin/ventas/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                _method: 'PATCH',
+                [fieldName]: value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            input.disabled = false;
+            if (data.status === 'success') {
+                const subDesktop = document.getElementById(`subtotal-desktop-${id}`);
+                const subMobile = document.getElementById(`subtotal-mobile-${id}`);
+                if (subDesktop) subDesktop.textContent = `Q${data.subtotal}`;
+                if (subMobile) subMobile.textContent = `Q${data.subtotal}`;
+                
+                document.querySelectorAll(`input[name="${fieldName}"]`).forEach(el => {
+                    if (el !== input && el.getAttribute('onchange')?.includes(id)) {
+                        el.value = value;
+                    }
+                });
+
+                document.getElementById('resumen-cantidad').textContent = data.resumen.cantidad_productos;
+                document.getElementById('resumen-total').textContent = `Q${data.resumen.total_vendido}`;
+                
+                input.style.transition = 'background-color 0.4s';
+                input.style.backgroundColor = '#d1e7dd';
+                setTimeout(() => { input.style.backgroundColor = 'transparent'; }, 800);
+            } else {
+                mostrarToast('<i class="fas fa-exclamation-triangle me-1"></i> Error al actualizar', 'warning');
+            }
+        })
+        .catch(err => {
+            input.disabled = false;
+            mostrarToast('<i class="fas fa-times-circle me-1"></i> Error de conexión', 'danger');
+        });
     }
 
     // ─── Construir fila para la tabla DataTable ──────────────────────────────────
@@ -471,25 +520,25 @@
             <td class="d-none d-sm-table-cell text-center">${fotoHtml}</td>
             <td class="text-center">
                 <input type="number" name="cantidad" value="${d.cantidad}" min="1"
-                    form="f-actualizar-desktop-${d.id}"
                     class="text-center fw-bold mx-auto"
                     style="max-width:60px;border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:2px;"
-                    onchange="document.getElementById(this.getAttribute('form')).submit()"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                    onchange="actualizarDetalle(this, ${d.id})"
                     onfocus="this.style.borderBottomColor='#0d6efd'"
                     onblur="this.style.borderBottomColor='#ced4da'">
             </td>
             <td class="d-none d-sm-table-cell text-center text-nowrap">Q${fmt(d.precio_unitario)}</td>
             <td class="d-none d-md-table-cell text-center">
                 <input type="number" name="descuento" value="${fmt(d.descuento)}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
-                    form="f-actualizar-desktop-${d.id}"
                     class="text-center mx-auto"
                     style="max-width:70px;border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:2px;"
                     placeholder="0.00"
-                    onchange="document.getElementById(this.getAttribute('form')).submit()"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                    onchange="actualizarDetalle(this, ${d.id})"
                     onfocus="this.style.borderBottomColor='#0d6efd'"
                     onblur="this.style.borderBottomColor='#ced4da'">
             </td>
-            <td class="fw-bold text-center text-nowrap text-primary">Q${fmt(d.subtotal)}</td>
+            <td class="fw-bold text-center text-nowrap text-primary subtotal-text" id="subtotal-desktop-${d.id}">Q${fmt(d.subtotal)}</td>
             <td class="text-center">
                 <div class="d-flex justify-content-center align-items-center gap-2">
                     <form action="${rutaEliminar}" method="POST" class="d-inline"
@@ -504,11 +553,7 @@
                     </form>
                 </div>
             </td>
-        </tr>
-        <form id="f-actualizar-desktop-${d.id}" action="${rutaActualizar}" method="POST" style="display:none;">
-            <input type="hidden" name="_token" value="${csrfToken}">
-            <input type="hidden" name="_method" value="PATCH">
-        </form>`;
+        </tr>`;
     }
 
     // ─── Construir card móvil ────────────────────────────────────────────────────
@@ -522,7 +567,6 @@
                     style="width:60px;height:60px;"><i class="fas fa-camera fa-lg"></i></div>`;
 
         const rutaEliminar = `/admin/ventas/${d.id}`;
-        const rutaActualizar = `/admin/ventas/${d.id}`;
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         return `<div class="card shadow-sm border-0 mb-3 rounded-3 fila-nueva" id="card-detalle-${d.id}">
@@ -536,7 +580,7 @@
                             <div class="small text-muted mt-1">
                                 <span>Q${fmt(d.precio_unitario)} c/u</span>
                             </div>
-                            <div class="text-primary fw-bold mt-1">Q${fmt(d.subtotal)}</div>
+                            <div class="text-primary fw-bold mt-1 subtotal-text" id="subtotal-mobile-${d.id}">Q${fmt(d.subtotal)}</div>
                         </div>
                     </div>
                     <form action="${rutaEliminar}" method="POST" onsubmit="return confirm('¿Eliminar este producto?')">
@@ -553,21 +597,21 @@
                     <div class="flex-grow-1">
                         <label class="small text-muted mb-1 d-block">Cantidad</label>
                         <input type="number" name="cantidad" value="${d.cantidad}" min="1"
-                            form="f-actualizar-mobile-${d.id}"
                             class="text-center fw-bold w-100"
                             style="border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:5px;"
-                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                            onchange="actualizarDetalle(this, ${d.id})"
                             onfocus="this.style.borderBottomColor='#0d6efd'"
                             onblur="this.style.borderBottomColor='#ced4da'">
                     </div>
                     <div class="flex-grow-1">
                         <label class="small text-muted mb-1 d-block">Desc.</label>
                         <input type="number" name="descuento" value="${fmt(d.descuento)}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
-                            form="f-actualizar-mobile-${d.id}"
                             class="text-center w-100"
                             style="border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:5px;"
                             placeholder="0.00"
-                            onchange="document.getElementById(this.getAttribute('form')).submit()"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                            onchange="actualizarDetalle(this, ${d.id})"
                             onfocus="this.style.borderBottomColor='#0d6efd'"
                             onblur="this.style.borderBottomColor='#ced4da'">
                     </div>

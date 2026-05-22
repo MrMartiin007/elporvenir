@@ -327,6 +327,17 @@ class VentaController extends Controller
             ->sum(\DB::raw('(precio_unitario - IFNULL(descuento,0)) * cantidad'));
         $venta->save();
 
+        if ($request->ajax()) {
+            return response()->json([
+                'status'  => 'success',
+                'subtotal' => number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2),
+                'resumen' => [
+                    'cantidad_productos' => $venta->cantidad_productos,
+                    'total_vendido'      => number_format($venta->total_vendido, 2),
+                ]
+            ]);
+        }
+
         return back();
     }
 
