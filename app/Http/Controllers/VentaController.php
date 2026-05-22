@@ -173,6 +173,95 @@ class VentaController extends Controller
             ->with('success', 'Producto agregado correctamente.');
     }
 
+    /**
+     * Escaneo vía AJAX: busca el producto por código, crea el DetalleVenta
+     * y retorna JSON con los datos actualizados para refrescar la UI sin recargar.
+     */
+    public function escanear(Request $request)
+    {
+        $codigo = $request->input('scan');
+
+        $venta = Venta::where('users_id', auth()->id())
+            ->where('estado', 1)
+            ->first();
+
+        if (!$venta) {
+            return response()->json(['status' => 'error', 'message' => 'No hay una venta activa.'], 422);
+        }
+
+        if (!$codigo) {
+            return response()->json(['status' => 'error', 'message' => 'Código vacío.'], 422);
+        }
+
+        $producto = Producto::with('ultimaEntrada')
+            ->where('codigo_producto', $codigo)
+            ->first();
+
+        if (!$producto) {
+            CodigoNoEncontrado::create([
+                'codigo'    => $codigo,
+                'ventas_id' => $venta->id,
+            ]);
+
+            return response()->json([
+                'status'  => 'not_found',
+                'message' => 'Producto no encontrado. Código registrado para revisión.',
+                'codigo'  => $codigo,
+            ]);
+        }
+
+        $precioUnitario = optional($producto->ultimaEntrada)->precio_venta;
+
+        if (!$precioUnitario) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'El producto no tiene precio asignado.',
+            ], 422);
+        }
+
+        $detalle = DetalleVenta::create([
+            'ventas_id'      => $venta->id,
+            'productos_id'   => $producto->id,
+            'cantidad'       => 1,
+            'precio_unitario' => $precioUnitario,
+        ]);
+
+        if ($producto->stock > 0) {
+            $producto->decrement('stock');
+        }
+
+        // 🚀 Optimización extrema: En vez de hacer 2 consultas pesadas de SUM() 
+        // a toda la tabla de detalle_ventas por cada producto escaneado, 
+        // simplemente sumamos matemáticamente el nuevo producto a los totales existentes.
+        $venta->cantidad_productos += 1;
+        $venta->total_vendido += $precioUnitario;
+        $venta->save();
+
+        // Foto del producto
+        $fotoUrl = $producto->foto_producto
+            ? asset('storage/' . $producto->foto_producto)
+            : null;
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Producto agregado.',
+            'detalle' => [
+                'id'              => $detalle->id,
+                'codigo'          => $producto->codigo_producto,
+                'nombre'          => $producto->detalle_producto,
+                'foto'            => $fotoUrl,
+                'cantidad'        => $detalle->cantidad,
+                'precio_unitario' => $detalle->precio_unitario,
+                'descuento'       => $detalle->descuento ?? 0,
+                'subtotal'        => $detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)),
+            ],
+            'resumen' => [
+                'cantidad_productos' => $venta->cantidad_productos,
+                'total_vendido'      => number_format($venta->total_vendido, 2),
+            ],
+        ]);
+    }
+
     public function show($id)
     {
         // Buscar la venta con sus detalles y productos relacionados
@@ -238,7 +327,7 @@ class VentaController extends Controller
             ->sum(\DB::raw('(precio_unitario - IFNULL(descuento,0)) * cantidad'));
         $venta->save();
 
-        return back()->with('success', 'Detalle actualizado correctamente.');
+        return back();
     }
 
 

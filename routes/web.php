@@ -72,6 +72,7 @@ Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
         Route::resource('entradas', EntradaController::class);
         Route::resource('ventas', VentaController::class);
         Route::resource('detalle-ventas', DetalleVenta::class);
+        Route::post('/ventas/escanear', [VentaController::class, 'escanear'])->name('ventas.escanear');
         Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
         Route::get('/producto/consultar', [ProductoController::class, 'consultarProducto'])->name('productos.consultar');
 
