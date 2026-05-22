@@ -50,8 +50,7 @@
                         </div>
 
                         <strong class="text-center align-middle"> Productos Vendidos</strong>
-                        @if($venta->detalles->count() > 0)
-                            <div class="table-responsive">
+                        <div class="table-responsive">
                                 {{-- Desktop View (Table) --}}
                                 <div class="d-none d-md-block">
                                     <table class="table table-hover table-bordered" id="tablaProductos">
@@ -112,7 +111,7 @@
                                                             onfocus="this.style.borderBottomColor='#0d6efd'"
                                                             onblur="this.style.borderBottomColor='#ced4da'">
                                                     </td>
-                                                    <td class="d-none d-sm-table-cell text-center text-nowrap">
+                                                    <td class="d-none d-sm-table-cell text-center text-nowrap" id="precio-desktop-{{ $detalle->id }}">
                                                         @if($detalle->descuento > 0 && $detalle->descuento < $detalle->precio_unitario)
                                                             <div class="d-flex flex-column align-items-center" style="line-height: 1.2;">
                                                                 <span class="text-decoration-line-through text-muted small">
@@ -128,7 +127,7 @@
                                                     </td>
                                                     <td class="d-none d-md-table-cell text-center">
                                                         <input type="number" name="descuento"
-                                                            value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
+                                                            value="{{ (float)old('descuento', $detalle->descuento) > 0 ? old('descuento', $detalle->descuento) : '0' }}" step="0.01"
                                                             min="0" max="{{ $detalle->precio_unitario }}"
                                                             class="text-center mx-auto"
                                                             style="max-width: 70px; border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 2px;"
@@ -192,8 +191,8 @@
                                                             <small class="text-muted d-block">{{ $detalle->producto->codigo_producto }}</small>
                                                             
                                                             {{-- Unit Price Breakdown for Mobile --}}
-                                                            <div class="small text-muted mt-1">
-                                                                @if($detalle->descuento > 0)
+                                                            <div class="small text-muted mt-1" id="precio-mobile-{{ $detalle->id }}">
+                                                                @if($detalle->descuento > 0 && $detalle->descuento < $detalle->precio_unitario)
                                                                      <span class="text-decoration-line-through me-1">Q{{ number_format($detalle->precio_unitario, 2) }}</span>
                                                                      <span class="fw-bold text-dark">Q{{ number_format($detalle->precio_unitario - $detalle->descuento, 2) }} c/u</span>
                                                                 @else
@@ -237,7 +236,7 @@
                                                     <div class="flex-grow-1">
                                                         <label class="small text-muted mb-1 d-block">Desc.</label>
                                                         <input type="number" name="descuento"
-                                                            value="{{ old('descuento', $detalle->descuento) }}" step="0.01"
+                                                            value="{{ (float)old('descuento', $detalle->descuento) > 0 ? old('descuento', $detalle->descuento) : '0' }}" step="0.01"
                                                             min="0" max="{{ $detalle->precio_unitario }}"
                                                             class="text-center w-100"
                                                             style="border: none; border-bottom: 2px solid #ced4da; background: transparent; outline: none; padding: 5px;"
@@ -272,7 +271,6 @@
                                     </form>
                                 @endforeach
                             </div>
-                        @endif
 
                         <div class="mt-3">
                             <a href="{{ route('ventas.index') }}" class="btn btn-secondary">Volver</a>
@@ -468,9 +466,13 @@
             if (data.status === 'success') {
                 const subDesktop = document.getElementById(`subtotal-desktop-${id}`);
                 const subMobile = document.getElementById(`subtotal-mobile-${id}`);
+                const precioDesktop = document.getElementById(`precio-desktop-${id}`);
+                const precioMobile = document.getElementById(`precio-mobile-${id}`);
+                
                 if (subDesktop) subDesktop.textContent = `Q${data.subtotal}`;
                 if (subMobile) subMobile.textContent = `Q${data.subtotal}`;
-                
+                if (precioDesktop && data.precio_html) precioDesktop.innerHTML = data.precio_html;
+                if (precioMobile && data.precio_html_mobile) precioMobile.innerHTML = data.precio_html_mobile;
                 document.querySelectorAll(`input[name="${fieldName}"]`).forEach(el => {
                     if (el !== input && el.getAttribute('onchange')?.includes(id)) {
                         el.value = value;
@@ -577,7 +579,7 @@
                         <div>
                             <h6 class="fw-bold text-dark mb-0 text-break" style="max-width:180px;">${d.nombre}</h6>
                             <small class="text-muted d-block">${d.codigo}</small>
-                            <div class="small text-muted mt-1">
+                            <div class="small text-muted mt-1" id="precio-mobile-${d.id}">
                                 <span>Q${fmt(d.precio_unitario)} c/u</span>
                             </div>
                             <div class="text-primary fw-bold mt-1 subtotal-text" id="subtotal-mobile-${d.id}">Q${fmt(d.subtotal)}</div>
@@ -606,7 +608,7 @@
                     </div>
                     <div class="flex-grow-1">
                         <label class="small text-muted mb-1 d-block">Desc.</label>
-                        <input type="number" name="descuento" value="${fmt(d.descuento)}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
+                        <input type="number" name="descuento" value="${Number(d.descuento) > 0 ? fmt(d.descuento) : '0'}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
                             class="text-center w-100"
                             style="border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:5px;"
                             placeholder="0.00"
@@ -617,11 +619,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <form id="f-actualizar-mobile-${d.id}" action="${rutaActualizar}" method="POST" style="display:none;">
-            <input type="hidden" name="_token" value="${csrfToken}">
-            <input type="hidden" name="_method" value="PATCH">
-        </form>`;
+        </div>`;
     }
 
     // ─── AJAX Scan ──────────────────────────────────────────────────────────────
@@ -688,30 +686,27 @@
                     <td class="d-none d-sm-table-cell text-center">${fotoHtml}</td>
                     <td class="text-center">
                         <input type="number" name="cantidad" value="${d.cantidad}" min="1"
-                            form="f-actualizar-desktop-${d.id}"
                             class="text-center fw-bold mx-auto"
                             style="max-width:60px;border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:2px;"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                            onchange="actualizarDetalle(this, ${d.id})"
                             onfocus="this.style.borderBottomColor='#0d6efd'"
                             onblur="this.style.borderBottomColor='#ced4da'">
                     </td>
-                    <td class="d-none d-sm-table-cell text-center text-nowrap">Q${fmt(d.precio_unitario)}</td>
+                    <td class="d-none d-sm-table-cell text-center text-nowrap" id="precio-desktop-${d.id}">Q${fmt(d.precio_unitario)}</td>
                     <td class="d-none d-md-table-cell text-center">
-                        <input type="number" name="descuento" value="${fmt(d.descuento)}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
-                            form="f-actualizar-desktop-${d.id}"
+                        <input type="number" name="descuento" value="${Number(d.descuento) > 0 ? fmt(d.descuento) : '0'}" step="0.01" min="0" max="${fmt(d.precio_unitario)}"
                             class="text-center mx-auto"
                             style="max-width:70px;border:none;border-bottom:2px solid #ced4da;background:transparent;outline:none;padding:2px;"
                             placeholder="0.00"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+                            onchange="actualizarDetalle(this, ${d.id})"
                             onfocus="this.style.borderBottomColor='#0d6efd'"
                             onblur="this.style.borderBottomColor='#ced4da'">
                     </td>
-                    <td class="fw-bold text-center text-nowrap text-primary">Q${fmt(d.subtotal)}</td>
+                    <td class="fw-bold text-center text-nowrap text-primary subtotal-text" id="subtotal-desktop-${d.id}">Q${fmt(d.subtotal)}</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center align-items-center gap-2">
-                            <button type="submit" form="f-actualizar-desktop-${d.id}"
-                                class="btn btn-outline-success btn-sm rounded-circle d-flex align-items-center justify-content-center p-0"
-                                style="width:32px;height:32px;" title="Actualizar">
-                                <i class="fas fa-check" style="font-size:14px;"></i>
-                            </button>
                             <form action="/admin/ventas/${d.id}" method="POST" class="d-inline"
                                 onsubmit="return confirm('¿Eliminar este producto de la venta?')">
                                 <input type="hidden" name="_token" value="${csrfToken}">
@@ -727,15 +722,8 @@
                 </tr>`);
 
                 // Agregar a DataTables y renderizar (draw false = no resetea la paginación)
-                const newRow = dtTable.row.add($fila).draw(false);
-
-                // Agregar el formulario PATCH fuera de la tabla (después del wrapper)
-                $('#tablaProductos').closest('.table-responsive').after(
-                    `<form id="f-actualizar-desktop-${d.id}" action="/admin/ventas/${d.id}" method="POST" style="display:none;">
-                        <input type="hidden" name="_token" value="${csrfToken}">
-                        <input type="hidden" name="_method" value="PATCH">
-                    </form>`
-                );
+                const addedRow = dtTable.row.add($fila);
+                addedRow.draw(false);
 
                 dtTable.columns.adjust();
 
@@ -747,7 +735,7 @@
 
                 // ── Highlight en la fila nueva (parpadeo verde) ──
                 setTimeout(() => {
-                    const filaNode = newRow.node();
+                    const filaNode = addedRow.node();
                     if (filaNode) {
                         filaNode.style.transition = 'background-color 0.6s';
                         filaNode.style.backgroundColor = '#d1e7dd';
@@ -808,12 +796,13 @@
                 mostrarToast(`<i class="fas fa-times-circle me-1"></i> ${data.message}`, 'danger');
             }
         })
-        .catch(() => {
+        .catch((err) => {
+            console.error('Error capturado en AJAX:', err);
             spinner.classList.add('d-none');
             scanInput.disabled = false;
             scanInput.value    = '';
             scanInput.focus();
-            mostrarToast('<i class="fas fa-times-circle me-1"></i> Error de conexión. Intenta de nuevo.', 'danger');
+            mostrarToast(`<i class="fas fa-times-circle me-1"></i> Error interno: ${err.message}`, 'danger');
         });
     });
 </script>

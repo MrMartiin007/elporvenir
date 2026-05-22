@@ -328,9 +328,26 @@ class VentaController extends Controller
         $venta->save();
 
         if ($request->ajax()) {
+            $precioHtml = '';
+            $precioHtmlMobile = '';
+            
+            if ($detalle->descuento > 0 && $detalle->descuento < $detalle->precio_unitario) {
+                $precioHtml = '<div class="d-flex flex-column align-items-center" style="line-height: 1.2;">
+                                  <span class="text-decoration-line-through text-muted small">Q' . number_format($detalle->precio_unitario, 2) . '</span>
+                                  <span class="fw-bold text-dark">Q' . number_format($detalle->precio_unitario - $detalle->descuento, 2) . '</span>
+                               </div>';
+                $precioHtmlMobile = '<span class="text-decoration-line-through me-1">Q' . number_format($detalle->precio_unitario, 2) . '</span>
+                                     <span class="fw-bold text-dark">Q' . number_format($detalle->precio_unitario - $detalle->descuento, 2) . ' c/u</span>';
+            } else {
+                $precioHtml = 'Q' . number_format($detalle->precio_unitario, 2);
+                $precioHtmlMobile = '<span>Q' . number_format($detalle->precio_unitario, 2) . ' c/u</span>';
+            }
+
             return response()->json([
                 'status'  => 'success',
                 'subtotal' => number_format($detalle->cantidad * ($detalle->precio_unitario - ($detalle->descuento ?? 0)), 2),
+                'precio_html' => $precioHtml,
+                'precio_html_mobile' => $precioHtmlMobile,
                 'resumen' => [
                     'cantidad_productos' => $venta->cantidad_productos,
                     'total_vendido'      => number_format($venta->total_vendido, 2),
