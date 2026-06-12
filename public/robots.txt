@@ -1,5 +1,5 @@
 # Robots.txt - Beauty Center El Porvenir
-# https://elporvenir.shop/
+# https://elporvenir.com.gt/
 
 User-agent: *
 Allow: /
@@ -15,4 +15,4 @@ Disallow: /register
 Disallow: /storage/
 
 # Sitemap
-Sitemap: https://elporvenir.shop/sitemap.xml
+Sitemap: https://elporvenir.com.gt/sitemap.xml

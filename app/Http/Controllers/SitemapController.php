@@ -19,10 +19,10 @@ class SitemapController extends Controller
         $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
 
         // Página principal
-        $sitemap .= $this->addUrl('https://elporvenir.shop/', '1.0', 'daily', now()->toIso8601String());
+        $sitemap .= $this->addUrl('https://elporvenir.com.gt/', '1.0', 'daily', now()->toIso8601String());
 
         // Página de contacto
-        $sitemap .= $this->addUrl('https://elporvenir.shop/contacto', '0.8', 'weekly', now()->toIso8601String());
+        $sitemap .= $this->addUrl('https://elporvenir.com.gt/contacto', '0.8', 'weekly', now()->toIso8601String());
 
         // Agregar cada producto con su URL individual
         foreach ($productos as $producto) {

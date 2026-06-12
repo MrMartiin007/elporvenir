@@ -6,7 +6,7 @@
     <x-seo-meta title="Beauty Center El Porvenir - Cosméticos y Cuidado Personal en Puerto Barrios"
         description="Descubre los mejores productos de belleza y cuidado personal en Puerto Barrios, Izabal. Amplio catálogo de cosméticos, maquillaje, cuidado de la piel, perfumes y más. ¡Calidad garantizada!"
         keywords="cosméticos, belleza, cuidado personal, maquillaje, skincare, perfumes, Puerto Barrios, Izabal, Guatemala, productos de belleza, beauty center"
-        :image="asset('logo.jpg')" url="https://elporvenir.shop/" type="website" />
+        :image="asset('logo.jpg')" url="https://elporvenir.com.gt/" type="website" />
 
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,8 +26,8 @@
         "alternateName": ["El Porvenir", "Tienda El Porvenir", "BC El Porvenir"],
         "description": "El Porvenir es un beauty center y tienda de cosméticos en Puerto Barrios, Izabal, Guatemala. Productos de belleza, maquillaje y cuidado personal de las mejores marcas con envío a toda Guatemala.",
         "image": "{{ asset('logo.jpg') }}",
-        "@id": "https://elporvenir.shop/",
-        "url": "https://elporvenir.shop/",
+        "@id": "https://elporvenir.com.gt/",
+        "url": "https://elporvenir.com.gt/",
         "telephone": "+502-3899-5635",
         "priceRange": "$$",
         "address": {

@@ -6,7 +6,7 @@
     <x-seo-meta title="Contacto - Beauty Center El Porvenir | Puerto Barrios, Izabal"
         description="Contáctanos para consultas sobre nuestros productos de belleza y cuidado personal. Estamos ubicados en Puerto Barrios, Izabal, Guatemala. WhatsApp, teléfono y redes sociales disponibles."
         keywords="contacto, Beauty Center El Porvenir, Puerto Barrios, Izabal, Guatemala, teléfono, whatsapp, ubicación, tienda de belleza"
-        :image="asset('logo.jpg')" url="https://elporvenir.shop/contacto" type="website" />
+        :image="asset('logo.jpg')" url="https://elporvenir.com.gt/contacto" type="website" />
 
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
