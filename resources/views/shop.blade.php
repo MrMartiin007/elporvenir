@@ -620,8 +620,9 @@
                                         <meta itemprop="price" content="{{ $producto->ultimaEntrada->precio_venta }}">
                                         <meta itemprop="priceCurrency" content="GTQ">
                                     @endif
+                                    <meta itemprop="description" content="{{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'El Porvenir' }}">
                                     <link itemprop="availability"
-                                        href="http://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
+                                        href="https://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
 
                                     <a href="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
                                         class="card-img-wrapper d-block">
@@ -654,6 +655,8 @@
                                                         <meta itemprop="price"
                                                             content="{{ $producto->ultimaEntrada->precio_venta }}">
                                                         <meta itemprop="priceCurrency" content="GTQ">
+                                                        <link itemprop="availability" href="https://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
+                                                        <meta itemprop="url" content="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}">
                                                         Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}
                                                     </span>
                                                 @else
