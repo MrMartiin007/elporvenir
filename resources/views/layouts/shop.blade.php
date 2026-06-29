@@ -3,7 +3,7 @@
 
 <head>
     {{-- SEO Meta Tags --}}
-    <x-seo-meta title="Beauty Center El Porvenir - Carrito de Compras"
+    <x-seo-meta title="El Porvenir Beauty Center - Carrito de Compras"
         description="Finaliza tu compra de productos de belleza y cuidado personal en Puerto Barrios, Izabal."
         keywords="carrito, compras, cosméticos, belleza, Puerto Barrios" :image="asset('logo.jpg')"
         url="https://elporvenir.com.gt/" type="website" />
@@ -122,7 +122,7 @@
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="{{ asset('logo.jpg') }}" alt="Logo" width="80" height="auto"
                     class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                Beauty Center <span>El Porvenir</span>
+                El Porvenir <span>Beauty Center</span>
             </a>
 
             {{-- Carrito visible siempre en móvil --}}
@@ -187,7 +187,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5>Beauty Center El Porvenir</h5>
+                    <h5>El Porvenir Beauty Center</h5>
                     <p>Tu destino número uno para productos de belleza y cuidado personal.</p>
                 </div>
                 <div class="col-md-4 mb-4 text-center">

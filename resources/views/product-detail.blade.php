@@ -4,8 +4,8 @@
 <head>
     {{-- SEO Meta Tags - Dinámicos para cada producto --}}
     <x-seo-meta
-        title="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? 'Beauty Center El Porvenir' }} | Beauty Center El Porvenir"
-        description="Compra {{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'las mejores marcas' }} en Beauty Center El Porvenir, Puerto Barrios. {{ $producto->ultimaEntrada ? 'Precio: Q. ' . number_format($producto->ultimaEntrada->precio_venta, 2) : '' }} ¡Envío a toda Guatemala!"
+        title="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? 'El Porvenir Beauty Center' }} | El Porvenir Beauty Center"
+        description="Compra {{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'las mejores marcas' }} en El Porvenir Beauty Center, Puerto Barrios. {{ $producto->ultimaEntrada ? 'Precio: Q. ' . number_format($producto->ultimaEntrada->precio_venta, 2) : '' }} ¡Envío a toda Guatemala!"
         keywords="{{ $producto->detalle_producto }}, {{ $producto->marca->nombre_marca ?? '' }}, cosméticos, belleza, Puerto Barrios, Guatemala"
         :image="$producto->foto_producto ? asset('storage/' . $producto->foto_producto) : asset('logo.jpg')"
         url="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}" type="product" />
@@ -26,10 +26,10 @@
         "@type": "Product",
         "name": "{{ $producto->detalle_producto }}",
         "image": "{{ $producto->foto_producto ? asset('storage/' . $producto->foto_producto) : asset('logo.jpg') }}",
-        "description": "{{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'Beauty Center El Porvenir' }}",
+        "description": "{{ $producto->detalle_producto }} de {{ $producto->marca->nombre_marca ?? 'El Porvenir Beauty Center' }}",
         "brand": {
             "@type": "Brand",
-            "name": "{{ $producto->marca->nombre_marca ?? 'Beauty Center El Porvenir' }}"
+            "name": "{{ $producto->marca->nombre_marca ?? 'El Porvenir Beauty Center' }}"
         },
         "sku": "{{ $producto->codigo_producto }}",
         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
@@ -41,7 +41,7 @@
                 "availability": "https://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}",
                 "seller": {
                     "@type": "Organization",
-                    "name": "Beauty Center El Porvenir"
+                    "name": "El Porvenir Beauty Center"
                 }
             },
         @endif
@@ -757,9 +757,9 @@
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('logo.jpg') }}" alt="Beauty Center El Porvenir - Logo" width="80" height="auto"
+                <img src="{{ asset('logo.jpg') }}" alt="El Porvenir Beauty Center - Logo" width="80" height="auto"
                     class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                Beauty Center <span>El Porvenir</span>
+                El Porvenir <span>Beauty Center</span>
             </a>
 
             {{-- Carrito visible siempre en móvil --}}
@@ -840,7 +840,7 @@
             <div class="product-img-section">
                 @if($producto->foto_producto)
                     <img src="{{ asset('storage/' . $producto->foto_producto) }}"
-                        alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
+                        alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - El Porvenir Beauty Center"
                         loading="eager">
                 @else
                     <div class="text-muted text-center">
@@ -976,7 +976,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5>Beauty Center El Porvenir</h5>
+                    <h5>El Porvenir Beauty Center</h5>
                     <p>Tu destino número uno para productos de belleza y cuidado personal. Calidad y servicio
                         garantizados.</p>
                 </div>

@@ -3,9 +3,9 @@
 
 <head>
     {{-- SEO Meta Tags --}}
-    <x-seo-meta title="Contacto - Beauty Center El Porvenir | Puerto Barrios, Izabal"
+    <x-seo-meta title="Contacto - El Porvenir Beauty Center | Puerto Barrios, Izabal"
         description="Contáctanos para consultas sobre nuestros productos de belleza y cuidado personal. Estamos ubicados en Puerto Barrios, Izabal, Guatemala. WhatsApp, teléfono y redes sociales disponibles."
-        keywords="contacto, Beauty Center El Porvenir, Puerto Barrios, Izabal, Guatemala, teléfono, whatsapp, ubicación, tienda de belleza"
+        keywords="contacto, El Porvenir Beauty Center, Puerto Barrios, Izabal, Guatemala, teléfono, whatsapp, ubicación, tienda de belleza"
         :image="asset('logo.jpg')" url="https://elporvenir.com.gt/contacto" type="website" />
 
     {{-- Bootstrap 5 CDN --}}
@@ -206,7 +206,7 @@
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="{{ asset('logo.jpg') }}" alt="Logo" width="80" height="auto"
                     class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                Beauty Center <span>El Porvenir</span>
+                El Porvenir <span>Beauty Center</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -329,7 +329,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5>Beauty Center El Porvenir</h5>
+                    <h5>El Porvenir Beauty Center</h5>
                     <p>Tu destino número uno para productos de belleza y cuidado personal. Calidad y servicio
                         garantizados.</p>
                 </div>

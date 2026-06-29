@@ -1,8 +1,8 @@
 {{-- SEO Meta Tags Component --}}
 @props([
-    'title' => 'El Porvenir - Beauty Center | Cosméticos y Cuidado Personal en Puerto Barrios, Guatemala',
-    'description' => 'El Porvenir es tu Beauty Center de confianza en Puerto Barrios, Izabal. Descubre cosméticos, maquillaje, skincare y cuidado personal de las mejores marcas. Tienda El Porvenir — ¡envío a toda Guatemala!',
-    'keywords' => 'El Porvenir, Beauty Center El Porvenir, El Porvenir cosméticos, El Porvenir Guatemala, El Porvenir Puerto Barrios, tienda El Porvenir, cosméticos, belleza, cuidado personal, maquillaje, Puerto Barrios, Izabal, Guatemala, productos de belleza, skincare',
+    'title' => 'El Porvenir Beauty Center | Cosméticos y Cuidado Personal en Puerto Barrios, Guatemala',
+    'description' => 'El Porvenir Beauty Center es tu tienda de confianza en Puerto Barrios, Izabal. Descubre cosméticos, maquillaje, skincare y cuidado personal de las mejores marcas. ¡Envío a toda Guatemala!',
+    'keywords' => 'El Porvenir Beauty Center, El Porvenir, beauty center Puerto Barrios, cosméticos El Porvenir, El Porvenir Guatemala, tienda belleza Puerto Barrios, cosméticos, belleza, cuidado personal, maquillaje, Puerto Barrios, Izabal, Guatemala, productos de belleza, skincare',
     'image' => asset('logo.jpg'),
     'url' => url()->current(),
     'type' => 'website'
@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{{ $description }}">
 <meta name="keywords" content="{{ $keywords }}">
-<meta name="author" content="Beauty Center El Porvenir">
+<meta name="author" content="El Porvenir Beauty Center">
 <meta name="robots" content="index, follow">
 <meta name="language" content="Spanish">
 <meta name="geo.region" content="GT-IZ">
@@ -33,7 +33,7 @@
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $description }}">
 <meta property="og:image" content="{{ $image }}">
-<meta property="og:site_name" content="Beauty Center El Porvenir">
+<meta property="og:site_name" content="El Porvenir Beauty Center">
 <meta property="og:locale" content="es_GT">
 
 {{-- Twitter Card --}}
@@ -46,6 +46,25 @@
 {{-- WhatsApp --}}
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+
+{{-- Schema.org WebSite - Le dice a Google cómo llamar al sitio en los resultados --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "El Porvenir Beauty Center",
+    "alternateName": ["El Porvenir", "BC El Porvenir", "elporvenir.com.gt"],
+    "url": "https://elporvenir.com.gt/",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://elporvenir.com.gt/?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
 
 {{-- Favicon --}}
 <link rel="shortcut icon" href="{{ asset('logo.jpg') }}" type="image/jpeg">

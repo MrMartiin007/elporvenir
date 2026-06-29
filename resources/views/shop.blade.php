@@ -3,7 +3,7 @@
 
 <head>
     {{-- SEO Meta Tags --}}
-    <x-seo-meta title="Beauty Center El Porvenir - Cosméticos y Cuidado Personal en Puerto Barrios"
+    <x-seo-meta title="El Porvenir Beauty Center - Cosméticos y Cuidado Personal en Puerto Barrios"
         description="Descubre los mejores productos de belleza y cuidado personal en Puerto Barrios, Izabal. Amplio catálogo de cosméticos, maquillaje, cuidado de la piel, perfumes y más. ¡Calidad garantizada!"
         keywords="cosméticos, belleza, cuidado personal, maquillaje, skincare, perfumes, Puerto Barrios, Izabal, Guatemala, productos de belleza, beauty center"
         :image="asset('logo.jpg')" url="https://elporvenir.com.gt/" type="website" />
@@ -22,7 +22,7 @@
     {
         "@context": "https://schema.org",
         "@type": "BeautySalon",
-        "name": "Beauty Center El Porvenir",
+        "name": "El Porvenir Beauty Center",
         "alternateName": ["El Porvenir", "Tienda El Porvenir", "BC El Porvenir"],
         "description": "El Porvenir es un beauty center y tienda de cosméticos en Puerto Barrios, Izabal, Guatemala. Productos de belleza, maquillaje y cuidado personal de las mejores marcas con envío a toda Guatemala.",
         "image": "{{ asset('logo.jpg') }}",
@@ -462,7 +462,7 @@
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="{{ asset('logo.jpg') }}" alt="Logo" width="80" height="auto"
                     class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                Beauty Center <span>El Porvenir</span>
+                El Porvenir <span>Beauty Center</span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -628,7 +628,7 @@
                                         class="card-img-wrapper d-block">
                                         @if($producto->foto_producto)
                                             <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
-                                                alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - Beauty Center El Porvenir"
+                                                alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - El Porvenir Beauty Center"
                                                 itemprop="image" loading="lazy">
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
@@ -712,7 +712,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5>Beauty Center El Porvenir</h5>
+                    <h5>El Porvenir Beauty Center</h5>
                     <p>Tu destino número uno para productos de belleza y cuidado personal. Calidad y servicio
                         garantizados.</p>
                 </div>
