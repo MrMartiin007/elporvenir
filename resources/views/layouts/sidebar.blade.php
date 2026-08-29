@@ -1,5 +1,5 @@
 <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 transition-all shadow-lg"
-    style="width: 180px; min-height: 100vh; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); background-color: #fae1e5; color: #5c3d42; z-index: 1000;">
+    style="width: 180px; height: 100vh; overflow-y: auto; overflow-x: hidden; position: sticky; top: 0; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); background-color: #fae1e5; color: #5c3d42; z-index: 1000;">
 
     <!-- Header: Logo + Toggle Button -->
     <div class="sidebar-header d-flex align-items-center justify-content-between mb-3" style="min-height: 50px;">
@@ -22,7 +22,7 @@
 
     <hr class="border-white opacity-50 my-2">
 
-    <ul class="nav nav-pills flex-column mb-auto">
+    <ul class="nav nav-pills flex-column mb-auto" style="overflow-y: auto; overflow-x: hidden;">
         @role('superadmin')
         <li>
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
@@ -281,6 +281,29 @@
 </div>
 
 <style>
+    /* Scrollbar personalizado para el sidebar */
+    #sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    #sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(176, 101, 123, 0.4);
+        border-radius: 10px;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(176, 101, 123, 0.7);
+    }
+
+    /* Firefox */
+    #sidebar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(176, 101, 123, 0.4) transparent;
+    }
     /* Active State Style */
     .nav-link.active {
         background-color: #ffffff !important;
