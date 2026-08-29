@@ -682,10 +682,10 @@
                                             <span class="position-absolute top-0 start-0 badge bg-danger text-white m-2"
                                                 style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🌟 OFERTA</span>
                                         @endif
-                                        @if($producto->stock === 0)
+                                        @if((int)$producto->stock === 0)
                                             <span class="position-absolute top-0 end-0 badge bg-danger text-white m-2"
-                                                style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Sin stock</span>
-                                        @elseif($producto->stock < 5)
+                                                style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">No disponible</span>
+                                        @elseif((int)$producto->stock < 5)
                                             <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">¡Pocas
                                                 unidades!</span>
                                         @endif
@@ -717,14 +717,14 @@
                                         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
                                             @php
                                                 $enCarrito = session('carrito') && isset(session('carrito')[$producto->id]);
-                                                $sinStock  = $producto->stock === 0;
+                                                $sinStock  = (int)$producto->stock === 0;
                                             @endphp
                                             @if($sinStock)
                                                 {{-- Sin stock: mostrar botón deshabilitado --}}
                                                 <div class="mt-auto">
                                                     <button type="button" class="btn w-100 btn-secondary" disabled
                                                         style="font-size: 0.9rem; padding: 0.6rem 1rem; border-radius: 50px; opacity: 0.65; cursor: not-allowed;">
-                                                        <i class="fas fa-ban me-1"></i> Sin stock
+                                                        <i class="fas fa-ban me-1"></i> No disponible
                                                     </button>
                                                 </div>
                                             @else
