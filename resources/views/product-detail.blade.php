@@ -877,38 +877,48 @@
                     </div>
                 @endif
 
-                <!-- Stock Status -->
-                @if($producto->stock > 5)
+                {{-- Stock Status --}}
+                @php $stockActual = (int)$producto->stock; @endphp
+                @if($stockActual > 5)
                     <div class="stock-badge in-stock">
                         <i class="fas fa-check-circle me-2"></i> Disponible
                     </div>
-                @elseif($producto->stock > 0)
+                @elseif($stockActual > 0)
                     <div class="stock-badge low-stock">
                         <i class="fas fa-exclamation-circle me-2"></i> ¡Pocas unidades!
                     </div>
                 @else
-                    <div class="stock-badge low-stock">
-                        <i class="fas fa-exclamation-circle me-2"></i> Pocas unidades
+                    <div class="stock-badge out-of-stock"
+                        style="background:#fdecea; color:#c0392b; border:1px solid #f5c6cb;">
+                        <i class="fas fa-times-circle me-2"></i> No disponible
                     </div>
                 @endif
 
                 <div class="divider"></div>
 
-                <!-- Actions (desktop only) -->
+                {{-- Actions (desktop only) --}}
                 <div class="d-flex flex-column gap-3 desktop-actions">
                     @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
-                        <form action="{{ route('cart.agregar') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="producto_id" value="{{ $producto->id }}">
-                            <input type="hidden" name="cantidad" value="1">
-                            <button type="submit" class="btn btn-add-cart w-100 {{ $enCarrito ? 'added' : '' }}">
-                                @if($enCarrito)
-                                    <i class="fas fa-check me-2"></i> Agregado al carrito
-                                @else
-                                    <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
-                                @endif
+                        @if($stockActual === 0)
+                            {{-- Sin stock: botón deshabilitado --}}
+                            <button type="button" class="btn btn-add-cart w-100" disabled
+                                style="opacity:0.6; cursor:not-allowed; background:#6c757d; color:white; border:none;">
+                                <i class="fas fa-ban me-2"></i> No disponible
                             </button>
-                        </form>
+                        @else
+                            <form action="{{ route('cart.agregar') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                                <input type="hidden" name="cantidad" value="1">
+                                <button type="submit" class="btn btn-add-cart w-100 {{ $enCarrito ? 'added' : '' }}">
+                                    @if($enCarrito)
+                                        <i class="fas fa-check me-2"></i> Agregado al carrito
+                                    @else
+                                        <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
+                                    @endif
+                                </button>
+                            </form>
+                        @endif
                     @endif
 
                     <a href="https://wa.me/50238995635?text={{ urlencode('Hola, me interesa el producto: ' . $producto->detalle_producto . ' (Código: ' . $producto->codigo_producto . '). ¿Está disponible?') }}"
@@ -1002,22 +1012,30 @@
         </div>
     </footer>
 
-    <!-- Mobile Sticky Action Bar -->
+    {{-- Mobile Sticky Action Bar --}}
     <div class="mobile-action-bar">
         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
             <span class="mobile-price">Q. {{ number_format($producto->ultimaEntrada->precio_venta, 2) }}</span>
-            <form action="{{ route('cart.agregar') }}" method="POST" style="flex: 1;">
-                @csrf
-                <input type="hidden" name="producto_id" value="{{ $producto->id }}">
-                <input type="hidden" name="cantidad" value="1">
-                <button type="submit" class="btn-add-cart-mobile w-100 {{ $enCarrito ? 'added' : '' }}">
-                    @if($enCarrito)
-                        <i class="fas fa-check me-1"></i> Agregado
-                    @else
-                        <i class="fas fa-cart-plus me-1"></i> Agregar
-                    @endif
+            @if($stockActual === 0)
+                {{-- Sin stock: botón deshabilitado --}}
+                <button type="button" class="btn-add-cart-mobile w-100" disabled
+                    style="flex:1; opacity:0.6; cursor:not-allowed; background:#6c757d; color:white; border:none; border-radius:50px; padding:0.7rem 1rem; font-weight:600; font-size:0.85rem;">
+                    <i class="fas fa-ban me-1"></i> No disponible
                 </button>
-            </form>
+            @else
+                <form action="{{ route('cart.agregar') }}" method="POST" style="flex: 1;">
+                    @csrf
+                    <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                    <input type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="btn-add-cart-mobile w-100 {{ $enCarrito ? 'added' : '' }}">
+                        @if($enCarrito)
+                            <i class="fas fa-check me-1"></i> Agregado
+                        @else
+                            <i class="fas fa-cart-plus me-1"></i> Agregar
+                        @endif
+                    </button>
+                </form>
+            @endif
         @endif
         <a href="https://wa.me/50238995635?text={{ urlencode('Hola, me interesa el producto: ' . $producto->detalle_producto . ' (Código: ' . $producto->codigo_producto . '). ¿Está disponible?') }}"
             target="_blank" class="btn-wa-mobile">
