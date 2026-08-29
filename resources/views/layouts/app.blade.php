@@ -52,7 +52,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="d-flex overflow-hidden" style="height: 100vh;">
+    <div class="d-flex" style="height: 100vh; overflow: hidden;">
         <!-- Sidebar -->
         @include('layouts.sidebar')
 

@@ -1,5 +1,5 @@
 <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 transition-all shadow-lg"
-    style="width: 180px; height: 100vh; overflow-y: auto; overflow-x: hidden; position: sticky; top: 0; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); background-color: #fae1e5; color: #5c3d42; z-index: 1000;">
+    style="width: 180px; height: 100vh; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); background-color: #fae1e5; color: #5c3d42; z-index: 1000;">
 
     <!-- Header: Logo + Toggle Button -->
     <div class="sidebar-header d-flex align-items-center justify-content-between mb-3" style="min-height: 50px;">
@@ -303,6 +303,10 @@
     #sidebar {
         scrollbar-width: thin;
         scrollbar-color: rgba(176, 101, 123, 0.4) transparent;
+        /* Forzar scroll: !important para sobrepasar cualquier clase de Bootstrap */
+        height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
     }
     /* Active State Style */
     .nav-link.active {
