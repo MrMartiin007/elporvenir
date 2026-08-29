@@ -140,19 +140,51 @@
 
         .card-img-wrapper {
             position: relative;
-            height: 250px;
+            /* aspect-ratio reserva el espacio ANTES de que cargue la imagen,
+               eliminando el layout shift (CLS) que percibe lentitud */
+            aspect-ratio: 1 / 1;
             overflow: hidden;
-            background-color: white;
+            background-color: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
+            /* Skeleton loader animado mientras no hay imagen */
+            background-image: linear-gradient(
+                90deg,
+                #f0f0f0 25%,
+                #e8e8e8 50%,
+                #f0f0f0 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-shimmer 1.5s infinite;
+        }
+
+        /* Cuando la imagen ya cargó, elimina el skeleton */
+        .card-img-wrapper.loaded {
+            background-image: none;
+            animation: none;
+            background-color: white;
+        }
+
+        @keyframes skeleton-shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
         }
 
         .card-img-top {
-            max-height: 100%;
-            width: auto;
-            max-width: 100%;
+            /* Ocupa todo el wrapper manteniendo proporción */
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             transition: transform 0.5s;
+            /* Invisible hasta que cargue para evitar flash de imagen rota */
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+        }
+
+        /* La imagen se hace visible al cargar */
+        .card-img-top.img-loaded {
+            opacity: 1;
         }
 
         .card-product:hover .card-img-top {
@@ -425,9 +457,7 @@
                 border-radius: 10px;
             }
 
-            .card-img-wrapper {
-                height: 200px;
-            }
+            /* En móvil mantenemos el aspect-ratio — no se necesita height fijo */
 
             .card-body {
                 padding: 1rem;
@@ -624,12 +654,27 @@
                                     <link itemprop="availability"
                                         href="https://schema.org/{{ $producto->stock > 0 ? 'InStock' : 'OutOfStock' }}">
 
+                                    @php
+                                        $isAboveFold = $loop->index < 4;
+                                    @endphp
                                     <a href="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
-                                        class="card-img-wrapper d-block">
+                                        class="card-img-wrapper d-block" id="img-wrapper-{{ $producto->id }}">
                                         @if($producto->foto_producto)
-                                            <img src="{{ asset('storage/' . $producto->foto_producto) }}" class="card-img-top"
+                                            <img
+                                                src="{{ asset('storage/' . $producto->foto_producto) }}"
+                                                class="card-img-top"
                                                 alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - El Porvenir Beauty Center"
-                                                itemprop="image" loading="lazy">
+                                                itemprop="image"
+                                                width="400"
+                                                height="400"
+                                                decoding="async"
+                                                @if($isAboveFold)
+                                                    fetchpriority="high"
+                                                @else
+                                                    loading="lazy"
+                                                @endif
+                                                onload="this.classList.add('img-loaded'); this.closest('.card-img-wrapper').classList.add('loaded')"
+                                            >
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
@@ -637,7 +682,10 @@
                                             <span class="position-absolute top-0 start-0 badge bg-danger text-white m-2"
                                                 style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">🌟 OFERTA</span>
                                         @endif
-                                        @if($producto->stock < 5)
+                                        @if($producto->stock === 0)
+                                            <span class="position-absolute top-0 end-0 badge bg-danger text-white m-2"
+                                                style="font-size: 0.8rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Sin stock</span>
+                                        @elseif($producto->stock < 5)
                                             <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">¡Pocas
                                                 unidades!</span>
                                         @endif
@@ -669,20 +717,31 @@
                                         @if($producto->ultimaEntrada && $producto->ultimaEntrada->precio_venta)
                                             @php
                                                 $enCarrito = session('carrito') && isset(session('carrito')[$producto->id]);
+                                                $sinStock  = $producto->stock === 0;
                                             @endphp
-                                            <form action="{{ route('cart.agregar') }}" method="POST" class="mt-auto">
-                                                @csrf
-                                                <input type="hidden" name="producto_id" value="{{ $producto->id }}">
-                                                <input type="hidden" name="cantidad" value="1">
-                                                <button type="submit" class="btn w-100 {{ $enCarrito ? '' : 'btn-theme' }}"
-                                                    style="font-size: 0.9rem; padding: 0.6rem 1rem; {{ $enCarrito ? 'background-color: var(--bs-primary); color: white; border: none; border-radius: 50px;' : '' }}">
-                                                    @if($enCarrito)
-                                                        <i class="fas fa-check me-1"></i> Agregado
-                                                    @else
-                                                        <i class="fas fa-cart-plus me-1"></i> Agregar
-                                                    @endif
-                                                </button>
-                                            </form>
+                                            @if($sinStock)
+                                                {{-- Sin stock: mostrar botón deshabilitado --}}
+                                                <div class="mt-auto">
+                                                    <button type="button" class="btn w-100 btn-secondary" disabled
+                                                        style="font-size: 0.9rem; padding: 0.6rem 1rem; border-radius: 50px; opacity: 0.65; cursor: not-allowed;">
+                                                        <i class="fas fa-ban me-1"></i> Sin stock
+                                                    </button>
+                                                </div>
+                                            @else
+                                                <form action="{{ route('cart.agregar') }}" method="POST" class="mt-auto">
+                                                    @csrf
+                                                    <input type="hidden" name="producto_id" value="{{ $producto->id }}">
+                                                    <input type="hidden" name="cantidad" value="1">
+                                                    <button type="submit" class="btn w-100 {{ $enCarrito ? '' : 'btn-theme' }}"
+                                                        style="font-size: 0.9rem; padding: 0.6rem 1rem; {{ $enCarrito ? 'background-color: var(--bs-primary); color: white; border: none; border-radius: 50px;' : '' }}">
+                                                        @if($enCarrito)
+                                                            <i class="fas fa-check me-1"></i> Agregado
+                                                        @else
+                                                            <i class="fas fa-cart-plus me-1"></i> Agregar
+                                                        @endif
+                                                    </button>
+                                                </form>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
