@@ -1,8 +1,8 @@
 <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 transition-all shadow-lg"
     style="width: 180px; height: 100vh; overflow-y: auto; overflow-x: hidden; flex-shrink: 0; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); background-color: #fae1e5; color: #5c3d42; z-index: 1000;">
 
-    <!-- Header: Logo + Toggle Button -->
-    <div class="sidebar-header d-flex align-items-center justify-content-between mb-3" style="min-height: 50px;">
+    {{-- Header: Logo + Toggle Button --}}
+    <div class="sidebar-header d-flex align-items-center justify-content-between mb-3" style="min-height: 50px; flex-shrink: 0;">
         <!-- Logo Wrapper -->
         <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none logo-container"
             style="color: #5c3d42;">
@@ -20,9 +20,10 @@
         </button>
     </div>
 
-    <hr class="border-white opacity-50 my-2">
+    <hr class="border-white opacity-50 my-2 flex-shrink-0">
 
-    <ul class="nav nav-pills flex-column mb-auto" style="overflow-y: auto; overflow-x: hidden;">
+    {{-- Lista de navegación — esta sección es la que hace scroll --}}
+    <ul class="nav nav-pills flex-column mb-auto" id="sidebar-nav">
         @role('superadmin')
         <li>
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
@@ -255,9 +256,9 @@
         @endrole
     </ul>
 
-    <hr class="border-white opacity-50 my-2">
+    <hr class="border-white opacity-50 my-2 flex-shrink-0">
 
-    <div class="dropdown">
+    <div class="dropdown flex-shrink-0">
         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser1"
             data-bs-toggle="dropdown" aria-expanded="false" style="color: #5c3d42;">
             <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=fff&color=5c3d42" alt=""
@@ -281,33 +282,6 @@
 </div>
 
 <style>
-    /* Scrollbar personalizado para el sidebar */
-    #sidebar::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    #sidebar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    #sidebar::-webkit-scrollbar-thumb {
-        background-color: rgba(176, 101, 123, 0.4);
-        border-radius: 10px;
-    }
-
-    #sidebar::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(176, 101, 123, 0.7);
-    }
-
-    /* Firefox */
-    #sidebar {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(176, 101, 123, 0.4) transparent;
-        /* Forzar scroll: !important para sobrepasar cualquier clase de Bootstrap */
-        height: 100vh !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-    }
     /* Active State Style */
     .nav-link.active {
         background-color: #ffffff !important;
