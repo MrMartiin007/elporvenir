@@ -64,7 +64,7 @@ class VentaController extends Controller
         if ($request->filled('scan')) {
             $codigo = $request->input('scan');
             $producto = Producto::with('ultimaEntrada')
-                ->where('codigo_producto', $codigo)
+                ->porCodigo($codigo)
                 ->first();
 
             if (!$producto) {
@@ -111,7 +111,7 @@ class VentaController extends Controller
         }
 
         if ($request->filled('buscar')) {
-            $productosFiltrados = Producto::where('codigo_producto', $request->buscar)
+            $productosFiltrados = Producto::porCodigo($request->buscar)
                 ->get();
         }
 
@@ -194,7 +194,7 @@ class VentaController extends Controller
         }
 
         $producto = Producto::with('ultimaEntrada')
-            ->where('codigo_producto', $codigo)
+            ->porCodigo($codigo)
             ->first();
 
         if (!$producto) {

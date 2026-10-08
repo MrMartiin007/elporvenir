@@ -38,6 +38,14 @@
                         <div class="col-md-3">
                             <label class="form-label text-muted">Código:</label>
                             <div class="bg-light p-3 rounded fw-semibold">{{ $producto->codigo_producto }}</div>
+                            @if($producto->codigos->isNotEmpty())
+                                <div class="small text-muted mt-2">
+                                    Otros códigos:
+                                    @foreach($producto->codigos as $extra)
+                                        <span class="badge bg-light text-dark border">{{ $extra->codigo }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
 
                         <div class="col-md-3">

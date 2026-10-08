@@ -5,7 +5,8 @@
     'keywords' => 'El Porvenir Beauty Center, El Porvenir, beauty center Puerto Barrios, cosméticos El Porvenir, El Porvenir Guatemala, tienda belleza Puerto Barrios, cosméticos, belleza, cuidado personal, maquillaje, Puerto Barrios, Izabal, Guatemala, productos de belleza, skincare',
     'image' => asset('logo.jpg'),
     'url' => url()->current(),
-    'type' => 'website'
+    'type' => 'website',
+    'robots' => 'index, follow'
 ])
 
 {{-- Basic Meta Tags --}}
@@ -14,12 +15,18 @@
 <meta name="description" content="{{ $description }}">
 <meta name="keywords" content="{{ $keywords }}">
 <meta name="author" content="El Porvenir Beauty Center">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="{{ $robots }}">
 <meta name="language" content="Spanish">
 <meta name="geo.region" content="GT-IZ">
 <meta name="geo.placename" content="Puerto Barrios">
 <meta name="geo.position" content="15.7308;-88.5992">
 <meta name="ICBM" content="15.7308, -88.5992">
+
+{{-- Conexiones tempranas a los CDN de CSS y fuentes (ahorra ~100-300 ms en móvil) --}}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 {{-- Canonical URL --}}
 <link rel="canonical" href="{{ $url }}">
@@ -53,13 +60,13 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "El Porvenir Beauty Center",
-    "alternateName": ["El Porvenir", "BC El Porvenir", "elporvenir.com.gt"],
+    "alternateName": ["El Porvenir", "El Porvenir Puerto Barrios", "El Porvenir Guatemala", "BC El Porvenir", "elporvenir.com.gt"],
     "url": "https://elporvenir.com.gt/",
     "potentialAction": {
         "@type": "SearchAction",
         "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://elporvenir.com.gt/?search={search_term_string}"
+            "urlTemplate": "https://elporvenir.com.gt/tienda?search={search_term_string}"
         },
         "query-input": "required name=search_term_string"
     }

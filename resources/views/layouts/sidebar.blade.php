@@ -123,6 +123,16 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('banners.index') }}"
+                class="nav-link {{ request()->routeIs('banners.*') ? 'active' : '' }}" title="Portada de la tienda"
+                style="color: #5c3d42;">
+                <div class="icon-wrapper d-flex justify-content-center" style="min-width: 30px;">
+                    <i class="fas fa-images fa-lg"></i>
+                </div>
+                <span class="ms-2 sidebar-text">Portada</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('empresas.index') }}"
                 class="nav-link {{ request()->routeIs('empresas.*') ? 'active' : '' }}" title="Empresas"
                 style="color: #5c3d42;">

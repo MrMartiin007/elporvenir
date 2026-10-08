@@ -26,9 +26,9 @@
                                 {{-- Imagen del producto --}}
                                 <div class="col-4 col-md-2">
                                     @if($item['imagen'])
-                                        <img src="{{ asset('storage/' . $item['imagen']) }}" 
-                                             alt="{{ $item['nombre'] }}" 
-                                             class="img-fluid rounded">
+                                        <x-product-img :path="$item['imagen']" :alt="$item['nombre']"
+                                             sizes="120px" :width="120" :height="120"
+                                             class="img-fluid rounded" loading="lazy" decoding="async" />
                                     @else
                                         <div class="bg-light p-3 rounded text-center">
                                             <i class="fas fa-image fa-2x text-muted"></i>
@@ -88,7 +88,7 @@
                 
                 {{-- Botón Vaciar Carrito (Mobile-First) --}}
                 <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
-                    <a href="{{ route('home') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('tienda') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i>
                         <span class="d-none d-sm-inline"></span>Seguir Comprando
                     </a>
@@ -141,7 +141,7 @@
                             <i class="fas fa-check-circle me-2"></i>Finalizar Pedido
                         </a>
                         
-                        <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 ">
+                        <a href="{{ route('tienda') }}" class="btn btn-outline-secondary w-100 ">
                             <i class="fas fa-shopping-bag me-1"></i>Seguir Comprando
                         </a>
                     </div>
@@ -160,7 +160,7 @@
                         <p class="text-muted mb-4">
                             ¡Descubre nuestros increíbles productos de belleza y comienza a comprar!
                         </p>
-                        <a href="{{ route('home') }}" class="btn btn-theme px-5 py-3">
+                        <a href="{{ route('tienda') }}" class="btn btn-theme px-5 py-3">
                             <i class="fas fa-shopping-bag me-2"></i>Ver Productos
                         </a>
                     </div>

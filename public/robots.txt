@@ -11,8 +11,15 @@ Disallow: /dashboard/
 Disallow: /login
 Disallow: /register
 
-# Bloquear directorios del sistema
+# Carrito y checkout (no aportan nada al buscador y llevan datos del cliente)
+Disallow: /cart
+Disallow: /buscar
+
+# Bloquear directorios del sistema, pero permitir las fotos de productos y marcas
+# (Google Imágenes y Merchant Center necesitan poder rastrearlas)
 Disallow: /storage/
+Allow: /storage/productos/
+Allow: /storage/marcas/
 
 # Sitemap
 Sitemap: https://elporvenir.com.gt/sitemap.xml

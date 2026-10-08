@@ -3,10 +3,82 @@
 
 <head>
     {{-- SEO Meta Tags --}}
-    <x-seo-meta title="El Porvenir Beauty Center - Cosméticos y Cuidado Personal en Puerto Barrios"
-        description="Descubre los mejores productos de belleza y cuidado personal en Puerto Barrios, Izabal. Amplio catálogo de cosméticos, maquillaje, cuidado de la piel, perfumes y más. ¡Calidad garantizada!"
+    @php
+        // Canonical propio por página: marca y paginación se indexan; búsquedas y orden no.
+        $seoPage = $productos->currentPage();
+        $seoMarca = $marcaActual?->nombre_marca;
+        // URL de una página del listado (inicio o marca) sin parámetros de búsqueda ni orden
+        $seoPageUrl = fn ($page) => $marcaActual
+            ? $marcaActual->url(['page' => $page > 1 ? $page : null])
+            : route('tienda', array_filter(['page' => $page > 1 ? $page : null]));
+        $seoUrl = $seoPageUrl($seoPage);
+        $seoNoIndex = filled($search) || filled($sort) || (filled($marcaId) && !$marcaActual);
+
+        // Títulos: "El Porvenir" siempre al inicio o al final, junto a la ciudad, que es como la gente lo busca.
+        $seoTitle = 'Tienda en línea de cosméticos y belleza | El Porvenir Puerto Barrios';
+        if ($seoMarca) {
+            $seoTitle = $seoMarca . ' en Puerto Barrios | El Porvenir Guatemala';
+        }
+        if ($seoPage > 1) {
+            $seoTitle .= ' - Página ' . $seoPage;
+        }
+        $seoDescription = $seoMarca
+            ? 'Compra ' . $productos->total() . ' productos ' . $seoMarca . ' en El Porvenir, Puerto Barrios, Guatemala. Envíos a toda Guatemala.'
+            : 'Compra en línea maquillaje, skincare, perfumes y cuidado personal en El Porvenir, Puerto Barrios, Guatemala. Más de ' . (floor($productos->total() / 100) * 100) . ' productos con envíos a toda Guatemala.';
+        if ($seoMarca && \App\Services\ImageVariants::existe($marcaActual->foto_marca)) {
+            $seoImage = asset('storage/' . $marcaActual->foto_marca);
+        } else {
+            $seoImage = asset('logo.jpg');
+        }
+    @endphp
+    <x-seo-meta :title="$seoTitle"
+        :description="$seoDescription"
         keywords="cosméticos, belleza, cuidado personal, maquillaje, skincare, perfumes, Puerto Barrios, Izabal, Guatemala, productos de belleza, beauty center"
-        :image="asset('logo.jpg')" url="https://elporvenir.com.gt/" type="website" />
+        :image="$seoImage" :url="$seoUrl" type="website"
+        :robots="$seoNoIndex ? 'noindex, follow' : 'index, follow'" />
+    @if($productos->previousPageUrl())
+        <link rel="prev" href="{{ $seoPageUrl($seoPage - 1) }}">
+    @endif
+    @if($productos->hasMorePages())
+        <link rel="next" href="{{ $seoPageUrl($seoPage + 1) }}">
+    @endif
+
+    {{-- Datos estructurados: lista de productos y migas de pan (solo páginas indexables) --}}
+    @unless($seoNoIndex)
+        @php
+            $ldLista = [
+                '@context' => 'https://schema.org',
+                '@type' => 'CollectionPage',
+                'name' => $seoTitle,
+                'description' => $seoDescription,
+                'url' => $seoUrl,
+                'isPartOf' => ['@type' => 'WebSite', 'name' => 'El Porvenir Beauty Center', 'url' => route('home')],
+                'mainEntity' => [
+                    '@type' => 'ItemList',
+                    'numberOfItems' => $productos->total(),
+                    'itemListElement' => $productos->values()->map(fn ($p, $i) => [
+                        '@type' => 'ListItem',
+                        'position' => ($productos->currentPage() - 1) * $productos->perPage() + $i + 1,
+                        'url' => $p->url,
+                        'name' => $p->detalle_producto,
+                    ])->all(),
+                ],
+            ];
+            $ldMigas = [
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => array_values(array_filter([
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => route('home')],
+                    $marcaActual ? ['@type' => 'ListItem', 'position' => 2, 'name' => $seoMarca, 'item' => $marcaActual->url()] : null,
+                ])),
+            ];
+            $ldFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP;
+        @endphp
+        <script type="application/ld+json">{!! json_encode($ldLista, $ldFlags) !!}</script>
+        @if($marcaActual)
+            <script type="application/ld+json">{!! json_encode($ldMigas, $ldFlags) !!}</script>
+        @endif
+    @endunless
 
     {{-- Bootstrap 5 CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,469 +89,11 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
 
-    {{-- Schema.org Structured Data - Local Business --}}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BeautySalon",
-        "name": "El Porvenir Beauty Center",
-        "alternateName": ["El Porvenir", "Tienda El Porvenir", "BC El Porvenir"],
-        "description": "El Porvenir es un beauty center y tienda de cosméticos en Puerto Barrios, Izabal, Guatemala. Productos de belleza, maquillaje y cuidado personal de las mejores marcas con envío a toda Guatemala.",
-        "image": "{{ asset('logo.jpg') }}",
-        "@id": "https://elporvenir.com.gt/",
-        "url": "https://elporvenir.com.gt/",
-        "telephone": "+502-3899-5635",
-        "priceRange": "$$",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Puerto Barrios",
-            "addressLocality": "Puerto Barrios",
-            "addressRegion": "Izabal",
-            "postalCode": "",
-            "addressCountry": "GT"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 15.7308,
-            "longitude": -88.5992
-        },
-        "openingHoursSpecification": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
-            ],
-            "opens": "08:00",
-            "closes": "18:00"
-        },
-        "sameAs": [
-            "https://www.facebook.com/profile.php?id=100068403559419",
-            "https://www.instagram.com/bcporvenir?igsh=Y2o3cjRreWpvN3B5"
-        ]
-    }
-    </script>
-
-    <style>
-        /* Colors Variables */
-        :root {
-            --bs-primary: #d8a4a4;
-            /* Nude Pink Primary */
-            --bs-primary-dark: #b0657b;
-            /* Darker Pink for Hover/Text */
-            --bs-primary-light: #f9ebeb;
-            /* Very Light Pink for Backgrounds */
-        }
-
-        body {
-            font-family: 'Lato', sans-serif;
-            background-color: #fcf8f8;
-            /* Slight pinkish white */
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 1rem 0;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: #212529;
-        }
-
-        .navbar-brand span {
-            color: var(--bs-primary);
-        }
-
-        .nav-link {
-            font-weight: 500;
-            color: #495057;
-            margin-left: 1rem;
-            transition: color 0.3s;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--bs-primary-dark);
-        }
-
-        /* Product Card */
-        .card-product {
-            border: none;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-            background: white;
-            border-radius: 12px;
-            /* More rounded */
-            overflow: hidden;
-            border: 1px solid #f0f0f0;
-        }
-
-        .card-product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(216, 164, 164, 0.15);
-            /* Soft pink shadow */
-            border-color: var(--bs-primary-light);
-        }
-
-        .card-img-wrapper {
-            position: relative;
-            /* aspect-ratio reserva el espacio ANTES de que cargue la imagen,
-               eliminando el layout shift (CLS) que percibe lentitud */
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            background-color: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* Skeleton loader animado mientras no hay imagen */
-            background-image: linear-gradient(
-                90deg,
-                #f0f0f0 25%,
-                #e8e8e8 50%,
-                #f0f0f0 75%
-            );
-            background-size: 200% 100%;
-            animation: skeleton-shimmer 1.5s infinite;
-        }
-
-        /* Cuando la imagen ya cargó, elimina el skeleton */
-        .card-img-wrapper.loaded {
-            background-image: none;
-            animation: none;
-            background-color: white;
-        }
-
-        @keyframes skeleton-shimmer {
-            0%   { background-position: -200% 0; }
-            100% { background-position:  200% 0; }
-        }
-
-        .card-img-top {
-            /* Ocupa todo el wrapper manteniendo proporción */
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: transform 0.5s;
-            /* Invisible hasta que cargue para evitar flash de imagen rota */
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.5s ease;
-        }
-
-        /* La imagen se hace visible al cargar */
-        .card-img-top.img-loaded {
-            opacity: 1;
-        }
-
-        .card-product:hover .card-img-top {
-            transform: scale(1.05);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .category-badge {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #999;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .product-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            transition: color 0.2s;
-        }
-
-        .product-title:hover {
-            color: var(--bs-primary-dark);
-        }
-
-        .product-price {
-            color: var(--bs-primary-dark);
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-
-        /* Sidebar Widgets */
-        .sidebar-widget {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-            margin-bottom: 2rem;
-            border: 1px solid #f8f8f8;
-        }
-
-        .widget-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1.2rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.8rem;
-            position: relative;
-            color: var(--bs-primary-dark);
-        }
-
-        .widget-title::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background-color: var(--bs-primary);
-            border-radius: 3px;
-        }
-
-        /* Improved Sidebar List */
-        .list-group-flush .list-group-item {
-            border: none;
-            padding: 0.6rem 0.8rem;
-            margin-bottom: 5px;
-            font-size: 0.95rem;
-            color: #555;
-            background: transparent;
-            border-radius: 8px;
-            /* Professional rounded look */
-            transition: all 0.2s;
-        }
-
-        .list-group-item a {
-            color: inherit;
-            text-decoration: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        .list-group-item:hover {
-            background-color: var(--bs-primary-light);
-            color: var(--bs-primary-dark);
-        }
-
-        .list-group-item.active {
-            background-color: var(--bs-primary-light);
-            color: var(--bs-primary-dark);
-            font-weight: 600;
-        }
-
-        .list-group-item.active a {
-            /* Reset default active color */
-            color: var(--bs-primary-dark);
-        }
-
-        .badge-count {
-            background-color: #f1f1f1;
-            color: #777;
-            font-size: 0.75rem;
-            padding: 0.25rem 0.6rem;
-            border-radius: 20px;
-        }
-
-        .list-group-item:hover .badge-count,
-        .list-group-item.active .badge-count {
-            background-color: white;
-            color: var(--bs-primary-dark);
-        }
-
-        /* Pagination */
-        .pagination .page-link {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            line-height: 24px;
-            text-align: center;
-            margin: 0 4px;
-            color: #444;
-            border: 1px solid #eee;
-        }
-
-        .pagination .page-link:hover {
-            background-color: var(--bs-primary-light);
-            color: var(--bs-primary-dark);
-            border-color: var(--bs-primary-light);
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: var(--bs-primary);
-            border-color: var(--bs-primary);
-            color: white;
-            box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
-        }
-
-        .btn-theme {
-            background-color: #333;
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            transition: all 0.3s;
-        }
-
-        .btn-theme:hover {
-            background-color: var(--bs-primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(216, 164, 164, 0.4);
-        }
-
-        footer {
-            background-color: #1a1a1a;
-            color: #bbb;
-            padding: 4rem 0 2rem;
-            margin-top: 5rem;
-        }
-
-        footer h5 {
-            color: white;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .social-links a {
-            color: white;
-            width: 38px;
-            height: 38px;
-            background: rgba(255, 255, 255, 0.05);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-right: 0.6rem;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .social-links a:hover {
-            background: var(--bs-primary);
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        /* Whatsapp Button */
-        .whatsapp-float {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            bottom: 40px;
-            right: 40px;
-            background-color: #25d366;
-            color: #FFF;
-            border-radius: 50px;
-            text-align: center;
-            font-size: 30px;
-            box-shadow: 2px 2px 3px #999;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .whatsapp-float:hover {
-            background-color: #128C7E;
-            transform: scale(1.1);
-            color: white;
-        }
-
-        .horizontal-scroll {
-            overflow-x: auto;
-            white-space: nowrap;
-            padding-bottom: 5px;
-            /* Space for shadow if needed */
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            /* Firefox */
-        }
-
-        .horizontal-scroll::-webkit-scrollbar {
-            display: none;
-            /* Chrome, Safari, Opera */
-        }
-
-        .brand-pill {
-            display: inline-block;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            background: white;
-            color: #555;
-            border: 1px solid #eee;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-        }
-
-        .brand-pill:hover {
-            background-color: var(--bs-primary-light);
-            color: var(--bs-primary-dark);
-        }
-
-        .brand-pill.active {
-            background-color: var(--bs-primary);
-            color: white;
-            border-color: var(--bs-primary);
-            box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
-        }
-
-        /* Mobile Product Grid Optimizations */
-        @media (max-width: 767px) {
-            .card-product {
-                border-radius: 10px;
-            }
-
-            /* En móvil mantenemos el aspect-ratio — no se necesita height fijo */
-
-            .card-body {
-                padding: 1rem;
-            }
-
-            .product-title {
-                font-size: 0.9rem;
-                line-height: 1.3;
-            }
-
-            .category-badge {
-                font-size: 0.65rem;
-            }
-
-            .product-price {
-                font-size: 1.1rem;
-            }
-        }
-    </style>
+    @vite(['resources/css/shop-home.css', 'resources/css/shop-buscador.css', 'resources/css/shop-tema.css'])
 </head>
 
 <body>
+    @include('partials.aviso-superior')
 
     <!-- WhatsApp Button -->
     <a href="https://wa.me/50238995635" class="whatsapp-float" target="_blank" title="Contáctanos por WhatsApp">
@@ -487,55 +101,7 @@
     </a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('logo.jpg') }}" alt="Logo" width="80" height="auto"
-                    class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                El Porvenir <span>Beauty Center</span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            {{-- Carrito visible siempre en móvil (a la derecha) --}}
-            <a class="nav-link position-relative d-lg-none ms-auto" href="{{ route('cart.index') }}"
-                title="Ver Carrito">
-                <i class="fas fa-shopping-cart" style="font-size: 1.9rem;"></i>
-                @if(($carritoCount ?? 0) > 0)
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                        style="background-color: var(--bs-primary); color: white; font-size: 0.7rem;">
-                        {{ $carritoCount }}
-                        <span class="visually-hidden">productos en carrito</span>
-                    </span>
-                @endif
-            </a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link {{ Route::is('home') ? 'active' : '' }}"
-                            href="{{ route('home') }}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link {{ Route::is('contact') ? 'active' : '' }}"
-                            href="{{ route('contact') }}">Contacto</a></li>
-
-                    {{-- Carrito de Compras (solo desktop, en móvil está fuera del menú) --}}
-                    <li class="nav-item d-none d-lg-block">
-                        <a class="nav-link position-relative" href="{{ route('cart.index') }}" title="Ver Carrito">
-                            <i class="fas fa-shopping-cart" style="font-size: 1.2rem;"></i>
-                            @if(($carritoCount ?? 0) > 0)
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                                    style="background-color: var(--bs-primary); color: white; font-size: 0.7rem;">
-                                    {{ $carritoCount }}
-                                    <span class="visually-hidden">productos en carrito</span>
-                                </span>
-                            @endif
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('partials.cabecera')
 
     <!-- Content -->
     <div class="container mt-3 mt-lg-5 mb-5">
@@ -547,64 +113,79 @@
                 @include('partials.sidebar_content')
             </div>
 
-            <!-- Mobile Offcanvas Sidebar -->
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas"
-                aria-labelledby="sidebarOffcanvasLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Filtros</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    @include('partials.sidebar_content')
-                </div>
-            </div>
-
             <!-- Product Grid -->
             <div class="col-lg-9 order-1 order-lg-2">
 
                 <!-- Mobile: Sticky Search & Brand Nav -->
                 <div class="d-block d-lg-none mb-4">
-                    <!-- Search Bar -->
-                    <form action="{{ route('home') }}" method="GET" class="mb-3">
-                        {{-- Keep sort if present, but clear marca when searching --}}
-                        @if(request('sort'))
-                            <input type="hidden" name="sort" value="{{ request('sort') }}">
-                        @endif
-                        <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
-                            <span class="input-group-text bg-white border-0 ps-3"><i
-                                    class="fas fa-search text-muted"></i></span>
-                            <input type="text" name="search" class="form-control border-0 py-2"
-                                placeholder="¿Qué estás buscando?" value="{{ $search ?? '' }}"
-                                style="box-shadow: none;">
-                        </div>
-                    </form>
 
                     <!-- Horizontal Brand Pills -->
                     <!-- Horizontal Brand Pills -->
                     <div class="horizontal-scroll d-flex gap-2 pb-2 align-items-center ps-1">
                         <!-- 'Todas' Pill -->
-                        <a href="{{ route('home', request()->only('sort')) }}"
+                        <a href="{{ route('tienda', request()->only('sort')) }}"
                             class="brand-pill {{ !($marcaId ?? false) ? 'active' : '' }} d-flex align-items-center justify-content-center border shadow-sm"
                             style="width: 50px; height: 50px; min-width: 50px; padding: 0; border-radius: 50%;">
                             <span class="small fw-bold">Todas</span>
                         </a>
-                        @foreach($marcas as $marca)
+                        @php
+                            // Solo las 40 marcas con más productos (la lista completa está en /marcas);
+                            // la marca activa siempre se muestra.
+                            $marcasPills = $marcas->sortByDesc('productos_count')->take(40);
+                            if ($marcaActual && !$marcasPills->contains('id', $marcaActual->id)) {
+                                $marcasPills->prepend($marcas->firstWhere('id', $marcaActual->id));
+                            }
+                        @endphp
+                        @foreach($marcasPills as $marca)
                             {{-- Clear search when selecting brand, keep only sort --}}
-                            <a href="{{ route('home', array_merge(request()->only('sort'), ['marca' => $marca->id])) }}"
+                            <a href="{{ $marca->url(request()->only('sort')) }}"
                                 class="brand-pill {{ ($marcaId ?? null) == $marca->id ? 'active' : '' }} p-0 d-flex align-items-center justify-content-center border shadow-sm"
                                 title="{{ $marca->nombre_marca }}"
                                 style="width: 50px; height: 50px; min-width: 50px; border-radius: 50%; overflow: hidden;">
-                                @if($marca->foto_marca)
-                                    <img src="{{ asset('storage/' . $marca->foto_marca) }}" alt="{{ $marca->nombre_marca }}"
-                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                @if(\App\Services\ImageVariants::existe($marca->foto_marca))
+                                    <img src="{{ \App\Services\ImageVariants::url($marca->foto_marca, 200) }}"
+                                        alt="{{ $marca->nombre_marca }}" width="50" height="50" loading="lazy"
+                                        decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
                                 @else
                                     <span class="small fw-bold text-uppercase">{{ substr($marca->nombre_marca, 0, 2) }}</span>
                                 @endif
                             </a>
                         @endforeach
+                        <a href="{{ route('tienda.marcas') }}"
+                            class="brand-pill d-flex align-items-center justify-content-center border shadow-sm text-center"
+                            title="Ver todas las marcas"
+                            style="width: 50px; height: 50px; min-width: 50px; padding: 0; border-radius: 50%;">
+                            <span class="small fw-bold" style="font-size: .62rem; line-height: 1.1;">Ver<br>todas</span>
+                        </a>
                     </div>
                 </div>
 
+
+                {{-- Encabezado de la página (el <h1> que Google usa para entender el tema) --}}
+                <header class="mb-3">
+                    @if($marcaActual)
+                        <nav aria-label="breadcrumb" class="small mb-1">
+                            <a href="{{ route('home') }}" class="text-decoration-none text-muted">Inicio</a>
+                            <span class="text-muted mx-1">/</span>
+                            <span>{{ $marcaActual->nombre_marca }}</span>
+                        </nav>
+                        <div class="d-flex align-items-center gap-3">
+                            <x-marca-logo :marca="$marcaActual" :tam="72" :alt="$marcaActual->nombre_marca" />
+                            <div>
+                                <h1 class="h3 mb-1">{{ $marcaActual->nombre_marca }} en Puerto Barrios</h1>
+                                <p class="text-muted small mb-0">
+                                    {{ $productos->total() }} {{ $productos->total() === 1 ? 'producto' : 'productos' }}
+                                    de {{ $marcaActual->nombre_marca }} en El Porvenir Beauty Center. Envíos a toda Guatemala.
+                                </p>
+                            </div>
+                        </div>
+                    @elseif(filled($search))
+                        <h1 class="h3 mb-0">Resultados para «{{ $search }}»</h1>
+                    @else
+                        {{-- Título de la página solo para buscadores y lectores de pantalla (no se ve) --}}
+                        <h1 class="visually-hidden">Tienda en línea: cosméticos y cuidado personal en Guatemala</h1>
+                    @endif
+                </header>
 
                 <!-- Sort/Filter Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -617,7 +198,7 @@
                             <i class="fas fa-filter"></i> Filtros
                         </button> -->
 
-                        <form id="sortForm" action="{{ route('home') }}" method="GET"
+                        <form id="sortForm" action="{{ route('tienda') }}" method="GET"
                             class="d-flex align-items-center mb-0">
                             @foreach(request()->except(['sort', 'page']) as $key => $value)
                                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
@@ -660,21 +241,19 @@
                                     <a href="{{ route('producto.show', ['hash' => $producto->hash_id, 'slug' => $producto->slug]) }}"
                                         class="card-img-wrapper d-block" id="img-wrapper-{{ $producto->id }}">
                                         @if($producto->foto_producto)
-                                            <img
-                                                src="{{ asset('storage/' . $producto->foto_producto) }}"
+                                            <x-product-img
+                                                :path="$producto->foto_producto"
                                                 class="card-img-top"
-                                                alt="{{ $producto->detalle_producto }} - {{ $producto->marca->nombre_marca ?? '' }} - El Porvenir Beauty Center"
+                                                :alt="$producto->detalle_producto . ' - ' . ($producto->marca->nombre_marca ?? '') . ' - El Porvenir Beauty Center'"
                                                 itemprop="image"
-                                                width="400"
-                                                height="400"
+                                                :width="400"
+                                                :height="400"
+                                                sizes="(max-width: 768px) 50vw, 25vw"
                                                 decoding="async"
-                                                @if($isAboveFold)
-                                                    fetchpriority="high"
-                                                @else
-                                                    loading="lazy"
-                                                @endif
+                                                :loading="$isAboveFold ? 'eager' : 'lazy'"
+                                                :fetchpriority="$isAboveFold ? 'high' : 'auto'"
                                                 onload="this.classList.add('img-loaded'); this.closest('.card-img-wrapper').classList.add('loaded')"
-                                            >
+                                            />
                                         @else
                                             <div class="text-muted"><i class="fas fa-image fa-3x"></i></div>
                                         @endif
@@ -751,14 +330,14 @@
 
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center mt-5">
-                        {{ $productos->appends(['search' => $search, 'marca' => $marcaId, 'sort' => $sort ?? null])->links('vendor.pagination.shop-pagination') }}
+                        {{ $productos->appends(['search' => $search, 'marca' => $marcaActual ? null : $marcaId, 'sort' => $sort ?? null])->links('vendor.pagination.shop-pagination') }}
                     </div>
                 @else
                     <div class="alert alert-info text-center py-5">
                         <i class="fas fa-search fa-3x mb-3 text-info"></i>
                         <h4>No encontramos productos</h4>
                         <p>Intenta ajustar tus filtros o búsqueda.</p>
-                        <a href="{{ route('home') }}" class="btn btn-outline-dark mt-2">Ver todo</a>
+                        <a href="{{ route('tienda') }}" class="btn btn-outline-dark mt-2">Ver todo</a>
                     </div>
                 @endif
 
@@ -779,7 +358,7 @@
                     <h5>Enlaces Rápidos</h5>
                     <ul class="list-unstyled">
                         <li><a href="/" class="text-decoration-none text-muted">Inicio</a></li>
-                        <li><a href="#" class="text-decoration-none text-muted">Marcas</a></li>
+                        <li><a href="{{ route('tienda.marcas') }}" class="text-decoration-none text-muted">Marcas</a></li>
                         <li><a href="#" class="text-decoration-none text-muted">Contacto</a></li>
                     </ul>
                 </div>
@@ -799,6 +378,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @include('partials.cart-ajax')
 </body>
 
 </html>

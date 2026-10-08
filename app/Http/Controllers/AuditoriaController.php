@@ -103,7 +103,7 @@ class AuditoriaController extends Controller
 
         if ($request->filled('buscar')) {
             $productosFiltrados = Producto::with(['marca', 'ultimaEntrada'])
-                ->where('codigo_producto', $request->buscar)
+                ->porCodigo($request->buscar)
                 ->get();
 
             if ($productosFiltrados->count() === 1) {

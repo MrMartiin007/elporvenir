@@ -1,0 +1,929 @@
+/*
+ * Tema "lujo cálido" de la tienda: marfil, rosa profundo y dorado suave.
+ * Se carga AL FINAL en todas las páginas de la tienda y refina lo que definen los demás archivos.
+ * Para cambiar la paleta basta con editar las variables de :root.
+ */
+:root {
+    /* Paleta */
+    --lx-ivory: #fbf7f2;
+    --lx-cream: #f4ebe0;
+    --lx-line: #eadfd1;
+    --lx-gold: #b08d57;
+    --lx-gold-soft: #dcc8a4;
+    --lx-champagne: #ecdcc0;
+    --lx-rose: #b0657b;
+    --lx-rose-deep: #8f4a60;
+    --lx-blush: #f7ece9;
+    --lx-ink: #33282a;
+    --lx-muted: #8a7b73;
+    --lx-espresso: #2b2023;
+
+    /* Variables que ya usan los demás archivos */
+    --bs-primary: var(--lx-rose);
+    --bs-primary-dark: var(--lx-rose-deep);
+    --bs-primary-light: var(--lx-blush);
+}
+
+/* ---------- Base ---------- */
+body {
+    background-color: var(--lx-ivory);
+    color: var(--lx-ink);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--lx-ink);
+    letter-spacing: 0.01em;
+}
+
+a {
+    color: var(--lx-rose);
+}
+
+a:hover {
+    color: var(--lx-rose-deep);
+}
+
+::selection {
+    background: var(--lx-champagne);
+    color: var(--lx-ink);
+}
+
+/* ---------- Barra superior de avisos ---------- */
+.aviso-superior {
+    background: var(--lx-espresso);
+    color: var(--lx-champagne);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0.5rem 1rem;
+}
+
+.aviso-superior span + span::before {
+    content: '·';
+    margin: 0 0.9rem;
+    color: var(--lx-gold);
+}
+
+@media (max-width: 767px) {
+    .aviso-superior span:not(:first-child) {
+        display: none;
+    }
+}
+
+/* ---------- Encabezado: buscador protagonista ---------- */
+.cab3 {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #fff;
+    border-bottom: 1px solid var(--lx-line);
+    box-shadow: 0 8px 22px rgba(122, 86, 60, 0.07);
+}
+
+.cab3-fila1 {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 0.75rem 12px;
+    transition: padding 0.25s ease;
+}
+
+.cab3-logo {
+    flex: 0 0 auto;
+    display: block;
+    line-height: 0;
+}
+
+.cab3-logo img {
+    height: 66px;
+    width: auto;
+    display: block;
+    transition: height 0.25s ease;
+}
+
+/* El buscador ocupa el centro y crece */
+.cab3-buscador {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cab3-buscador .buscador {
+    max-width: 640px;
+}
+
+.cab3-buscador .buscador-box {
+    box-shadow: none;
+    border-color: var(--lx-line);
+    background: var(--lx-ivory);
+}
+
+.cab3-buscador .buscador-box:focus-within {
+    background: #fff;
+}
+
+.cab3-acciones {
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cab3-wa {
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 1.1rem 0.35rem 0.85rem;
+    border: 1px solid var(--lx-gold-soft);
+    border-radius: 50px;
+    color: var(--lx-ink);
+    text-decoration: none;
+    line-height: 1.15;
+    transition: border-color 0.25s, background 0.25s;
+}
+
+.cab3-wa i {
+    color: #25d366;
+    font-size: 1.5rem;
+}
+
+.cab3-wa small {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lx-muted);
+}
+
+.cab3-wa strong {
+    display: block;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+}
+
+.cab3-wa:hover {
+    border-color: var(--lx-gold);
+    background: var(--lx-cream);
+    color: var(--lx-ink);
+}
+
+.cab3-carrito {
+    padding: 0.45rem;
+    color: var(--lx-ink);
+    font-size: 1.3rem;
+    text-decoration: none;
+}
+
+.cab3-carrito:hover {
+    color: var(--lx-gold);
+}
+
+.cab3-carrito .badge {
+    background: var(--lx-rose);
+    color: #fff;
+    font-size: 0.66rem;
+}
+
+.cab3-toggler {
+    border: 0;
+    background: none;
+    padding: 0.45rem;
+    font-size: 1.3rem;
+    color: var(--lx-ink);
+}
+
+/* Fila 2: menú y marcas populares */
+.cab3-menu {
+    background: var(--lx-ivory);
+    border-top: 1px solid var(--lx-line);
+}
+
+.cab3-menu-fila {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    min-height: 46px;
+}
+
+.cab3-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 2rem;
+}
+
+.cab3-links a {
+    display: block;
+    padding: 0.8rem 0 0.6rem;
+    color: var(--lx-ink);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.25s, border-color 0.25s;
+}
+
+.cab3-links a:hover,
+.cab3-links a.activo {
+    color: var(--lx-gold);
+    border-bottom-color: var(--lx-gold);
+}
+
+.cab3-chips {
+    margin-left: auto;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    max-height: 40px;
+    transition: opacity 0.2s ease;
+}
+
+.cab3-chips span {
+    color: var(--lx-gold);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-right: 0.2rem;
+}
+
+.cab3-chip {
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    border-radius: 50px;
+    padding: 0.18rem 0.8rem;
+    font-size: 0.8rem;
+    color: var(--lx-ink);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.cab3-chip:hover {
+    border-color: var(--lx-gold);
+    color: var(--lx-gold);
+}
+
+/* Al bajar: logo más chico y sin atajos, para ocupar poco */
+.cab3.mini .cab3-fila1 {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
+
+.cab3.mini .cab3-logo img {
+    height: 40px;
+}
+
+.cab3.mini .cab3-chips {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cab3.mini .cab3-menu-fila {
+    min-height: 36px;
+}
+
+.cab3.mini .cab3-links a {
+    padding: 0.5rem 0 0.35rem;
+}
+
+.cab3.mini .cab3-buscador .buscador-box {
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+}
+
+.cab3.mini .cab3-buscador .buscador-box input {
+    padding: 0.3rem 0;
+}
+
+.cab3-buscador-movil {
+    background: var(--lx-ivory);
+    padding: 0.8rem 0 0.2rem;
+}
+
+/* Escritorio: el menú siempre visible, aunque Bootstrap lo trate como "collapse" */
+@media (min-width: 992px) {
+    .cab3-colapso {
+        display: block !important;
+        height: auto !important;
+        visibility: visible !important;
+    }
+}
+
+/* Celular: barra fija chica (menú, logo, carrito); el menú se despliega debajo */
+@media (max-width: 991px) {
+    .cab3-fila1 {
+        gap: 0.5rem;
+        padding: 0.4rem 12px;
+        justify-content: space-between;
+    }
+
+    .cab3-logo {
+        flex: 1;
+        text-align: center;
+    }
+
+    .cab3-logo img {
+        height: 46px;
+        margin: 0 auto;
+    }
+
+    .cab3-acciones {
+        margin-left: 0;
+    }
+
+    .cab3-menu-fila {
+        display: block;
+        min-height: 0;
+        padding: 0.2rem 12px 0.6rem;
+    }
+
+    .cab3-links {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .cab3-links a {
+        padding: 0.7rem 0.25rem;
+        border-bottom: 0;
+    }
+}
+
+/* ---------- Botones ---------- */
+.btn-theme {
+    background-color: var(--lx-ink);
+    color: #fff;
+    border: 1px solid var(--lx-ink);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: none;
+}
+
+.btn-theme:hover,
+.btn-theme:focus {
+    background-color: var(--lx-gold);
+    border-color: var(--lx-gold);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(176, 141, 87, 0.28);
+}
+
+.btn-outline-dark,
+.btn-outline-secondary {
+    border-color: var(--lx-gold-soft);
+    color: var(--lx-ink);
+}
+
+.btn-outline-dark:hover,
+.btn-outline-secondary:hover {
+    background-color: var(--lx-gold);
+    border-color: var(--lx-gold);
+    color: #fff;
+}
+
+/* ---------- Tarjetas de producto ---------- */
+.card-product,
+.card-mini {
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    border-radius: 14px;
+    box-shadow: none;
+}
+
+.card-product:hover,
+.card-mini:hover {
+    border-color: var(--lx-gold-soft);
+    box-shadow: 0 18px 40px rgba(122, 86, 60, 0.12);
+    transform: translateY(-4px);
+}
+
+.card-img-wrapper,
+.card-mini-img {
+    background-color: #fff;
+}
+
+.card-img-wrapper.loaded {
+    background-color: #fff;
+}
+
+.category-badge,
+.mini-brand,
+.card-category,
+.product-brand {
+    color: var(--lx-gold);
+    letter-spacing: 0.14em;
+    font-weight: 600;
+}
+
+.product-title,
+.mini-title a,
+.card-title-product {
+    color: var(--lx-ink);
+}
+
+.product-title:hover,
+.mini-title a:hover {
+    color: var(--lx-rose);
+}
+
+.product-price,
+.mini-price,
+.card-price {
+    color: var(--lx-rose-deep);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.badge-oferta,
+.card-mini .badge-oferta {
+    background: var(--lx-rose-deep);
+    letter-spacing: 0.08em;
+}
+
+/* ---------- Barra lateral del catálogo ---------- */
+.sidebar-widget {
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    box-shadow: none;
+    border-radius: 14px;
+}
+
+.widget-title {
+    color: var(--lx-gold);
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-bottom-color: var(--lx-line);
+}
+
+.widget-title::after {
+    background-color: var(--lx-gold);
+    height: 2px;
+}
+
+.list-group-item:hover,
+.list-group-item.active {
+    background-color: var(--lx-blush);
+    color: var(--lx-rose-deep);
+}
+
+.badge-count {
+    background-color: var(--lx-cream);
+    color: var(--lx-muted);
+}
+
+.brand-pill {
+    border-color: var(--lx-line);
+    color: var(--lx-ink);
+}
+
+.brand-pill:hover {
+    background-color: var(--lx-blush);
+    color: var(--lx-rose-deep);
+    border-color: var(--lx-gold-soft);
+}
+
+.brand-pill.active {
+    background-color: var(--lx-rose);
+    border-color: var(--lx-rose);
+    color: #fff;
+}
+
+/* ---------- Paginación ---------- */
+.pagination .page-link {
+    border-color: var(--lx-line);
+    color: var(--lx-ink);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--lx-blush);
+    border-color: var(--lx-gold-soft);
+    color: var(--lx-rose-deep);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--lx-ink);
+    border-color: var(--lx-ink);
+    color: #fff;
+    box-shadow: none;
+}
+
+/* ---------- Portada ---------- */
+.hero {
+    border-radius: 14px;
+    box-shadow: 0 14px 34px rgba(122, 86, 60, 0.12);
+}
+
+.hero-caption .hero-btn {
+    background: var(--lx-ink);
+    letter-spacing: 0.06em;
+}
+
+.hero .carousel-indicators .active {
+    background-color: var(--lx-gold);
+}
+
+.portada-lead,
+.text-muted {
+    color: var(--lx-muted) !important;
+}
+
+.trust-item {
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    box-shadow: none;
+}
+
+.trust-item i {
+    color: var(--lx-gold);
+}
+
+.section-head h2 {
+    position: relative;
+    padding-bottom: 0.55rem;
+}
+
+.section-head h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 46px;
+    height: 2px;
+    background: var(--lx-gold);
+}
+
+.section-head a {
+    color: var(--lx-rose);
+    letter-spacing: 0.04em;
+}
+
+.brand-chip .logo {
+    border: 1px solid var(--lx-gold-soft);
+    box-shadow: none;
+}
+
+.brand-chip:hover .logo {
+    border-color: var(--lx-gold);
+}
+
+.brand-chip .logo .initials {
+    background: var(--lx-cream);
+    color: var(--lx-gold);
+}
+
+.about-box {
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    box-shadow: none;
+}
+
+/* ---------- Buscador ---------- */
+.buscador-box {
+    border-color: var(--lx-line);
+    box-shadow: 0 6px 22px rgba(122, 86, 60, 0.08);
+}
+
+.buscador-box:focus-within {
+    border-color: var(--lx-gold);
+    box-shadow: 0 8px 26px rgba(176, 141, 87, 0.22);
+}
+
+.buscador-box i {
+    color: var(--lx-gold);
+}
+
+.buscador-box button {
+    background: var(--lx-ink);
+    letter-spacing: 0.04em;
+}
+
+.buscador-box button:hover {
+    background: var(--lx-gold);
+}
+
+.sug-marca {
+    background: var(--lx-cream);
+    color: var(--lx-rose-deep);
+}
+
+.sug-item:hover,
+.sug-item.sug-activa,
+.sug-marca.sug-activa,
+.sug-todos.sug-activa {
+    background: var(--lx-blush);
+}
+
+.sug-precio {
+    color: var(--lx-rose-deep);
+}
+
+.sug-todos {
+    color: var(--lx-gold);
+    border-top-color: var(--lx-line);
+}
+
+/* ---------- Ficha de producto ---------- */
+/* Solo el título grande de la ficha va en serif; en las tarjetas se conserva la tipografía de lectura */
+.product-info-content .product-title {
+    font-family: 'Playfair Display', serif;
+}
+
+.breadcrumb-custom .breadcrumb-item a:hover {
+    color: var(--lx-gold);
+}
+
+.desktop-actions .btn-add-cart,
+.mobile-action-bar .btn-add-cart-mobile {
+    background-color: var(--lx-ink);
+    letter-spacing: 0.04em;
+}
+
+.desktop-actions .btn-add-cart:hover {
+    background-color: var(--lx-gold);
+}
+
+.related-title::after {
+    background-color: var(--lx-gold);
+}
+
+.product-img-section {
+    border: 1px solid var(--lx-line);
+    box-shadow: none;
+}
+
+/* ---------- Pie de página ---------- */
+footer {
+    background-color: var(--lx-espresso);
+    color: #cdbfb5;
+    border-top: 3px solid var(--lx-gold);
+}
+
+footer h5 {
+    color: var(--lx-champagne);
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+footer a,
+footer .text-muted {
+    color: #cdbfb5 !important;
+}
+
+footer a:hover {
+    color: var(--lx-gold) !important;
+}
+
+.social-links a:hover {
+    background: var(--lx-gold);
+}
+
+/* ---------- Marcas: logo, página /marcas y filtro lateral ---------- */
+.marca-logo {
+    --t: 56px;
+    display: inline-flex;
+    flex: 0 0 var(--t);
+    width: var(--t);
+    height: var(--t);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--lx-gold-soft);
+    vertical-align: middle;
+}
+
+.marca-logo--img {
+    background: #fff;
+}
+
+.marca-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12%;
+}
+
+.marca-logo--tono0 { background: var(--lx-cream); }
+.marca-logo--tono1 { background: var(--lx-blush); }
+.marca-logo--tono2 { background: #f3ece0; }
+
+.marca-logo-ini {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: calc(var(--t) * 0.34);
+    letter-spacing: 0.02em;
+    color: var(--lx-gold);
+}
+
+/* Página /marcas */
+.marcas-herramientas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+}
+
+.marcas-filtro-caja {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 0 1 320px;
+    min-width: 220px;
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    border-radius: 50px;
+    padding: 0.35rem 1rem;
+}
+
+.marcas-filtro-caja:focus-within {
+    border-color: var(--lx-gold);
+}
+
+.marcas-filtro-caja i {
+    color: var(--lx-gold);
+}
+
+.marcas-filtro-caja input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    padding: 0.2rem 0;
+}
+
+.marcas-letras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.marcas-letras a {
+    min-width: 30px;
+    text-align: center;
+    padding: 0.2rem 0.4rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--lx-ink);
+    text-decoration: none;
+}
+
+.marcas-letras a:hover {
+    background: var(--lx-cream);
+    color: var(--lx-gold);
+}
+
+.marcas-letras a.apagada {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.marcas-letra {
+    margin-bottom: 2rem;
+    scroll-margin-top: 150px; /* el encabezado fijo no tapa el título de la letra */
+}
+
+.marcas-letra[hidden],
+.marca-item[hidden] {
+    display: none !important;
+}
+
+.marcas-letra-titulo {
+    position: relative;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    color: var(--lx-gold);
+}
+
+.marcas-letra-titulo::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 46px;
+    height: 2px;
+    background: var(--lx-gold);
+}
+
+.marcas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    padding: 0;
+    margin: 0;
+}
+
+@media (min-width: 576px) {
+    .marcas-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+    .marcas-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 992px) {
+    .marcas-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+.marca-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 1rem 0.5rem 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--lx-ink);
+    background: #fff;
+    border: 1px solid var(--lx-line);
+    border-radius: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.marca-card:hover {
+    border-color: var(--lx-gold-soft);
+    box-shadow: 0 14px 30px rgba(122, 86, 60, 0.1);
+    transform: translateY(-3px);
+    color: var(--lx-ink);
+}
+
+.marca-nombre {
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.marca-cuenta {
+    font-size: 0.75rem;
+    color: var(--lx-muted);
+}
+
+/* Filtro de la barra lateral del catálogo */
+.marcas-filtro-lateral {
+    margin-bottom: 0.7rem;
+    border-radius: 50px;
+    border-color: var(--lx-line);
+    padding-left: 0.9rem;
+}
+
+.marcas-filtro-lateral:focus {
+    border-color: var(--lx-gold);
+    box-shadow: none;
+}
+
+.list-group-item[hidden] {
+    display: none !important;
+}
+
+.sidebar-widget .marca-logo {
+    border-color: var(--lx-line);
+}
+
+/* Lista lateral de marcas: sin barra horizontal; los nombres largos se parten en dos líneas */
+.sidebar-widget [data-lista-marcas] {
+    position: relative;
+    overflow-x: hidden;
+}
+
+.sidebar-widget .list-group-item a > .d-flex {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sidebar-widget .list-group-item a > .d-flex > span:last-child {
+    min-width: 0;
+    overflow-wrap: break-word; /* solo parte una palabra si de verdad no cabe */
+    line-height: 1.25;
+    font-size: 0.88rem;
+}
+
+.sidebar-widget .list-group-item .badge-count {
+    flex: 0 0 auto;
+    margin-left: 0.4rem;
+}
+
+/* Más espacio útil para los nombres de marca en la barra lateral */
+.sidebar-widget:has([data-lista-marcas]) {
+    padding: 1.1rem 0.9rem;
+}
+
+.sidebar-widget [data-lista-marcas] .list-group-item {
+    padding: 0.45rem 0.4rem;
+    margin-bottom: 2px;
+}
+
+.sidebar-widget [data-lista-marcas] .list-group-item a > .d-flex {
+    gap: 0.5rem !important;
+}
+

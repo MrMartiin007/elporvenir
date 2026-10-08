@@ -24,7 +24,7 @@ public function index(Request $request)
     $ultimaEntrada = null;
 
     if ($request->filled('buscar')) {
-        $productosFiltrados = Producto::where('codigo_producto', $request->buscar)->get();
+        $productosFiltrados = Producto::porCodigo($request->buscar)->get();
 
         if ($productosFiltrados->count() === 1) {
             $producto = $productosFiltrados->first();
