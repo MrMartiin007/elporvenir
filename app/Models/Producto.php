@@ -26,6 +26,14 @@ class Producto extends Model
 
     protected $perPage = 20;
 
+    /** Al crear, editar o borrar un producto la portada se recalcula en la siguiente visita. */
+    protected static function booted()
+    {
+        $olvidar = fn () => \Illuminate\Support\Facades\Cache::forget('portada.secciones');
+        static::saved($olvidar);
+        static::deleted($olvidar);
+    }
+
     /**
      * Attributes that should be mass-assignable.
      *
