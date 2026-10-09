@@ -3,6 +3,7 @@
 
 # ── Googlebot (búsqueda web) ──────────────────────────────
 User-agent: Googlebot
+Disallow:
 Allow: /
 Allow: /storage/productos/
 Allow: /storage/marcas/
@@ -15,6 +16,7 @@ Disallow: /buscar
 
 # ── Googlebot-Image (Google Imágenes + Merchant Center) ───
 User-agent: Googlebot-Image
+Disallow:
 Allow: /
 Allow: /storage/productos/
 Allow: /storage/marcas/
