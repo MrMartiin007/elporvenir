@@ -117,6 +117,45 @@
     background-color: var(--bs-primary-dark);
 }
 
+/* Flechas anterior / siguiente */
+.hero .hero-flecha {
+    width: 15%;
+    max-width: 72px;
+    opacity: 1;
+}
+
+.hero-flecha-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.12);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.7rem;
+    opacity: 0.45;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+
+/* Casi invisibles: se notan al pasar el mouse por el banner */
+.hero:hover .hero-flecha-icono,
+.hero-flecha:focus-visible .hero-flecha-icono {
+    opacity: 0.8;
+}
+
+.hero-flecha:hover .hero-flecha-icono {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+/* En celular se desliza con el dedo: sin flechas */
+@media (max-width: 767px) {
+    .hero .hero-flecha {
+        display: none;
+    }
+}
+
 /* Banner de respaldo mientras no hay banners cargados */
 .hero--default {
     display: flex;

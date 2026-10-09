@@ -69,6 +69,17 @@
                         </div>
                     @endforeach
                 </div>
+
+                @if($banners->count() > 1)
+                    <button class="carousel-control-prev hero-flecha" type="button" data-bs-target="#heroPortada" data-bs-slide="prev">
+                        <span class="hero-flecha-icono" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next hero-flecha" type="button" data-bs-target="#heroPortada" data-bs-slide="next">
+                        <span class="hero-flecha-icono" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                @endif
             </div>
         @else
             {{-- Mientras no haya banners cargados desde el admin --}}
@@ -144,12 +155,9 @@
     {{-- ===== 6. Sobre el negocio ===== --}}
     <section class="container-xl portada-section" aria-labelledby="sobre-el-porvenir">
         <div class="about-box">
-            <h2 id="sobre-el-porvenir" class="h4 mb-3">Sobre El Porvenir Beauty Center</h2>
+            <h2 id="sobre-el-porvenir" class="h4 mb-3">El Porvenir Beauty Center</h2>
             <p class="mb-2">
-                El Porvenir es una tienda de cosméticos y beauty center en Puerto Barrios, Izabal, Guatemala.
-                Encuentras maquillaje, cuidado de la piel, perfumes y productos de cuidado personal de
-                {{ $marcasTotal ?? $marcasLogo->count() }} marcas, y puedes comprarlos en línea con envío a toda Guatemala o visitarnos
-                en nuestra tienda física.
+                Cuidarte es lo que mejor sabemos hacer: lo mejor de la belleza para ti y para los tuyos, en toda Guatemala.
             </p>
             <p class="mb-0 text-muted small">
                 Escríbenos por
