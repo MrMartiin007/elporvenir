@@ -133,6 +133,7 @@ class PedidoController extends Controller
         if (!empty($term)) {
             $query->where(function ($q) use ($term) {
                 $q->where('codigo_producto', 'like', "%$term%")
+                    ->orWhereHas('codigos', fn ($c) => $c->where('codigo', 'like', "%$term%"))
                     ->orWhere('detalle_producto', 'like', "%$term%");
             });
         }

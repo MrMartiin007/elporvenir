@@ -1,0 +1,93 @@
+/* Estilos base - mismos que shop.blade.php */
+:root {
+    --bs-primary: #d8a4a4;
+    --bs-primary-dark: #b0657b;
+    --bs-primary-light: #f9ebeb;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #fcf8f8;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #212529;
+}
+
+.navbar-brand span {
+    color: var(--bs-primary);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #495057;
+    margin-left: 1rem;
+    transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--bs-primary-dark);
+}
+
+.btn-theme {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-theme:hover {
+    background-color: var(--bs-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(216, 164, 164, 0.4);
+}
+
+footer {
+    background-color: #1a1a1a;
+    color: #bbb;
+    padding: 4rem 0 2rem;
+    margin-top: 5rem;
+}
+
+footer h5 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+/* Mobile-First Optimizations */
+@media (max-width: 767px) {
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .navbar-brand img {
+        width: 60px !important;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+}

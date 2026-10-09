@@ -129,7 +129,7 @@
 
                 {{-- Botones de acción --}}
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                    <a href="{{ route('home') }}" class="btn btn-theme px-5 py-3">
+                    <a href="{{ route('tienda') }}" class="btn btn-theme px-5 py-3">
                         <i class="fas fa-shopping-bag me-2"></i>Seguir Comprando
                     </a>
                     <a href="https://wa.me/50238995635?text=Hola,%20realicé%20el%20pedido%20*{{ $pedido->numero_pedido }}*%20por%20un%20total%20de%20Q.{{ number_format($pedido->total, 2) }}.%20¿Cuándo%20pueden%20entregarlo?"

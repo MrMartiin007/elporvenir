@@ -9,23 +9,17 @@
         <div class="bg-white rounded-4 shadow-sm p-5">
             <h2 class="mb-4 text-center fw-bold" style="color: #5c3d42;">Consultar Producto</h2>
 
-            <form method="GET" action="{{ route('productos.consultar') }}" class="row g-3 mb-5 justify-content-center">
+            <div class="row g-3 mb-5 justify-content-center">
                 <div class="col-md-8">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-white border-end-0" style="border-color: #d63384;">
-                            <i class="fas fa-barcode" style="color: #d63384;"></i>
-                        </span>
-                        <input type="text" name="buscar"
-                            value="{{ isset($productos) && $productos ? '' : request('buscar') }}"
-                            class="form-control border-start-0" style="border-color: #d63384; box-shadow: none;"
-                            placeholder="Escanear código de barras o escribir nombre..." autofocus>
-                        <button type="submit" class="btn text-white px-4"
-                            style="background-color: #d63384; border-color: #d63384;">
-                            <i class="fas fa-search me-2"></i> Buscar
-                        </button>
-                    </div>
+                    @include('partials.admin-buscador', [
+                        'destino' => 'consultar',
+                        'grande' => true,
+                        'enfocar' => true,
+                        'valor' => isset($productos) && $productos ? '' : request('buscar'),
+                        'placeholder' => 'Escanear código de barras o escribir nombre…',
+                    ])
                 </div>
-            </form>
+            </div>
 
             @if(isset($productos) && $productos->isNotEmpty())
 
@@ -53,6 +47,14 @@
                                                 style="background-color: #fce4ec; color: #880e4f;">
                                                 <i class="fas fa-barcode me-2"></i> {{ $producto->codigo_producto }}
                                             </div>
+                                            @if($producto->codigos->isNotEmpty())
+                                                <div class="small text-muted mt-2">
+                                                    Otros códigos:
+                                                    @foreach($producto->codigos as $extra)
+                                                        <span class="badge bg-light text-dark border">{{ $extra->codigo }}</span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
 
                                         <div class="col-md-6">

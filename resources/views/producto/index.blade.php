@@ -33,15 +33,9 @@
                         <i class="fa fa-plus me-2"></i> Crear Nuevo
                     </a>
 
-                    <form method="GET" action="{{ route('productos.index') }}" class="d-flex">
-                        <div class="input-group">
-                            <input type="text" name="buscar" value="{{ request('buscar') }}"
-                                class="form-control border-pink" placeholder="Buscar...">
-                            <button type="submit" class="btn text-white" style="background-color: #d63384;">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
+                    <div style="width: min(100%, 420px);">
+                        @include('partials.admin-buscador', ['destino' => 'listado', 'placeholder' => 'Código, nombre o marca…'])
+                    </div>
                 </div>
                 <div class="p-4">
                     <div class="table-responsive">
@@ -66,7 +60,15 @@
                                     <tr class="text-center">
                                         <td>{{ $loop->iteration + ($productos->currentPage() - 1) * $productos->perPage() }}
                                         </td>
-                                        <td>{{ $producto->codigo_producto }}</td>
+                                        <td>
+                                            {{ $producto->codigo_producto }}
+                                            @if($producto->codigos->isNotEmpty())
+                                                <span class="badge rounded-pill ms-1" style="background:#fce4ec; color:#880e4f;"
+                                                    title="Otros códigos: {{ $producto->codigos->pluck('codigo')->implode(', ') }}">
+                                                    +{{ $producto->codigos->count() }}
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td class="text-start">{{ $producto->detalle_producto }}</td>
                                         <td>
                                             @if($producto->foto_producto)

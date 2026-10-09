@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Marca;
 use App\Http\Requests\MarcaRequest;
+use App\Services\ImageVariants;
 
 /**
  * Class MarcaController
@@ -47,6 +48,7 @@ class MarcaController extends Controller
         if ($request->hasFile('foto_marca')) {
             $imagePath = $request->file('foto_marca')->store('marcas', 'public');
             $data['foto_marca'] = $imagePath;
+            app(ImageVariants::class)->generate($imagePath, false, ImageVariants::LOGO_WIDTHS);
         }
 
         Marca::create($data);
@@ -88,10 +90,12 @@ class MarcaController extends Controller
             if ($marca->foto_marca && \Storage::disk('public')->exists($marca->foto_marca)) {
                 \Storage::disk('public')->delete($marca->foto_marca);
             }
+            app(ImageVariants::class)->delete($marca->foto_marca, ImageVariants::LOGO_WIDTHS);
 
             // Guardar la nueva imagen
             $imagePath = $request->file('foto_marca')->store('marcas', 'public');
             $data['foto_marca'] = $imagePath;
+            app(ImageVariants::class)->generate($imagePath, false, ImageVariants::LOGO_WIDTHS);
         }
 
         $marca->update($data);

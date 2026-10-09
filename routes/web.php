@@ -22,7 +22,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [App\Http\Controllers\ShopController::class, 'shop'])->name('home');
+// Portada (banners, marcas, ofertas, novedades) y catálogo completo en /tienda
+Route::get('/', [App\Http\Controllers\ShopController::class, 'home'])->name('home');
+Route::get('/tienda', [App\Http\Controllers\ShopController::class, 'tienda'])->name('tienda');
 
 // Rutas Legacy (antiguas) para SEO (Google Search Console 404s)
 Route::get('/producto/{id}', function ($id) {
@@ -39,11 +41,18 @@ Route::get('/producto/{id}', function ($id) {
 
 Route::get('/producto/{hash}-{slug?}', [App\Http\Controllers\ShopController::class, 'showProduct'])
     ->name('producto.show');
-Route::get('/contacto', [App\Http\Controllers\ShopController::class, 'contact'])->name('contact');
+Route::get('/buscar', [App\Http\Controllers\ShopController::class, 'sugerencias'])
+    ->middleware('throttle:90,1')->name('tienda.buscar');
+Route::get('/marcas',[App\Http\Controllers\ShopController::class, 'marcas'])->name('tienda.marcas');
+Route::get('/marca/{id}-{slug?}', [App\Http\Controllers\ShopController::class, 'marca'])
+    ->where('id', '[0-9]+')
+    ->name('marca.show');
+Route::get('/contacto',[App\Http\Controllers\ShopController::class, 'contact'])->name('contact');
 
 // Rutas del carrito/shop (públicas - no requieren autenticación)
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CarritoController::class, 'index'])->name('index');
+    Route::get('/resumen', [CarritoController::class, 'resumen'])->name('resumen');
     Route::post('/agregar', [CarritoController::class, 'agregar'])->name('agregar');
     Route::patch('/actualizar', [CarritoController::class, 'actualizar'])->name('actualizar');
     Route::delete('/eliminar/{id}', [CarritoController::class, 'eliminar'])->name('eliminar');
@@ -54,7 +63,7 @@ Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('index');
         Route::post('/procesar', [CheckoutController::class, 'procesar'])->name('procesar');
         Route::get('/municipios/{departamento_id}', [CheckoutController::class, 'getMunicipios'])->name('municipios');
-        Route::get('/confirmacion/{id}', [CheckoutController::class, 'confirmacion'])->name('confirmacion');
+        Route::get('/confirmacion/{id}', [CheckoutController::class, 'confirmacion'])->middleware('signed:relative')->name('confirmacion');
     });
 });
 
@@ -75,6 +84,8 @@ Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
         Route::post('/ventas/escanear', [VentaController::class, 'escanear'])->name('ventas.escanear');
         Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
         Route::get('/producto/consultar', [ProductoController::class, 'consultarProducto'])->name('productos.consultar');
+        Route::get('/producto/codigo-disponible', [ProductoController::class, 'codigoDisponible'])->middleware('throttle:180,1')->name('productos.codigo');
+        Route::get('/producto/sugerencias', [ProductoController::class, 'sugerencias'])->middleware('throttle:120,1')->name('productos.sugerencias');
 
         // Ubicaciones (Departamentos y Municipios)
         Route::get('/ubicaciones', [App\Http\Controllers\UbicacionController::class, 'index'])->name('ubicaciones.index');
@@ -110,6 +121,10 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Portada de la tienda: banners y video
+        Route::resource('banners', App\Http\Controllers\BannerController::class)->except(['show']);
+        Route::patch('banners/{banner}/toggle', [App\Http\Controllers\BannerController::class, 'toggle'])->name('banners.toggle');
 
         Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
         Route::resource('facturas', App\Http\Controllers\FacturaController::class);
@@ -158,6 +173,9 @@ Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])-
 Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
 Route::delete('/ventas/codigo/{id}', [VentaController::class, 'eliminarCodigoNoEncontrado'])->name('ventas.eliminar-codigo');
 Route::get('/ventas/{venta}/eliminados', [VentaController::class, 'verEliminados'])->name('ventas.eliminados');
+
+// Feed de productos para Google Merchant Center
+Route::get('/feeds/google-merchant.xml', [App\Http\Controllers\MerchantFeedController::class, 'google'])->name('feed.google-merchant');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');

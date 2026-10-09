@@ -118,6 +118,8 @@
                                     </div>
                                 </div>
                                 
+                                @include('producto._codigos_extra')
+
                                 <!-- Opciones Extras (Oferta) -->
                                 <div class="mt-4 p-4 rounded-lg bg-light border">
                                     <div class="form-check form-switch d-flex align-items-center">

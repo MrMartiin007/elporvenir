@@ -191,9 +191,11 @@
             color: white;
         }
     </style>
+    @vite(['resources/css/shop-buscador.css', 'resources/css/shop-tema.css'])
 </head>
 
 <body>
+    @include('partials.aviso-superior')
 
     <!-- WhatsApp Button -->
     <a href="https://wa.me/50238995635" class="whatsapp-float" target="_blank" title="Contáctanos por WhatsApp">
@@ -201,25 +203,7 @@
     </a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ asset('logo.jpg') }}" alt="Logo" width="80" height="auto"
-                    class="d-inline-block align-text-top me-2" style="max-height: 80px; object-fit: contain;">
-                El Porvenir <span>Beauty Center</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ route('contact') }}">Contacto</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('partials.cabecera')
 
     <!-- Content -->
     <div class="container my-5">

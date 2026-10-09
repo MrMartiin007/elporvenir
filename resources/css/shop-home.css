@@ -1,0 +1,417 @@
+/* Colors Variables */
+:root {
+    --bs-primary: #d8a4a4;
+    /* Nude Pink Primary */
+    --bs-primary-dark: #b0657b;
+    /* Darker Pink for Hover/Text */
+    --bs-primary-light: #f9ebeb;
+    /* Very Light Pink for Backgrounds */
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #fcf8f8;
+    /* Slight pinkish white */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #212529;
+}
+
+.navbar-brand span {
+    color: var(--bs-primary);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #495057;
+    margin-left: 1rem;
+    transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--bs-primary-dark);
+}
+
+/* Product Card */
+.card-product {
+    border: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    background: white;
+    border-radius: 12px;
+    /* More rounded */
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+}
+
+.card-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(216, 164, 164, 0.15);
+    /* Soft pink shadow */
+    border-color: var(--bs-primary-light);
+}
+
+/* <picture> no genera caja: el <img> se comporta como hijo directo */
+picture {
+    display: contents;
+}
+
+.card-img-wrapper {
+    position: relative;
+    /* aspect-ratio reserva el espacio ANTES de que cargue la imagen,
+       eliminando el layout shift (CLS) que percibe lentitud */
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Skeleton loader animado mientras no hay imagen */
+    background-image: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e8e8e8 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+}
+
+/* Cuando la imagen ya cargó, elimina el skeleton */
+.card-img-wrapper.loaded {
+    background-image: none;
+    animation: none;
+    background-color: white;
+}
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.card-img-top {
+    /* Ocupa todo el wrapper manteniendo proporción */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s;
+    /* Invisible hasta que cargue para evitar flash de imagen rota */
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+/* La imagen se hace visible al cargar */
+.card-img-top.img-loaded {
+    opacity: 1;
+}
+
+.card-product:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.category-badge {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    transition: color 0.2s;
+}
+
+.product-title:hover {
+    color: var(--bs-primary-dark);
+}
+
+.product-price {
+    color: var(--bs-primary-dark);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Sidebar Widgets */
+.sidebar-widget {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    border: 1px solid #f8f8f8;
+}
+
+.widget-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.8rem;
+    position: relative;
+    color: var(--bs-primary-dark);
+}
+
+.widget-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--bs-primary);
+    border-radius: 3px;
+}
+
+/* Improved Sidebar List */
+.list-group-flush .list-group-item {
+    border: none;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    color: #555;
+    background: transparent;
+    border-radius: 8px;
+    /* Professional rounded look */
+    transition: all 0.2s;
+}
+
+.list-group-item a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.list-group-item:hover {
+    background-color: var(--bs-primary-light);
+    color: var(--bs-primary-dark);
+}
+
+.list-group-item.active {
+    background-color: var(--bs-primary-light);
+    color: var(--bs-primary-dark);
+    font-weight: 600;
+}
+
+.list-group-item.active a {
+    /* Reset default active color */
+    color: var(--bs-primary-dark);
+}
+
+.badge-count {
+    background-color: #f1f1f1;
+    color: #777;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+}
+
+.list-group-item:hover .badge-count,
+.list-group-item.active .badge-count {
+    background-color: white;
+    color: var(--bs-primary-dark);
+}
+
+/* Pagination */
+.pagination .page-link {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 24px;
+    text-align: center;
+    margin: 0 4px;
+    color: #444;
+    border: 1px solid #eee;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--bs-primary-light);
+    color: var(--bs-primary-dark);
+    border-color: var(--bs-primary-light);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
+}
+
+.btn-theme {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    transition: all 0.3s;
+}
+
+.btn-theme:hover {
+    background-color: var(--bs-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(216, 164, 164, 0.4);
+}
+
+footer {
+    background-color: #1a1a1a;
+    color: #bbb;
+    padding: 4rem 0 2rem;
+    margin-top: 5rem;
+}
+
+footer h5 {
+    color: white;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.social-links a {
+    color: white;
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.05);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 0.6rem;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.social-links a:hover {
+    background: var(--bs-primary);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Whatsapp Button */
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 40px;
+    right: 40px;
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 30px;
+    box-shadow: 2px 2px 3px #999;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    background-color: #128C7E;
+    transform: scale(1.1);
+    color: white;
+}
+
+.horizontal-scroll {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+    /* Space for shadow if needed */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+}
+
+.brand-pill {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    background: white;
+    color: #555;
+    border: 1px solid #eee;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.brand-pill:hover {
+    background-color: var(--bs-primary-light);
+    color: var(--bs-primary-dark);
+}
+
+.brand-pill.active {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+    box-shadow: 0 4px 10px rgba(216, 164, 164, 0.4);
+}
+
+/* Mobile Product Grid Optimizations */
+@media (max-width: 767px) {
+    .card-product {
+        border-radius: 10px;
+    }
+
+    /* En móvil mantenemos el aspect-ratio — no se necesita height fijo */
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .product-title {
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+
+    .category-badge {
+        font-size: 0.65rem;
+    }
+
+    .product-price {
+        font-size: 1.1rem;
+    }
+}

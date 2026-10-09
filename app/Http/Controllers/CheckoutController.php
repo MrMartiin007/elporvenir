@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Pedido;
 use App\Models\DetallePedido;
 use App\Models\Departamento;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class CheckoutController extends Controller
 {
@@ -16,10 +19,11 @@ class CheckoutController extends Controller
      */
     public function index()
     {
-        $carrito = session()->get('carrito', []);
+        $carrito = $this->carritoActualizado(session()->get('carrito', []));
+        session()->put('carrito', $carrito);
 
         if (empty($carrito)) {
-            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío');
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío o los productos ya no están disponibles');
         }
 
         // Calcular totales
@@ -67,10 +71,12 @@ class CheckoutController extends Controller
             'direccion.required' => 'La dirección de entrega es obligatoria'
         ]);
 
-        $carrito = session()->get('carrito', []);
+        // Recalcular precios y cantidades con los datos actuales de la base
+        $carrito = $this->carritoActualizado(session()->get('carrito', []));
+        session()->put('carrito', $carrito);
 
         if (empty($carrito)) {
-            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío');
+            return redirect()->route('cart.index')->with('error', 'Tu carrito está vacío o los productos ya no están disponibles');
         }
 
         // Iniciar transacción
@@ -129,17 +135,19 @@ class CheckoutController extends Controller
             session()->forget('carrito');
 
             // Redirigir a confirmación
-            return redirect()->route('cart.checkout.confirmacion', $pedido->id)
+            // URL firmada: el id del pedido no se puede adivinar ni alterar
+            return redirect(URL::signedRoute('cart.checkout.confirmacion', ['id' => $pedido->id], null, false))
                 ->with('success', '¡Pedido realizado con éxito!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
+            Log::error('Error al procesar pedido', ['exception' => $e]);
+            return back()->withInput()->with('error', 'No pudimos procesar tu pedido. Intenta de nuevo o escríbenos por WhatsApp.');
         }
     }
 
     /**
-     * Mostrar confirmación del pedido
+     * Mostrar confirmación del pedido (solo con URL firmada)
      */
     public function confirmacion($id)
     {
@@ -158,6 +166,38 @@ class CheckoutController extends Controller
             ->get(['id', 'nombre']);
 
         return response()->json($municipios);
+    }
+
+    /**
+     * Sincroniza el carrito de la sesión con la base de datos: precio vigente,
+     * stock disponible y productos que ya no existen o no tienen precio.
+     */
+    private function carritoActualizado(array $carrito): array
+    {
+        if (empty($carrito)) {
+            return [];
+        }
+
+        $productos = Producto::with('ultimaEntrada')
+            ->whereIn('id', array_keys($carrito))
+            ->get()
+            ->keyBy('id');
+
+        $actualizado = [];
+        foreach ($carrito as $id => $item) {
+            $producto = $productos->get($id);
+            $precio = $producto?->ultimaEntrada?->precio_venta;
+
+            if (!$producto || !$precio || (int) $producto->stock <= 0) {
+                continue;
+            }
+
+            $item['precio'] = $precio;
+            $item['cantidad'] = max(1, min((int) $item['cantidad'], (int) $producto->stock, 99));
+            $actualizado[$id] = $item;
+        }
+
+        return $actualizado;
     }
 
     /**
