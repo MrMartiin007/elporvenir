@@ -318,12 +318,17 @@
     position: relative;
     display: block;
     aspect-ratio: 1 / 1;
-    background: #f5f5f5;
+    background: #fff;
+    overflow: hidden;
 }
 
+/* La imagen se ajusta dentro de un cuadro fijo: una foto alta o ancha ya no estira la tarjeta */
 .card-mini-img img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    padding: 0.5rem;
     object-fit: contain;
     background: #fff;
 }
