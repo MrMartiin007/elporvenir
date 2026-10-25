@@ -40,8 +40,10 @@ class ShopController extends Controller
         $banners = Banner::vigentes()->deTipo(Banner::TIPO_BANNER)->orderBy('orden')->orderBy('id')->get();
         $video = Banner::vigentes()->deTipo(Banner::TIPO_VIDEO)->orderBy('orden')->orderBy('id')->first();
 
-        // Las secciones de productos sí: se recalculan cada 5 minutos.
-        $secciones = Cache::remember('portada.secciones', 300, fn () => $this->seccionesPortada());
+        // Las secciones de productos se guardan en caché para que la portada sea rápida. Se limpian solas
+        // al crear/editar/borrar un producto o una entrada (modelos Producto y Entrada); los cambios de
+        // stock por ventas se reflejan como máximo en 60 segundos.
+        $secciones = Cache::remember('portada.secciones', 60, fn () => $this->seccionesPortada());
 
         $carritoCount = collect(session()->get('carrito', []))->sum('cantidad');
 

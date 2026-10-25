@@ -48,6 +48,11 @@ class Entrada extends Model
                 $producto->save();
             }
         });
+
+        // Un precio nuevo o un cambio de entrada también cambia lo que muestra la portada.
+        $olvidar = fn () => \Illuminate\Support\Facades\Cache::forget('portada.secciones');
+        static::saved($olvidar);
+        static::deleted($olvidar);
     }
 
 }
