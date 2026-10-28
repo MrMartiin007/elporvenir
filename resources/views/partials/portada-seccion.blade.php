@@ -8,7 +8,7 @@
             @endisset
         </div>
         <div class="fila-productos" data-fila>
-            <div class="fila-pista" data-pista>
+            <div class="fila-pista {{ $productos->count() > 4 ? 'fila-pista--doble' : '' }}" data-pista>
                 @foreach($productos as $p)
                     @include('partials.product-card-mini', ['p' => $p])
                 @endforeach

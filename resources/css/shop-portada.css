@@ -302,7 +302,10 @@
 }
 
 .fila-pista {
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 1rem) / 2);
+    grid-template-rows: auto;
     gap: 1rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -315,8 +318,12 @@
     display: none;
 }
 
+/* Dos líneas cuando hay más de 4 productos */
+.fila-pista--doble {
+    grid-template-rows: repeat(2, auto);
+}
+
 .fila-pista > .col {
-    flex: 0 0 calc((100% - 1rem) / 2);
     width: auto;
     max-width: none;
     padding: 0;
@@ -324,14 +331,14 @@
 }
 
 @media (min-width: 768px) {
-    .fila-pista > .col {
-        flex-basis: calc((100% - 3rem) / 4);
+    .fila-pista {
+        grid-auto-columns: calc((100% - 3rem) / 4);
     }
 }
 
 .fila-flecha {
     position: absolute;
-    top: 38%;
+    top: calc(50% - 17px);
     z-index: 2;
     width: 34px;
     height: 34px;
