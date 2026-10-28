@@ -181,6 +181,54 @@
         });
     </script>
     <script>
+        // Filas de productos: avanzan solas cada 3 segundos, se detienen al pasar el mouse o tocar,
+        // y vuelven al inicio al llegar al final. Con "reducir movimiento" activado no avanzan solas.
+        (function () {
+            var reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            document.querySelectorAll('[data-fila]').forEach(function (fila, n) {
+                var pista = fila.querySelector('[data-pista]');
+                var pausado = false, visible = false, timer = null, reanuda = null;
+
+                function paso() {
+                    var carta = pista.firstElementChild;
+                    return carta ? carta.getBoundingClientRect().width + parseFloat(getComputedStyle(pista).columnGap || 0) : 0;
+                }
+                function enElFinal() { return pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4; }
+                function mover(dir) {
+                    if (pista.scrollWidth <= pista.clientWidth + 4) return;
+                    if (dir > 0 && enElFinal()) { pista.scrollTo({ left: 0, behavior: 'smooth' }); return; }
+                    if (dir < 0 && pista.scrollLeft <= 4) { pista.scrollTo({ left: pista.scrollWidth, behavior: 'smooth' }); return; }
+                    pista.scrollBy({ left: dir * paso() * (window.innerWidth < 768 ? 1 : 2), behavior: 'smooth' });
+                }
+                function iniciar() {
+                    if (reducir || timer) return;
+                    // Cada fila arranca con un pequeño desfase para que no se muevan todas a la vez
+                    timer = setInterval(function () { if (!pausado && visible && !document.hidden) mover(1); }, 3000 + n * 400);
+                }
+                function pausar(ms) {
+                    pausado = true;
+                    clearTimeout(reanuda);
+                    if (ms) reanuda = setTimeout(function () { pausado = false; }, ms);
+                }
+
+                fila.querySelectorAll('[data-dir]').forEach(function (b) {
+                    b.addEventListener('click', function () { mover(parseInt(b.dataset.dir, 10)); pausar(8000); });
+                });
+                fila.addEventListener('mouseenter', function () { pausar(); });
+                fila.addEventListener('mouseleave', function () { clearTimeout(reanuda); pausado = false; });
+                fila.addEventListener('focusin', function () { pausar(); });
+                fila.addEventListener('focusout', function () { pausado = false; });
+                pista.addEventListener('touchstart', function () { pausar(8000); }, { passive: true });
+
+                if ('IntersectionObserver' in window) {
+                    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0.3 }).observe(fila);
+                } else { visible = true; }
+                iniciar();
+            });
+        })();
+    </script>
+    <script>
         (function () {
             var wrap = document.querySelector('[data-video-wrap]');
             if (!wrap) return;
