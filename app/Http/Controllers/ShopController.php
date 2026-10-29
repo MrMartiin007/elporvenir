@@ -129,10 +129,11 @@ class ShopController extends Controller
 
         $ofertas = $this->productosPortada()
             ->whereRaw('CAST(oferta AS UNSIGNED) > 0')
-            ->orderByDesc('updated_at')->limit(12)->get()->filter($comprable)->take(8)->values();
+            ->orderByDesc('updated_at')->get()->filter($comprable)->values(); // todas las ofertas, sin límite
 
+        // Novedades y más vendidos: hasta 100 cada una (el catálogo tiene miles; sin tope la portada pesaría demasiado)
         $novedades = $this->productosPortada()
-            ->orderByDesc('created_at')->orderByDesc('id')->limit(16)->get()->filter($comprable)->take(8)->values();
+            ->orderByDesc('created_at')->orderByDesc('id')->limit(130)->get()->filter($comprable)->take(100)->values();
 
         // Más vendidos: unidades vendidas en tienda en los últimos 90 días (si hay pocas, todo el historial)
         $topIds = fn ($desde) => DetalleVenta::query()
@@ -140,16 +141,16 @@ class ShopController extends Controller
             ->whereNotNull('productos_id')
             ->groupBy('productos_id')
             ->orderByRaw('SUM(CAST(cantidad AS UNSIGNED)) DESC')
-            ->limit(60)->pluck('productos_id');
+            ->limit(130)->pluck('productos_id');
 
         $ids = $topIds(now()->subDays(90));
-        if ($ids->count() < 8) {
+        if ($ids->count() < 20) {
             $ids = $topIds(null);
         }
 
         $masVendidos = $ids->isEmpty() ? collect() : $this->productosPortada()
             ->whereIn('id', $ids)->get()->filter($comprable)
-            ->sortBy(fn ($p) => $ids->search($p->id))->take(8)->values();
+            ->sortBy(fn ($p) => $ids->search($p->id))->take(100)->values();
 
         $marcasTotal = Marca::has('productos')->count();
 

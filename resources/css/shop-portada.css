@@ -296,6 +296,78 @@
 }
 
 /* ---------- Tarjetas de producto ---------- */
+/* ---------- Filas de productos que se desplazan ---------- */
+.fila-productos {
+    position: relative;
+}
+
+.fila-pista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 1rem) / 2);
+    grid-template-rows: auto;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 2px 10px; /* espacio para la sombra y el efecto al pasar el mouse */
+}
+
+.fila-pista::-webkit-scrollbar {
+    display: none;
+}
+
+/* Dos líneas cuando hay más de 4 productos */
+.fila-pista--doble {
+    grid-template-rows: repeat(2, auto);
+}
+
+.fila-pista > .col {
+    width: auto;
+    max-width: none;
+    padding: 0;
+    scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+    .fila-pista {
+        grid-auto-columns: calc((100% - 3rem) / 4);
+    }
+}
+
+.fila-flecha {
+    position: absolute;
+    top: calc(50% - 17px);
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--bs-primary-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.fila-flecha--prev { left: -10px; }
+.fila-flecha--next { right: -10px; }
+
+.fila-productos:hover .fila-flecha,
+.fila-flecha:focus-visible {
+    opacity: 1;
+}
+
+/* En celular se desliza con el dedo */
+@media (max-width: 767px) {
+    .fila-flecha { display: none; }
+}
+
 .card-mini {
     border: 0;
     border-radius: 14px;
@@ -317,7 +389,9 @@
 .card-mini-img {
     position: relative;
     display: block;
-    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: 0;
+    padding-top: 100%; /* cuadro perfecto en cualquier navegador */
     background: #fff;
     overflow: hidden;
 }
