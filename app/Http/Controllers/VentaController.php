@@ -15,6 +15,22 @@ use Illuminate\Support\Facades\Auth;
 
 class VentaController extends Controller
 {
+    /**
+     * El administrador (superadmin) puede ver y gestionar cualquier venta; un cajero solo las suyas,
+     * y para modificarlas ($soloAbierta) la venta debe seguir abierta.
+     */
+    private function autorizarVenta(?Venta $venta, bool $soloAbierta = false): void
+    {
+        abort_if(!$venta, 404);
+
+        if (auth()->user()->hasRole('superadmin')) {
+            return;
+        }
+
+        abort_unless((int) $venta->users_id === (int) auth()->id(), 403, 'Esta venta no es tuya.');
+        abort_if($soloAbierta && (int) $venta->estado !== 1, 403, 'La venta ya está cerrada.');
+    }
+
     public function index()
     {
         $ventaActiva = Venta::where('users_id', auth()->id())
@@ -272,6 +288,7 @@ class VentaController extends Controller
     {
         // Buscar la venta con sus detalles y productos relacionados
         $venta = Venta::with(['detalles.producto', 'codigosNoEncontrados'])->findOrFail($id);
+        $this->autorizarVenta($venta);
 
         return view('venta.show', compact('venta'));
     }
@@ -279,7 +296,8 @@ class VentaController extends Controller
 
     public function edit($id)
     {
-        $venta = Venta::find($id);
+        $venta = Venta::findOrFail($id);
+        $this->autorizarVenta($venta, true);
         return view('venta.edit', compact('venta'));
     }
 
@@ -291,6 +309,7 @@ class VentaController extends Controller
         ]);
 
         $detalle = DetalleVenta::findOrFail($detalleId);
+        $this->autorizarVenta($detalle->venta, true);
         $producto = $detalle->producto;
 
         if ($request->filled('descuento') && $request->descuento > $detalle->precio_unitario) {
@@ -370,6 +389,7 @@ class VentaController extends Controller
     {
 
         $detalle = DetalleVenta::findOrFail($id);
+        $this->autorizarVenta($detalle->venta, true);
 
         $venta = $detalle->venta;
         $producto = $detalle->producto;
@@ -417,6 +437,8 @@ class VentaController extends Controller
 
     public function cerrarVenta(Request $request, Venta $venta)
     {
+        $this->autorizarVenta($venta);
+
         // Solo el administrador registra el dinero que deja en caja ese día; el cajero cierra como siempre.
         if (auth()->user()?->hasRole('superadmin')) {
             $request->validate(
@@ -444,6 +466,12 @@ class VentaController extends Controller
 
     public function reabrir(Venta $venta)
     {
+        // Una venta solo se reabre en la cuenta de su dueño (si no, quedaría activa para otra persona
+        // y esa persona podría tener dos ventas abiertas a la vez).
+        if ((int) $venta->users_id !== (int) auth()->id()) {
+            return back()->with('error', 'Solo puedes reabrir tus propias ventas.');
+        }
+
         // Verificar si ya tiene una venta activa para evitar colisiones
         $ventaActiva = Venta::where('users_id', auth()->id())
             ->where('estado', 1)
@@ -468,6 +496,9 @@ class VentaController extends Controller
     public function eliminarCodigoNoEncontrado($id)
     {
         $codigo = CodigoNoEncontrado::findOrFail($id);
+        if ($codigo->venta) {
+            $this->autorizarVenta($codigo->venta);
+        }
         $codigo->delete();
 
         return redirect()->route('ventas.create')
