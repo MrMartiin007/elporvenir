@@ -6,7 +6,7 @@
     'image' => asset('logo.jpg'),
     'url' => url()->current(),
     'type' => 'website',
-    'robots' => 'index, follow'
+    'robots' => 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
 ])
 
 {{-- Basic Meta Tags --}}

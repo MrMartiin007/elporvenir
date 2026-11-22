@@ -35,7 +35,7 @@
         :description="$seoDescription"
         keywords="cosméticos, belleza, cuidado personal, maquillaje, skincare, perfumes, Puerto Barrios, Izabal, Guatemala, productos de belleza, beauty center"
         :image="$seoImage" :url="$seoUrl" type="website"
-        :robots="$seoNoIndex ? 'noindex, follow' : 'index, follow'" />
+        :robots="$seoNoIndex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'" />
     @if($productos->previousPageUrl())
         <link rel="prev" href="{{ $seoPageUrl($seoPage - 1) }}">
     @endif
