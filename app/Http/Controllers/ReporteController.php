@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DineroCaja;
 use App\Models\Venta;
 use App\Models\Pedido;
 use App\Models\Entrada;
@@ -217,6 +218,21 @@ class ReporteController extends Controller
             }
         }
 
+        // Dinero que el administrador dejó en caja (una cantidad por día), con los mismos filtros de año y mes
+        $datosCajaGrafico = array_fill_keys(array_keys($datosGrafico), 0);
+        $cajaQuery = DineroCaja::whereYear('fecha', $anio);
+        if ($mes != 'todos') {
+            $cajaQuery->whereMonth('fecha', $mes);
+        }
+        $registrosCaja = $cajaQuery->get();
+        $totalCaja = (float) $registrosCaja->sum('monto');
+        foreach ($registrosCaja as $registro) {
+            $key = ($mes == 'todos') ? $registro->fecha->month : $registro->fecha->day;
+            if (isset($datosCajaGrafico[$key])) {
+                $datosCajaGrafico[$key] += (float) $registro->monto;
+            }
+        }
+
         // Conteo de pedidos por estado (todos los estados, sin filtro)
         $queryPedidosEstado = Pedido::whereYear('created_at', $anio);
         if ($mes != 'todos') {
@@ -244,6 +260,8 @@ class ReporteController extends Controller
             'peorMonto',
             'ventasPorUsuario',
             'datosPedidosGrafico',
+            'datosCajaGrafico',
+            'totalCaja',
             'pedidosPorEstado'
         ));
     }

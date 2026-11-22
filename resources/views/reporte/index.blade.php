@@ -72,6 +72,10 @@
                     </div>
                     <div class="text-3xl font-bold text-gray-900">Q{{ number_format($totalVentas, 2) }}</div>
                     <div class="mt-2 text-sm text-gray-500">Total vendido (tienda + online)</div>
+                    <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Total en caja</span>
+                        <span class="text-lg font-bold text-emerald-600">Q{{ number_format($totalCaja, 2) }}</span>
+                    </div>
                 </div>
 
                 <!-- Ganancia Estimada -->
@@ -257,6 +261,7 @@
             gradientPedidos.addColorStop(1, 'rgba(147, 51, 234, 0)');
 
             const pedidosData = @json(array_values($datosPedidosGrafico));
+            const cajaData = @json(array_values($datosCajaGrafico));
 
             new Chart(ctx, {
                 type: 'line',
@@ -289,6 +294,19 @@
                         fill: true,
                         tension: 0.4,
                         borderDash: [5, 5]
+                    }, {
+                        label: 'Dinero en caja (Q)',
+                        data: cajaData,
+                        borderColor: '#059669',
+                        backgroundColor: 'rgba(5, 150, 105, 0)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#059669',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: false,
+                        tension: 0.4
                     }]
                 },
                 options: {

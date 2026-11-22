@@ -39,14 +39,26 @@
                                     </span>
                                 </div>
                             </form>
-                            <form method="POST" action="{{ route('ventas.cerrar', $venta->id) }}"
-                                onsubmit="return confirm('¿Estás seguro de cerrar esta venta?');">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-lock"></i> Cerrar Venta
-                                </button>
-                            </form>
+                            @role('superadmin')
+                                {{-- El administrador indica el dinero que deja en caja ese día (se trae el ya guardado para modificarlo) --}}
+                                <form method="POST" id="formCerrarVenta" action="{{ route('ventas.cerrar', $venta->id) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="dinero_caja" id="dineroCajaInput">
+                                    <button type="button" id="btnCerrarVenta" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-lock"></i> Cerrar Venta
+                                    </button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('ventas.cerrar', $venta->id) }}"
+                                    onsubmit="return confirm('¿Estás seguro de cerrar esta venta?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-lock"></i> Cerrar Venta
+                                    </button>
+                                </form>
+                            @endrole
                         </div>
 
                         <strong class="text-center align-middle"> Productos Vendidos</strong>
@@ -621,6 +633,49 @@
             </div>
         </div>`;
     }
+
+    @role('superadmin')
+    // ─── Cerrar venta: dinero que se deja en caja (una cantidad por día) ─────────
+    document.getElementById('btnCerrarVenta').addEventListener('click', function () {
+        @php
+            $cajaGuardadaTxt = $cajaDia !== null ? number_format((float) $cajaDia, 2, '.', '') : null;
+            $fechaCajaTxt = \Carbon\Carbon::parse($fechaCaja)->format('d-m-Y');
+        @endphp
+        const guardado = @json($cajaGuardadaTxt);
+        const fecha = @json($fechaCajaTxt);
+
+        Swal.fire({
+            title: 'Cerrar venta',
+            html:
+                '<p class="mb-2" style="font-size:.95rem;">Dinero que dejas en caja el día <strong>' + fecha + '</strong></p>' +
+                (guardado !== null
+                    ? '<p class="text-muted" style="font-size:.8rem;">Ya hay una cantidad guardada para este día. Puedes modificarla.</p>'
+                    : '') +
+                '<div class="input-group">' +
+                    '<span class="input-group-text fw-bold">Q</span>' +
+                    '<input id="swal-dinero-caja" type="number" inputmode="decimal" min="0" step="0.01" class="form-control" placeholder="0.00" value="' + (guardado ?? '') + '">' +
+                '</div>',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar y cerrar venta',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc3545',
+            focusConfirm: false,
+            didOpen: () => { const i = document.getElementById('swal-dinero-caja'); i.focus(); i.select(); },
+            preConfirm: () => {
+                const valor = document.getElementById('swal-dinero-caja').value.trim();
+                if (valor === '' || isNaN(valor) || parseFloat(valor) < 0) {
+                    Swal.showValidationMessage('Escribe una cantidad válida (0 o más).');
+                    return false;
+                }
+                return valor;
+            }
+        }).then((r) => {
+            if (!r.isConfirmed) return;
+            document.getElementById('dineroCajaInput').value = r.value;
+            document.getElementById('formCerrarVenta').submit();
+        });
+    });
+    @endrole
 
     // ─── AJAX Scan ──────────────────────────────────────────────────────────────
     document.getElementById('formScan').addEventListener('submit', function (e) {
