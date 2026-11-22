@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CodigoNoEncontrado;
+use App\Models\DineroCaja;
+use Carbon\Carbon;
 use App\Models\DetalleVenta;
 use App\Models\Producto;
 use App\Models\Venta;
@@ -118,7 +120,11 @@ class VentaController extends Controller
         // Cargar códigos no encontrados para mostrar en la vista
         $venta->load('codigosNoEncontrados');
 
-        return view('venta.create', compact('venta', 'productosFiltrados', 'ventasActivasOtrosUsuarios'));
+        // Dinero en caja ya guardado para el día de esta venta (el administrador lo ve para modificarlo al cerrar)
+        $fechaCaja = Carbon::parse($venta->fecha_venta)->toDateString();
+        $cajaDia = DineroCaja::whereDate('fecha', $fechaCaja)->value('monto');
+
+        return view('venta.create', compact('venta', 'productosFiltrados', 'ventasActivasOtrosUsuarios', 'fechaCaja', 'cajaDia'));
     }
 
 
@@ -409,8 +415,26 @@ class VentaController extends Controller
         return redirect()->route('ventas.create');
     }
 
-    public function cerrarVenta(Venta $venta)
+    public function cerrarVenta(Request $request, Venta $venta)
     {
+        // Solo el administrador registra el dinero que deja en caja ese día; el cajero cierra como siempre.
+        if (auth()->user()?->hasRole('superadmin')) {
+            $request->validate(
+                ['dinero_caja' => 'required|numeric|min:0|max:9999999999'],
+                [
+                    'dinero_caja.required' => 'Escribe el dinero que dejas en caja.',
+                    'dinero_caja.numeric' => 'El dinero en caja debe ser un número.',
+                    'dinero_caja.min' => 'El dinero en caja no puede ser negativo.',
+                ]
+            );
+
+            // Una sola cantidad por día: si ya existía, se modifica
+            DineroCaja::updateOrCreate(
+                ['fecha' => Carbon::parse($venta->fecha_venta)->toDateString()],
+                ['monto' => round((float) $request->input('dinero_caja'), 2), 'users_id' => auth()->id()]
+            );
+        }
+
         $venta->estado = 0;
         $venta->save();
 
