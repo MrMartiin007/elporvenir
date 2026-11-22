@@ -8,7 +8,6 @@ use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VentaController;
-use App\Models\DetalleVenta;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,9 +79,7 @@ Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
         Route::resource('marcas', MarcaController::class);
         Route::resource('entradas', EntradaController::class);
         Route::resource('ventas', VentaController::class);
-        Route::resource('detalle-ventas', DetalleVenta::class);
         Route::post('/ventas/escanear', [VentaController::class, 'escanear'])->name('ventas.escanear');
-        Route::get('/producto/buscar', [VentaController::class, 'buscarProducto'])->name('productos.buscar');
         Route::get('/producto/consultar', [ProductoController::class, 'consultarProducto'])->name('productos.consultar');
         Route::get('/producto/codigo-disponible', [ProductoController::class, 'codigoDisponible'])->middleware('throttle:180,1')->name('productos.codigo');
         Route::get('/producto/sugerencias', [ProductoController::class, 'sugerencias'])->middleware('throttle:120,1')->name('productos.sugerencias');
@@ -168,11 +165,15 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 require __DIR__ . '/auth.php';
 
 
-Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
-Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
-Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
-Route::delete('/ventas/codigo/{id}', [VentaController::class, 'eliminarCodigoNoEncontrado'])->name('ventas.eliminar-codigo');
-Route::get('/ventas/{venta}/eliminados', [VentaController::class, 'verEliminados'])->name('ventas.eliminados');
+// Acciones de ventas (mismas direcciones de siempre): solo con sesión iniciada y rol de administrador o ventas.
+// verEliminados además exige superadmin dentro del controlador.
+Route::middleware(['auth', 'role:superadmin|venta'])->group(function () {
+    Route::get('/ventas/nueva', [VentaController::class, 'iniciarVenta'])->name('ventas.nueva');
+    Route::patch('/ventas/{venta}/cerrar', [VentaController::class, 'cerrarVenta'])->name('ventas.cerrar');
+    Route::patch('/ventas/{venta}/reabrir', [VentaController::class, 'reabrir'])->name('ventas.reabrir');
+    Route::delete('/ventas/codigo/{id}', [VentaController::class, 'eliminarCodigoNoEncontrado'])->name('ventas.eliminar-codigo');
+    Route::get('/ventas/{venta}/eliminados', [VentaController::class, 'verEliminados'])->name('ventas.eliminados');
+});
 
 // Feed de productos para Google Merchant Center
 Route::get('/feeds/google-merchant.xml', [App\Http\Controllers\MerchantFeedController::class, 'google'])->name('feed.google-merchant');
